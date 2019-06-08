@@ -1,0 +1,342 @@
+% ******************************************************************************
+% ****************************** Custom Margin *********************************
+
+% Add `custommargin' in the document class options to use this section
+% Set {innerside margin / outerside margin / topmargin / bottom margin}  and
+% other page dimensions
+\ifsetCustomMargin
+  \RequirePackage[left=37mm,right=30mm,top=35mm,bottom=30mm]{geometry}
+  \setFancyHdr % To apply fancy header after geometry package is loaded
+\fi
+
+% Add spaces between paragraphs
+%\setlength{\parskip}{0.5em}
+% Ragged bottom avoids extra whitespaces between paragraphs
+\raggedbottom
+% To remove the excess top spacing for enumeration, list and description
+%\usepackage{enumitem}
+%\setlist[enumerate,itemize,description]{topsep=0em}
+
+% *****************************************************************************
+% ******************* Fonts (like different typewriter fonts etc.)*************
+
+% Add `customfont' in the document class option to use this section
+
+\ifsetCustomFont
+  % Set your custom font here and use `customfont' in options. Leave empty to
+  % load computer modern font (default LaTeX font).
+  %\RequirePackage{helvet}
+
+  % For use with XeLaTeX
+  %  \setmainfont[
+  %    Path              = ./libertine/opentype/,
+  %    Extension         = .otf,
+  %    UprightFont = LinLibertine_R,
+  %    BoldFont = LinLibertine_RZ, % Linux Libertine O Regular Semibold
+  %    ItalicFont = LinLibertine_RI,
+  %    BoldItalicFont = LinLibertine_RZI, % Linux Libertine O Regular Semibold Italic
+  %  ]
+  %  {libertine}
+  %  % load font from system font
+  %  \newfontfamily\libertinesystemfont{Linux Libertine O}
+\fi
+
+% *****************************************************************************
+% **************************** Custom Packages ********************************
+
+% ************************* Algorithms and Pseudocode **************************
+
+%\usepackage{algpseudocode}
+
+
+% ********************Captions and Hyperreferencing / URL **********************
+
+% Captions: This makes captions of figures use a boldfaced small font.
+%\RequirePackage[small,bf]{caption}
+
+\RequirePackage[labelsep=space,tableposition=top]{caption}
+\renewcommand{\figurename}{Fig.} %to support older versions of captions.sty
+
+
+% *************************** Graphics and figures *****************************
+
+%\usepackage{rotating}
+%\usepackage{wrapfig}
+
+% Uncomment the following two lines to force Latex to place the figure.
+% Use [H] when including graphics. Note 'H' instead of 'h'
+%\usepackage{float}
+%\restylefloat{figure}
+
+% Subcaption package is also available in the sty folder you can use that by
+% uncommenting the following line
+% This is for people stuck with older versions of texlive
+%\usepackage{sty/caption/subcaption}
+\usepackage{subcaption}
+
+% ********************************** Tables ************************************
+\usepackage{booktabs} % For professional looking tables
+\usepackage{multirow}
+
+%\usepackage{multicol}
+%\usepackage{longtable}
+%\usepackage{tabularx}
+
+
+% *********************************** SI Units *********************************
+\usepackage{siunitx} % use this package module for SI units
+
+
+% ******************************* Line Spacing *********************************
+
+% Choose linespacing as appropriate. Default is one-half line spacing as per the
+% University guidelines
+
+% \doublespacing
+% \onehalfspacing
+% \singlespacing
+
+
+% ************************ Formatting / Footnote *******************************
+
+% Don't break enumeration (etc.) across pages in an ugly manner (default 10000)
+%\clubpenalty=500
+%\widowpenalty=500
+
+%\usepackage[perpage]{footmisc} %Range of footnote options
+
+
+% *****************************************************************************
+% *************************** Bibliography  and References ********************
+
+%\usepackage{cleveref} %Referencing without need to explicitly state fig /table
+
+% Add `custombib' in the document class option to use this section
+\ifuseCustomBib
+   \RequirePackage[square, sort, numbers]{natbib} % CustomBib
+
+% If you would like to use biblatex for your reference management, as opposed to the default `natbibpackage` pass the option `custombib` in the document class. Comment out the previous line to make sure you don't load the natbib package. Uncomment the following lines and specify the location of references.bib file
+
+%\RequirePackage[backend=biber, style=numeric-comp, citestyle=numeric, sorting=nty, natbib=true]{biblatex}
+%\bibliography{References/references} %Location of references.bib only for biblatex
+
+\fi
+
+% changes the default name `Bibliography` -> `References'
+\renewcommand{\bibname}{References}
+
+
+% ******************************************************************************
+% ************************* User Defined Commands ******************************
+% ******************************************************************************
+
+% *********** To change the name of Table of Contents / LOF and LOT ************
+
+%\renewcommand{\contentsname}{My Table of Contents}
+%\renewcommand{\listfigurename}{My List of Figures}
+%\renewcommand{\listtablename}{My List of Tables}
+
+
+% ********************** TOC depth and numbering depth *************************
+
+\setcounter{secnumdepth}{2}
+\setcounter{tocdepth}{2}
+
+
+% ******************************* Nomenclature *********************************
+
+% To change the name of the Nomenclature section, uncomment the following line
+
+%\renewcommand{\nomname}{Symbols}
+
+
+% ********************************* Appendix ***********************************
+
+% The default value of both \appendixtocname and \appendixpagename is `Appendices'. These names can all be changed via:
+
+%\renewcommand{\appendixtocname}{List of appendices}
+%\renewcommand{\appendixname}{Appndx}
+
+% *********************** Configure Draft Mode **********************************
+
+% Uncomment to disable figures in `draft'
+%\setkeys{Gin}{draft=true}  % set draft to false to enable figures in `draft'
+
+% These options are active only during the draft mode
+% Default text is "Draft"
+%\SetDraftText{DRAFT}
+
+% Default Watermark location is top. Location (top/bottom)
+%\SetDraftWMPosition{bottom}
+
+% Draft Version - default is v1.0
+%\SetDraftVersion{v1.1}
+
+% Draft Text grayscale value (should be between 0-black and 1-white)
+% Default value is 0.75
+%\SetDraftGrayScale{0.8}
+
+
+% ******************************** Todo Notes **********************************
+%% Uncomment the following lines to have todonotes.
+
+%\ifsetDraft
+%	\usepackage[colorinlistoftodos]{todonotes}
+%	\newcommand{\mynote}[1]{\todo[author=kks32,size=\small,inline,color=green!40]{#1}}
+%\else
+%	\newcommand{\mynote}[1]{}
+%	\newcommand{\listoftodos}{}
+%\fi
+
+% Example todo: \mynote{Hey! I have a note}
+
+\usepackage{epigraph}
+\usepackage{savesym}
+\usepackage{amsmath}
+\usepackage{array}
+\usepackage{listings}
+\usepackage{epsfig}
+\usepackage{float}
+\usepackage{subcaption}
+\captionsetup{compatibility=false}
+\usepackage{epstopdf}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{url}
+\usepackage{amssymb}
+\usepackage{pifont}% http://ctan.org/pkg/pifont
+%\usepackage{acro}
+\savesymbol{printindex}
+\usepackage[acronym, toc]{glossaries}
+\restoresymbol{GLOS}{printindex}
+%\usepackage{biblatex}
+%\usepackage[square,numbers]{natbib}
+%\usepackage{cite}
+%\usepackage[sorting=none]{biblatex}
+\usepackage{bibentry}
+\nobibliography*
+%\usepackage[citestyle=verbose]{biblatex} 
+\usepackage{pdfpages}
+
+\lstset{ %
+  basicstyle=\scriptsize,        % the size of the fonts that are used for the code
+  breakatwhitespace=false,         % sets if automatic breaks should only happen at whitespace
+  breaklines=true,                 % sets automatic line breaking
+  %commentstyle=\color{mygreen},    % comment style
+  %escapeinside={\%*}{*)},          % if you want to add LaTeX within your code
+  %frame=single,                    % adds a frame around the code
+  keepspaces=true,                 % keeps spaces in text, useful for keeping indentation of code (possibly needs columns=flexible)
+  keywordstyle=\color{blue},       % keyword style
+  language=C,                 % the language of the code
+  morekeywords={pragma, omp, task, in, out, taskwait},            % if you want to add more keywords to the set
+  numbers=none,                    % where to put the line-numbers; possible values are (none, left, right)
+  %numbersep=5pt,                   % how far the line-numbers are from the code
+  %numberstyle=\tiny\color{mygray}, % the style that is used for the line-numbers
+  %rulecolor=\color{black},         % if not set, the frame-color may be changed on line-breaks within not-black text (e.g. comments (green here))
+  showspaces=false,                % show spaces everywhere adding particular underscores; it overrides 'showstringspaces'
+  showstringspaces=false,          % underline spaces within strings only
+  showtabs=false,                  % show tabs within strings adding particular underscores
+  %stepnumber=2,                    % the step between two line-numbers. If it's 1, each line will be numbered
+  %stringstyle=\color{mymauve},     % string literal style
+  tabsize=2,                       % sets default tabsize to 2 spaces
+  %title=\lstname                   % show the filename of files included with \lstinputlisting; also try caption instead of title
+}
+
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks,
+    citecolor=black,
+    filecolor=black,
+    linkcolor=black,
+    urlcolor=blue
+}
+
+\renewcommand*\listfigurename{List of Figures}
+\renewcommand*\listtablename{List of Tables}
+\renewcommand{\bibname}{Bibliography}
+
+\newcommand{\comment}{\textcolor{red}{}\textcolor{red}}
+
+\newcommand{\cmark}{\ding{51}}%
+\newcommand{\xmark}{\ding{55}}%
+
+\newcommand{\OMPSS}{OmpSs}
+\newcommand{\PARSEC}{PARSEC}
+
+\newcommand{\ARCH}{Broadwell}
+
+\newcommand{\DefaultSched}{\textit{SLURM extended}}
+\newcommand{\PESched}{\textit{SLURM+PE}}
+\newcommand{\PEVASched}{\textit{SLURM+PEVA}}
+\newcommand{\PRVSSched}{\textit{SLURM+PRVP}}
+\newcommand{\PMCVSSched}{\textit{SLURM+PMCVP}}
+\newcommand{\IVSSched}{\textit{SLURM+IVP}}
+\newcommand{\AvgJTT}{\textcolor{black}{24}}
+\newcommand{\MaxJTT}{\textcolor{black}{30}}
+\newcommand{\AvgEnergy}{\textcolor{black}{4}}
+\newcommand{\MaxEnergy}{\textcolor{black}{8}}
+\newcommand{\EstMaxJTT}{\textcolor{black}{12}}
+\newcommand{\EstMinJTT}{\textcolor{black}{33}}
+
+\renewcommand{\glsnamefont}[1]{\textbf{#1}}
+\makeglossaries
+ 
+\newacronym{hpc}{HPC}{High Performance Computing}
+\newacronym{mpi}{MPI}{Message Passing Interface}
+\newacronym{rapl}{RAPL}{Running Average Power Limit}
+\newacronym{msr}{MSR}{Model-Specific Register}
+\newacronym{pthreads}{Pthreads}{Posix Threads}
+\newacronym{posix}{POXIS}{Portable Operating System Interface, Unix}
+\newacronym{pmc}{PMC}{Performance Monitoring Counters}
+\newacronym{ilp}{ILP}{Instruction Level Parallelism}
+\newacronym{tlp}{TLP}{Thread Level Parallelism}
+\newacronym{numa}{NUMA}{Non-Uniform Memory Access}
+\newacronym{cpu}{CPU}{Central Processing Unit}
+\newacronym{gpu}{GPU}{Graphics Processing Unit}
+\newacronym{llc}{LLC}{Last Level Cache}
+%\newacronym{ipc}{IPC}{Instruction Per Cycle}
+\newacronym{uma}{UMA}{Uniform Memory Access}
+\newacronym{amc}{AMC}{Assymetric Multi-Core}
+\newacronym{tdg}{TDG}{Task Dependency Graph}
+\newacronym{cuda}{CUDA}{Compute Unified Device Architecture}
+\newacronym{dvfs}{DVFS}{Dynamic Voltage and Frequency Scaling}
+\newacronym{ddr3}{DDR3}{Double Data Rate}
+\newacronym{dimm}{DIMM}{Dual Inline Memory Module}
+\newacronym{spmd}{SPMD}{Single Program Multiple Data}
+\newacronym{doe}{DOE}{Department of Energy}
+\newacronym{llnl}{LLNL}{Lawrence Livermore National Laboratory}
+\newacronym{fe}{FE}{Fetch Unit}
+\newacronym{bpu}{BPU}{Branch Prediction Unit}
+\newacronym{alu}{ALU}{Arithmetic Logic Unit}
+\newacronym{fpu}{FPU}{Floating Point Unit}
+\newacronym{pe}{PE}{Power Estimation}
+\newacronym{peva}{PEVA}{Power Estimation Variability Aware}
+\newacronym{prvp}{PRVP}{Power Ratio Variability Prediction}
+\newacronym{vtvp}{VTVP}{Variability Trained Variability Prediction}
+\newacronym{ivp}{IVP}{Ideal Variability Prediction}
+\newacronym{pr}{PR}{Power Ratio}
+\newacronym{pr-mb}{PR-MB}{Power Ratio - Memory Bound}
+\newacronym{pr-cb}{PR-CB}{Power Ratio - Computational Bound}
+\newacronym{vt}{VT}{Variability Trained}
+\newacronym{pmcvp}{PMCVP}{Program Monitoring Counter-based Variability Prediction}
+\newacronym{vth}{V\pmb{$_{th}$}}{Voltage Threshold}
+\newacronym{leff}{L\pmb{$_{eff}$}}{Effective Gate Length}
+\newacronym{nas-mz}{NAS-MZ}{NASA Multi-Zone}
+\newacronym{nasa}{NASA}{National Aeronautics and Space Agency}
+\newacronym{tdp}{TDP}{Thermal Design Power}
+
+\makeatletter
+\renewcommand{\@chapapp}{}% Not necessary...
+\newenvironment{chapquote}[2][2em]
+  {\setlength{\@tempdima}{#1}%
+   \def\chapquote@author{#2}%
+   \parshape 1 \@tempdima \dimexpr\textwidth-2\@tempdima\relax%
+   \itshape}
+  {\par\normalfont\hfill--\ \chapquote@author\hspace*{\@tempdima}\par\bigskip}
+\makeatother
+
+\setlength \epigraphwidth {\textwidth}
+\setlength \epigraphrule {0pt}
+%\AtBeginDocument{\renewcommand {\epigraphflush}{center}}
+%\renewcommand {\sourceflush} {center}
+

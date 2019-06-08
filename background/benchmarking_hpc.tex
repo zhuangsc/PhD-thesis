@@ -1,0 +1,56 @@
+
+Other studies exist that compare parallel programming models in the literature.  Although
+these studies do not focus on task parallelism, they employ benchmarks and similar
+methodology to evaluate their target models.  \cite{Coarfa:2005:EGA:1065944.1065950} study
+and compare the performance of UPC and Co-array Fortran, two PGAS languages.  They use
+select benchmarks from the NAS benchmark suite.
+\cite{Appeltauer:2009:CCP:1562112.1562118} use microbenchmarks to measure and compare the
+performance of 11 context-oriented languages.  Their study shows that they all often
+manifest high overheads.
+
+
+Although all the works we mention try to evaluate various programming models, in terms of
+performance, and some times on usability and versatility, they are all limited to small
+kernels or even just micro-benchmarks.  We find that this approach is not sufficient to
+give us an insight on how a model will impact actual large-scale applications.
+\cite{Karlin:2013:ETE:2510661.2511433} use a proxy application in their work to evaluate a
+number of different programming models (OpenMP, MPI, MPI+OpenMP, CUDA, Chapel, Charm++,
+Liszt, Loci).  Their approach however is limited to only one application.  Different
+application domains can be very different, and may require different parallelization
+techniques to get good scalability and performance.  A programming model could fail to
+even provide a way to express a parallelization scheme, let alone deliver performance.  It
+is important to have an in depth understanding of a models behavior and limitation in
+order to make an educated decision whether research should direct its efforts to adopt
+and further expand it. 
+
+
+Pipeline parallelism has been the subject of study in some recent studies.  This
+programming idiom is found often in streaming and server applications and goes far beyond
+the HPC domain.  \cite{Lee:2013:OPP:2486159.2486174} propose an extension to the Cilk
+model, for expressing pipeline parallelism on-the-fly, without constructing the pipeline
+stages at their dependencies a priori.  It offers a performance comparison between the
+proposed model, Pthreads and Thread Building Blocks (TTB) for three PARSEC benchmarks,
+ferret, dedup and x264.
+
+This trend of using microbenchmarks and kernel application is also followed when
+evaluating other aspects of HPC, apart from parallel programming models, such as emerging
+microarchitectures, novel load-balancing techniques and scheduling policies, etc.  The
+SPEC CPU2006~\cite{Henning:2006:SCB:1186736.1186737} and SPEC
+CPU2017~\cite{Bucek:2018:SCN:3185768.3185771} are benchmark suites designed to evaluate
+processor architectures.  However, although the included workloads are fitting for
+processor design evaluation, they are not representative of larger, more complex
+applications that are run in today's large computer systems.  The PARSEC benchmark
+suite~\cite{bienia2008} on the other hand is composed by applications from varying
+computing domains, but are also common problems run on HPC systems.  Both SPEC and the
+PARSEC however, are implemented using the most basic of parallel programming models, like
+Pthreads.  Such programming models, although expressive enough to exploit the available
+parallelism, offer little insight into how these applications interact with more
+sophisticated programming models, which may have a dedicated runtime system to deal with
+workload management and synchronization.  In this work we implement a variation of the
+PARSEC benchmarks suite, the PARSECSs, using OMPSs/OpenMP 4.0 task directives and dataflow
+relations.  Our implementation uses the most common features between contemporary
+task-based models, so they can be easily ported.  Using task parallelism allows us to
+implement more complex and efficient parallel programming paradigms, like pipelines.  In
+this work, we will be using the PARSECSs to evaluate our runtime and job management
+solutions to mitigating the manufacturing variability.
+ 

@@ -1,0 +1,176 @@
+
+\chapter{Background}
+\label{chap:background}
+
+In this Chapter we provide the necessary background context and the state-of-the-art
+related to this thesis.  In Section \ref{sec:parallel_systems} we describe the different
+architectures found in today's parallel systems.  We divide them into two main categories,
+based on the way memory is viewed by the individual computing units.  We then describe how
+a computing cluster is designed and explain the distinction between homogeneous and
+heterogeneous clusters.  In Section \ref{sec:parallel_programming_models}, we present the
+different programming models used to program shared and distributed memory machines, as
+well as the challenges users face when writing parallel applications.  We then discuss how
+more sophisticated programming models can help users write more efficient and maintainable
+parallel code, when coupled with a runtime system.  In Section \ref{sec:hpc_benchmarking},
+we discuss the limitations of contemporary benchmarking suites and methodologies, and make
+a case for moving to a benchmarking suite that better represents workloads run on today's
+HPC systems, implemented in a state-of-the-art parallel programming model.  In Section
+\ref{sec:cluster_management}, we describe the software used to manage the workload and the
+resources on an HPC cluster.  Manufacturing variability, which causes same model
+processors to run at varying frequencies and power consumption is presented and discussed
+in Section \ref{sec:process_variability}.  The state-of-the-art in power managing HPC
+clusters and improving the power efficiency of parallel runtime systems is presented in
+Section \ref{sec:power_management}.
+
+\section{Parallel Systems}
+\label{sec:parallel_systems}
+With the stagnation of processor frequency and the inherent limitation of ILP in computer
+programs, computer architects turned to multi-core processor chip design in order to
+exploit parallelism at application level.  Both hardware design and software
+implementation for exploiting the parallelism available by the multiple cores brings
+significant new challenges.  Traditionally, computer programs were designed in an
+sequential algorithmic manner.  However, in a parallel environment, the tasks performed by
+a program need to be divided into smaller ones, which can be concurrently executed.  This
+is known as thread or task level parallelism (TLP).  In an ideal scenario, a program can
+be parallelized in an equal number of concurrent tasks, as the number of available cores.
+If a system has $N$ cores and the sequential version of the program run in $T$ seconds,
+then the expected speedup would be $N*T$.  This is known as linear scaling.  However, in
+practice this is rarely the case.  Even if an algorithm is embarrassing parallel, meaning
+that it can easily be divided in $N$ tasks, the speedup may be near-linear because the
+application may become bound by memory or I/O.   
+
+Understanding the underlying hardware, is key in order to achieve good performance.  For
+example, parallel tasks operate in smaller segments of data than their sequential
+counterpart.  This can lead in better utilization of the memory hierarchy and more
+efficient use of the data replacement policies.  In such cases, performance can achieve
+super-linear speedup, meaning that it is possible to surpass even linear scaling.  The
+importance of efficiently utilizing the memory organization on a parallel system is
+apparent from the above example.  As such, the most common distinction between parallel
+systems is the way memory is organized and viewed by different cores.  There are two main
+memory schemes used, shared memory and distributed memory.  
+
+\subsection{Shared and Distributed Memory Systems}
+In shared memory systems, all cores can access the entire memory using the same physical
+address space.  Typically, modern processors feature multiple cores, each with access to a
+private cache and an interface connection to the DRAM subsystem.  A common design for
+contemporary processor features private instruction and data L1 caches to each core, an
+additional L2 private cache and a shared L3 cache between all cores.  It is also possible
+to only have two levels of caches, in which case L2 cache is shared and connects to the
+DRAM, instead of the L3.  The shared cache memory (be it L2 or L3) is also referred to as
+Last Level Cache (LLC). 
+
+If all cores can access any arbitrary memory location with the same speed (latency and
+bandwidth), then such a system is referred to a Uniform Memory Access (UMA).  If however,
+the physical location of a core influences the cost of accessing memory, this system is
+referred to as Non-Uniform Memory Access (NUMA).  This design is most common in practice
+fore modern processors.  A single unit can feature two or more sockets on the motherboard,
+mounted with a multi-core processor each.  Each processor has it's own cache hierarchy,
+with the LLC connected to the DRAM memory via a cache-coherent network interconnection.
+Because memory access time depends whether data is present in the local cache hierarchy of
+each processor, such a system is a NUMA one.        
+
+In a distributed memory system, each processor has its own physical memory address space.
+All processors can communicate with each other via a network interconnection and can
+exchange data through it.  The network bandwidth and latency are of uttermost importance
+for the systems performance, since it can act as a bottleneck on large scale systems,
+where multiple processors may transfer data through the same interconnection.  As such,
+the network topology is very important for such systems.  Connection between processors
+can be point-to-point links or use dedicated switching hardware, grouping processors
+together.  For the interconnection network, low latency and high throughput protocol is
+used, like Infiniband. 
+
+\subsection{HPC Cluster Design}
+\label{sec:cluster_design}
+
+HPC cluster typically consist of hundreds or thousands of processors and cores, offering
+immense parallelization and computing power.  Summit, the current faster supercomputer,
+according to TOP500 list \cite{TOP500}, consists of 2,282,544 cores.  MareNostrum, one of
+Europe's largest supercomputers \cite{TOP500}, consists of 19,440 cores.  Multiple
+computing units, referred to as nodes from this point on, are connected together via a
+network interface, from commodity ones like Ethernet to high-throughput ones like
+Infiniband.  In practice, large HPC clusters feature a combination of shared and
+distributed memory system design. Each node features multiple UMA or NUMA sockets.  Nodes
+use the network interconnection to transfer data between them. 
+
+\subsubsection{Homogeneous vs Heterogeneous Systems}
+\label{sec:cluster_homogeneity}
+An HPC cluster may only feature same type processors.  Such a system is known as
+homogeneous, referring to the uniform computing capacity of all nodes.  General purpose
+processors offer a good option for most problem classes, however specialized hardware,
+like GPUs, are better candidates for certain problems (e.g. linear algebra and machine
+learning) and act as accelerators.  An alternative to the homogeneous system design is
+combining different type of computing units.  As an example, a system can feature NUMA
+nodes general purpose processors and additional nodes with multiple GPUs.  This design
+approach is known as heterogeneous.
+
+Apart from accelerating certain problem cases, heterogeneous system design is also
+considered for power efficiency.  Typically, smaller cores are more power efficient than
+faster ones.  The GPU approach is to offer a hundred times more cores than processors.
+These cores are slower but more power efficient than those of a processor.  Emerging
+processor architectures explore the potential of designing multi-core chips where not all
+cores have the same computing capacity.  Such processors are referred to as Asymmetric
+Multi-core (AMC) processors.   ARM big.LITTLE is an AMC processor design, steered towards
+power efficiency.  \emph{Bigger},faster cores are combined with \emph{smaller}, slower but
+more power efficient ones.  The reasoning behind this design is to offer fast cores for
+running tasks in the critical path of the application, while the smaller ones can offer
+more parallelism at a smaller power cost, for non-critical tasks.  Although heterogeneous
+systems offer benefits in power efficiency and performance, they are more difficult to
+program compared to homogeneous ones.  Since in an heterogeneous system not all processing
+units perform the same, evenly distributing work among cores is not a good option.  Faster
+cores will finish earlier and remain idle, waiting for the slower ones.  Either the
+programmer needs to explicitly distribute work in a fashion that will not create
+bottlenecks.  Alternatively, dedicated software can act as a scheduler to dynamically
+load-balance work between cores.   
+
+Heterogeneity is not always a deliberate choice.  Due to manufacturing issues, processors
+of the same model, stepping and firmware can still demonstrate variability in both
+performance and power consumption \cite{Marathe:2017:ESP:3149412.3149421,Rountree2012}.
+As such, a system that is expected to act as homogeneous is in fact heterogeneous.
+Dynamic load-balancing is again required to mitigate performance issues, while power needs
+to also be managed for more efficient use by the available cores.  Software solutions,
+like the ones proposed by this thesis, can be employed to deal with this type of
+heterogeneity and mitigate its negative effects.
+
+\section{Parallel Programming Models}
+\label{sec:parallel_programming_models}
+\input{background/parallel_models}
+%\section{Benchmarking in HPC}
+%\label{sec:hpc_benchmarking}
+%\input{background/benchmarking_hpc}
+%\subsection{The \PARSEC{} Benchmark Suite}
+%\label{sec:parsec}
+%\input{background/parsec_suite}
+\section{Managing HPC Clusters}
+\label{sec:cluster_management}
+\input{background/cluster_management}
+\section{Manufacturing Variability}
+\label{sec:process_variability}
+\input{background/manufacturing_variability}
+\section{Variability-Aware Power Management in HPC Systems}
+\label{sec:power_management}
+
+As we head towards the exascale era, power is increasingly becoming a serious constraint.
+full capacity.  According to a report from the US Department of Energy
+\cite{ASCAC:tech:2014}, energy efficiency is considered to be among the top ten most
+serious research challenges we face today, in order to achieve exascale computing
+capacity.  The same report also points out that apart from the advances expected in
+hardware, in order to reduce the power consumption of HPC systems, it is also necessary to
+design software which is able to manage thousands of nodes in a power efficient manner.
+Large HPC systems currently are expected to meet their power demands at all times, even
+when all cores are operating at full capacity. This is rarely the case and poses a huge
+strain on the power budget, provisioning the system for the worst case scenario, no matter
+how unlikely it is.  A software solution could manage the underlying hardware and make
+sure that such a scenario never takes place.  Moreover, modern clusters suffer from
+manufacturing variability.  Any software solution should consider the heterogeneity in
+power consumption in order to be effective.  It is a combination of energy efficient
+hardware architectures and power-aware parallel runtimes and system software (e.g.
+workload managers) that will make exascale computing feasible.       
+
+\subsection{Software-aided Power Constraining and Management}
+\input{background/power_budgeting}
+\subsection{Power Prediction Models}
+\input{background/power_prediction}
+\subsection{Power Aware System-Wide Job Scheduling}
+\label{sec:power_aware_job_sched}
+\input{background/power_aware_job_scheduling}
+

@@ -1,0 +1,66 @@
+\subsection{Power Prediction Models} Power prediction models have been extensively studied
+over the years.  In particular, models based on PMC have been very successful in
+predicting power
+consumption~\cite{Bircher:2012:CSP:2196827.2196987,Bertran:2012:SEC:2457472.2457499,Bertran:2010:DRP:1810085.1810108,Goel:2010:PSP:1909624.1909734,Isci:2003:RPM:956417.956567}.
+Our PMC-based model is based on the work of Bertran et
+al.~\cite{Bertran:2012:SEC:2457472.2457499,Bertran:2010:DRP:1810085.1810108}, which aims
+at providing insight into the way individual architectural components influence power
+consumption.  Our PMC-based model extends Bertran's model to account for manufacturing
+variability in terms of power consumption.  The original model requires carefully crafting
+micro-benchmarks that isolate activity per architectural component, in order to train it.
+We show that comparable results can be obtained by training the model with a small set of
+kernel applications and a microbenchmark that stresses the memory unit.
+\par
+\subsection{Power-Aware Budgeting and Scheduling} Managing power has become an important
+issue in HPC.  Etinski et al.~\cite{5999809} propose a job scheduling policy that seeks
+the optimal frequency for parallel jobs in order to lower power consumption.  Sarood et
+al.~\cite{Sarood:2014:MTO:2683593.2683682} use performance modeling to increase job
+throughput in power constrained systems.  A power management of overprovisioned systems
+has also been studied by Patki et al.~\cite{patki:2013:eho:2464996.2465009,7515666}.
+Unlike our work, all sockets are viewed as homogeneous in terms of power consumption,
+which can lead to suboptimal scheduling decisions.
+\par
+More recent work identifies the need to consider manufacturing variability when making
+scheduling decisions or managing a system's power budget
+~\cite{Chasapis:2016:RMM:2925426.2926279,Inadomi:2015:AMI:2807591.2807638,Gholkar:2016:PTH:2967938.2967961,Ellsworth:2015:DPS:2807591.2807643,Bailey:2015:FLP:2807591.2807637,Teodorescu:2008:VAS:1381306.1382152,Totoni:tech:2014}.
+Inadomi et al.~\cite{Inadomi:2015:AMI:2807591.2807638} extensively study the impact of
+manufacturing variability on a number of production clusters and propose a variation-aware
+power budgeting framework.  They introduce variability to their prediction model in
+similar fashion to our \textit{PR} model, by measuring power variability using a single
+microbenchmark on each socket and then apply it to their original, variability agnostic,
+prediction model.    In contrast to our work, their prediction model is used to guide work
+balancing within an MPI application and not system wide job scheduling.  Unlike our
+\textit{VT} model, Inadomi's and our \textit{PR} models assume that variability is
+application independent, which is not correct in general.  As the effects of manufacturing
+variability are expected to increase in future CPUs
+\cite{Marathe:2017:ESP:3149412.3149421}, a more robust model is needed, such as our
+\textit{VT} model.  Chasapis et al.~\cite{Chasapis:2016:RMM:2925426.2926279} and Totoni et
+al.~\cite{Totoni:tech:2014} also employ runtime scheduling solutions for mitigating
+manufacturing variability at application level.  Teodorescu et
+al.~\cite{Teodorescu:2008:VAS:1381306.1382152} study the impact of manufacturing
+variability and propose a linear programming algorithm to find the best parameters for
+power budgeting with DVFS, instead of optimizing job scheduling.  Ellsworth et
+al.~\cite{Ellsworth:2015:DPS:2807591.2807643} propose a power distribution framework that
+optimizes an HPC cluster's power consumption under a certain system wide power budget.  In
+contrast to our work, jobs are scheduled without considering power consumption, but power
+is redistributed, favoring more power intensive jobs.  A two level solution for
+overprovisioned clusters is presented by Gholkar et
+al.~\cite{Gholkar:2016:PTH:2967938.2967961}, where a job scheduler is used at system level
+to allocate nodes and distribute power.  The job scheduler predicts the total energy
+consumption in order to make a scheduling decision, but unlike our work, the prediction
+model does not consider variability.  Individual sockets may run under power constrains
+and a second runtime scheduler decides the optimal configuration of active
+processors and the power distribution among them in order to mitigate the power
+variability.
+\par
+Our job scheduling policies can also be coupled with energy saving runtimes, to further
+reduce power consumption.  
+%However, any technique that throttles frequency or power, such
+%as VDD, will expose the performance variability of the sockets.  Our models would need to
+%be extended to consider different frequencies during training.   
+For example, our approach can be coupled with
+Adagio~\cite{rountree2009}, which detects the
+critical path of MPI codes and uses DFVS to reduce power consumption of
+non-critical pieces of work.
+%hiding performance variability from the scheduler.
+

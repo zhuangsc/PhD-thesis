@@ -1,0 +1,19 @@
+
+In this Chapter we evaluate the benefits of task-based parallelisim by applying it to the \PARSEC{} benchmark suite.
+We discuss and compare our implementations to their
+PARSEC Pthreads/OpenMP counterparts. 
+We show how task parallelism can be applied on a wide range of applications from 
+different domains.   
+In fact, by comparing the lines of code between our implementations and the original versions, we make a strong case
+that task-based  models are actually easier to use.
+The asynchronous nature of task-based parallelism, along with data dependency tracking through dataflow annotations, allows
+us to overlap computation with I/O phases.
+The underlying runtime system can take care of issues like scheduling and load balancing without significant overhead. 
+
+Our experimental results demonstrate that the task model can be easily applied on a wide range of applications beyond the HPC domain. 
+Although, not all applications can benefit from a task-based approach, there are cases where 
+it can greatly improve scalability. 
+The programs that benefit most are those that present pipeline execution model, where different stages of the application can run concurrently.
+The proposed benchmark suite is expected to be of great use in evaluating experimental software
+and hardware system designs, offering a more mature testbed compared to the typically used
+small kernel applications.

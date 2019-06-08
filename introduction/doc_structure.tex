@@ -1,0 +1,19 @@
+
+The remainder of this thesis is organized as follows:
+
+In Chapter \ref{chap:background} we summarize the most widely used designs in modern parallel
+architectures and runtime systems.  We also present the most prominent programming models designed 
+for such systems and focus on the state-of-the-art in the widely used task-based programming model 
+for shared memory architectures.  Furthermore, we discuss the shortcommings in the current state of 
+benchmarking in HPC systems.  In the end of the Chapter we present an emerging issue in modern HPC 
+system design, the manufacturing variability and how it effects a system's power efficiency.
+In Chapter \ref{chap:methodology} we show our experimental platforms, the hardware-software stack
+and methodology used to obtain the results presented in this thesis. 
+In Chapter \ref{chap:task_based_benchmarks} we present our task-based implementation of the PARSEC 
+benchmarks suite.  We show how tasks and dataflow annotations can be used to improve the performance 
+and programmability of parallel applications, when compared to other commonly used programming 
+paradigms.  Moreover, we discuss why the PARSEC benchmark suite and our implementation offers a better and more realistic testbed for HPC systems. 
+In Chapter \ref{chap:power_aware_runtime} we further discuss how manufacturing variability can harm performance and the energy efficiency of an HPC system.  In this Chapter we focus on a runtime solution to mitigate the effects of manufacturing variability.
+In Chapter \ref{chap:power_aware_job_scheduling} we move from the runtime to a more system-wide approach to dealing with manufacturing variability.  We show how variability-aware power prediction models can be employed to guide job scheduling decisions, in order to improve the job throughput and power efficient of an HPC cluster.
+In Chapter \ref{chap:conclusions} we offer our closing remarks and summarize the contributions and conclusions of this work.  We also discuss the future direction of this work.
+

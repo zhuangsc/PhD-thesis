@@ -1,0 +1,54 @@
+%\subsection{A New Form of Heterogeneity}
+
+HPC systems are becoming increasingly power hungry, as we keep pushing the boundaries of
+performance on the road to exascale and beyond.  While significant advances have been made
+in increasing the power efficiency of each single hardware component, i. e., flop/watt
+ratios continue to decrease driven by significant architecture advances, these savings are
+not enough to compensate for the growth in terms of computational elements required to
+realize the needed performance advances.  Consequently, we need to build systems that use
+power more efficiently and ensure that any power provisioned for a system is also used and
+turned into realized performance, i.e., we need systems that can  dynamically manage their
+power budgets among the available hardware components to direct power where it is needed.
+
+Current machines are ``worst-case provisioned'', i.e., all components of a system can be
+powered at the same time without reaching the system's power limit. Since applications
+rarely keep all components occupied\footnote{It's a well known fact that many applications
+only run at a fraction of peak performance --- often way below 10\%}, this conservative
+approach leads to ``wasted power'', i.e., provisioned power that is not used. Prior
+studies show that this wasted power can be up to 30\% of a system's power
+rating~\cite{patki:2013:eho:2464996.2465009,conductor2015}. One solution is to reduce the
+provisioned power to the expected average power consumption, or even lower, allowing
+systems to exploit all available power, and, consequentially, allowing for larger systems
+at the same total provisioned power. In such systems, which we refer to as
+``overprovisioned systems'', though, we must cap power to avoid power spikes caused by
+intermittent phases to exceed the provisioned power and with that endanger the operation
+of the entire system.
+
+Many current architectures either already provide such power capping mechanisms or have
+them on their near term road map. However, such capping doesn't come for free: it impacts
+performance, as show by the results of some initial experiments in
+Figure~\ref{fig:socket_perf_variation}.  The graph shows timing and power consumption of
+multiple runs of the \texttt{freqmine} code from the PARSEC benchmark
+suite~\cite{bienia2008} on 64 nodes of the Lawrence Livermore National Laboratory (LLNL)
+Catalyst cluster~\cite{llnlconfluence}, using 12 threads per execution.  \texttt{Freqmine}
+has been adapted to use OpenMP-like task-based parallelism~\cite{Chasapis:2015:PEI:2836331.2829952} and runs in
+the top of the Nanos++ (v0.7a) parallel runtime system~\cite{nanos}.  Since each node is
+composed of two 12-core Intel Xeon E5-2695v2 sockets, our experiments involve 128
+different 12-core sockets and each run is limited to one of these 128 sockets.  We
+consider five different power bounds: 40, 50, 60, 70W and unlimited per socket.  The TDP
+for each socket was 115W. The x-axis shows the measured power consumption for each
+execution of the \texttt{Freqmine}  benchmark while in the y-axis we show the
+corresponding execution time.  We can see that running without a power bound results in
+almost no performance variation, but exhibits a wide spread of power consumption. Under a
+power bound, this power variation is no longer possible and we can see a drastic impact on
+performance variation instead.  Further, we can see that lower bounds result in higher
+variations.
+
+This behavior can be explained by manufacturing variability, which causes different
+processors to exhibit different efficiencies. The consequence of this phenomena is,
+though, that nominally homogeneous NUMA turn into heterogeneous systems when operated
+under a power cap equally applied to each socket.  Since such irregular responses are due
+to uncontrollable manufacturing issues, there is no way to now how a particular software
+component while behave if run on several particular nodes unless it has been run there
+before. 
+

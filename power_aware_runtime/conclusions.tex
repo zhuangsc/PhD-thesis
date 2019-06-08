@@ -1,0 +1,24 @@
+In this Chapter we demonstrate how state-of-the-art parallel runtime systems can mitigate the performance imbalance between sockets on the same node when
+operating under strict power constraints.  We establish that load-balancing, although improving performance, is not sufficient for a wide set of applications.  In our study
+we use six applications from the PARSEC benchmark suite and three additional applications, all implemented with OpenMP 4.0 tasks.
+The OpenMP runtime offers us a perfect platform for developing our methodology, without the need to
+any additional modification for each application.
+By performing profiling runs of 
+the applications with different power distributions and active number of cores on each socket we demonstrate that it is possible to achieve speedups up to 1.30x over
+naively spreading evenly the power budget and using all possible cores.
+%
+We also propose and implement an online analysis that monitors only a segment of the application's execution and is able to
+switch between different power and concurrency configurations at runtime, reducing the overhead of profiling.  
+Our evaluation shows that it is possible to carefully compose the configuration search space by eliminating candidates that are unlikely to give a good result (such as reducing
+power but increasing concurrency). 
+The online analysis achieves speedups up to 1.22x over the naive case.
+
+This work focused on figuring out the optimal power-concurrency balance on machines with 2 sockets per NUMA
+node, which is a common setup in current systems. Future configurations will have many more sockets on a single node. 
+In respect to our method this trend will likely require increasing the training set sizes, thus the cost and its complexity. 
+However, the benefits of our technique will also increase: more sockets imply an even more varied response to low power scenarios within the same NUMA node.
+Adding accelerators will further increase the number of frequency/power capping domains. By restricting our searches to well-balanced configurations, as shown 
+in this work, we can avoid a combinatorial explosion in the training set sizes, which keeps training costs within reasonable margins and enables larger performance 
+improvements on multi-socket NUMA nodes. The results on 2 a socket system, as described in the thesis, therefore cover the worst case scenario.
+
+ 

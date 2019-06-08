@@ -1,0 +1,100 @@
+
+Handling power has become an important factor when managing and designing HPC
+systems.  However, contemporary workload managers deployed on such systems (e.g. SLURM \cite{slurm_02})
+ do not consider power as a resource and do not
+manage their workloads in an energy efficient way.  Yet, researchers have
+identified the need to make workload management software power-aware and have
+already published various experimental approaches 
+\cite{Sarood:2014:MTO:2683593.2683682,932708,Etinski2010,Etinski2012615,10.1007/978-3-319-07518-1_25,1559953,8081827,KHEMKA201514,8081827,LEAL201633,Patki:2015:PRM:2749246.2749262}.
+
+A survey on the techniques developed in nine of the TOP500 HPC centers for improving energy
+efficient is presented by Maiterth et al. \cite{8425478}.  They identify several emerging
+techniques, some with common characteristics.  Over-provisioning
+\cite{Sarood:2014:MTO:2683593.2683682} considers building a system where it is not
+possible to run all the nodes at full capacity.  Instead, the system operates under a
+certain power budget and dynamically distributes the available power among nodes.  Nodes can
+operate under different power caps.  For example, a few nodes may operate at full capacity, while
+the rest are disabled or constrained.  Other
+approaches \cite{932708,Patki:2015:PRM:2749246.2749262} take advantage of applications that
+can be considered \emph{moldable}, meaning that these applications can run at different
+configurations (e.g. number of threads). 
+
+A significant body of work examines approaches on
+how to optimally use DVFS or hardware imposed power constrains (e.g. RAPL) in order to
+save energy but also optimize performance~\cite{Etinski2010,Etinski2012615,10.1007/978-3-319-07518-1_25,1559953,8081827,Patki:2015:PRM:2749246.2749262}.
+A different approach is also identified, where instead of using hardware imposed power
+caps, energy efficiency is achieved only by job scheduling~\cite{KHEMKA201514,8081827,LEAL201633}.  
+Manufacturing variability is also considered in
+some studies, which exploit the variance in power and performance among nodes to improve
+energy efficiency \cite{Patki:2015:PRM:2749246.2749262,ShoukourianPhD}.  Although the
+identified techniques are not used in production in any of the HPC centers, they provide some 
+insight on future trends in energy efficient HPC computing.
+
+Etinksi et al. \cite{Etinski2010} present a practical approach to apply DVFS on an HPC
+cluster, exploiting periods of low activity.  With DVFS, scaling down the frequency to 
+save power causes significant performance degradation.  Their approach manages to reduce
+the negative impact DVFS by applying it when overall activity is low on the cluster. 
+Moreover, Etinksi et al. \cite{Etinski2012615} present
+a power-aware job scheduling policy, MaxJobPerf.  Their policy considers two types of
+resource that need to be allocated to new jobs, processors and power.  To
+decide which job should be scheduled next and how power should be distributed
+among jobs, they use integer linear programming.
+Sarood et al.~\cite{Sarood:2014:MTO:2683593.2683682} use performance modeling
+to increase job throughput in power constrained systems.  A power management of
+overprovisioned systems has also been studied by Patki et
+al.~\cite{patki:2013:eho:2464996.2465009,7515666}. 
+Unlike our work, all sockets in a cluster are viewed as homogeneous in terms of power 
+consumption, which can lead to suboptimal scheduling decisions.
+
+More recent work identifies the need to consider manufacturing variability when making
+scheduling decisions or managing a system's power budget
+~\cite{Inadomi:2015:AMI:2807591.2807638,Gholkar:2016:PTH:2967938.2967961,Ellsworth:2015:DPS:2807591.2807643,Bailey:2015:FLP:2807591.2807637,Teodorescu:2008:VAS:1381306.1382152,Totoni:tech:2014}.
+Inadomi et al.~\cite{Inadomi:2015:AMI:2807591.2807638} extensively study the impact of
+manufacturing variability on a number of production clusters and propose a variation-aware
+power budgeting framework.  They introduce variability to their prediction model by statically 
+measuring power variability on
+each socket and then apply it to their original, variability agnostic, predictions.  However,
+they base their approach on the assumption that variability is application independent. 
+%In
+%contrast to our work, their prediction model is used to guide work balancing within an MPI
+%application and not system wide job scheduling.  Unlike our \textit{Optimized PMC} model,
+%Inadomi's and our \textit{PR} models assume that variability is application independent,
+%which is not correct in general.  As the effects of manufacturing variability are expected
+%to increase in future CPUs \cite{Marathe:2017:ESP:3149412.3149421}, a more robust model is
+%needed, such as our \textit{Optimized PMC} model.  
+Teodorescu et al.~\cite{Teodorescu:2008:VAS:1381306.1382152} study the impact
+of manufacturing variability and propose a linear programming algorithm to find
+the best parameters for power budgeting with DVFS.  Ellsworth et
+al.~\cite{Ellsworth:2015:DPS:2807591.2807643} propose a power distribution
+framework that optimizes an HPC cluster's power consumption under a certain
+system wide power budget.  In contrast to our work, jobs are scheduled without
+considering power consumption, but power is redistributed, favoring more power
+intensive jobs.  A two level solution for overprovisioned clusters is presented
+by Gholkar et al.~\cite{Gholkar:2016:PTH:2967938.2967961}, where a job
+scheduler is used at system level to allocate nodes and distribute power.  The
+job scheduler predicts the total energy consumption in order to make a
+scheduling decision.  Individual sockets may run under power constrains, in
+which case, a second runtime scheduler decides the optimal configuration of
+active processors and the power distribution among them in order to mitigate
+the power variability.  Adagio \cite{rountree2009} detects the critical path of
+MPI applications and uses DVFS to reduce power consumption of non-critical
+pieces of work, hiding performance variability from the scheduler.
+
+In this thesis we present two job scheduling policies that consider
+manufacturing variability to optimize performance and energy efficiency, in
+power constrained clusters.  We use two different analytical models to predict
+power consumption and manufacturing variability, in order to guide scheduling
+decisions.  The first model is similar to
+\cite{Inadomi:2015:AMI:2807591.2807638}, making the same assumption that
+variability is application dependent, but used in a different context.  The
+second model offers a more robust approach, eliminating the aforementioned
+assumption.  In contrast to hardware imposed power caps, our approach aims to
+maintain power consumption below a certain budget, only by optimizing job
+scheduling.  This way we avoid the implications of degraded and varying
+performance, of power constrained sockets.
+
+%Our job scheduling policies could also be coupled with energy saving runtimes, to further reduce power consumption.  However, any technique that throttles frequency or power, such as VDD, 
+%will expose the performance variability of the sockets.  Our models would need to be extended to consider different frequencies during training.   
+%A more transparent approach is to couple it with a runtime like Adagio \cite{rountree2009}.
+%It detects the critical path of MPI applications and uses DVFS to reduce power consumption of non-critical pieces of work, hiding performance variability from the scheduler.
+

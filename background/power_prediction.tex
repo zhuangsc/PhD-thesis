@@ -1,0 +1,27 @@
+
+Knowing an applications power requirements can be invaluable information when making decisions
+on when an where to run it in a large HPC cluster.  Relying on user supplied information is not
+enough, since this information can be both difficult to obtain but also unreliable.
+An alternative is to train analytical prediction models to get the information. 
+Power prediction models have been extensively studied over the years.  In particular, models based on PMC
+have been very successful in  predicting power consumption~\cite{Bircher:2012:CSP:2196827.2196987,Bertran:2012:SEC:2457472.2457499,Bertran:2010:DRP:1810085.1810108,Goel:2010:PSP:1909624.1909734,Isci:2003:RPM:956417.956567}.  
+However, none of the models found in the literature consider manufacturing variability. 
+In this work, we demonstrate that it is possible to make PMC prediction models aware of the 
+manufacturing variability and accurately predict the socket and application specific power 
+consumption, insteadof making the same prediction for all sockets.  
+Our PMC-based model is based on the work of Bertran et al.~\cite{Bertran:2012:SEC:2457472.2457499,Bertran:2010:DRP:1810085.1810108}, which aims at providing insight into the way individual architectural components influence power consumption.
+Our PMC-based model extends Bertran's model to account for manufacturing variability in terms of power consumption.
+The original model requires carefully crafting micro-benchmarks that isolate activity per architectural component, in order to train it.  We show that comparable results can be obtained 
+by training the model with a small set of kernel applications and a microbenchmark that stresses the memory unit.
+The benefit of using the suggested set of applications for training the model, is that it is a more
+portable solution, compared to Beltran's original set of microbenchmarks.  In Beltran's work, 
+the microbenchmarks need to be designed so that only certain architectural components are stessed
+by each microbenchmark.  This is achieved by carefully implementing an assembly code and considering
+all the architectural details of the underlying machine.  Although our approach will suffer a small
+penalty in precision, there is not need of modification when run on a different machine.
+%, which makes their approach architectural dependent.
+Our approach intends to predict power consumption variability while remaining easy to 
+deploy on any system.
+The implementation, application and evaluation of our proposed analytical
+analytical prediction model is discussed in Chapter \ref{chap:power_aware_job_scheduling}. 
+

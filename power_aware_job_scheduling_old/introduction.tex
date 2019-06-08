@@ -1,0 +1,56 @@
+
+Power is becoming a major financial and environmental concern, restricting the compute 
+capacity of High Performance Computing (HPC) systems. 
+Today's most power efficient supercomputer operates at 14.1GFLOPS/W~\cite{Green500:2017}, 
+but even if we had a system able to operate at the 50GFLOPS/W rate, which is the limit that 
+some funding agencies have set up for building an exascale machine, the full system would 
+consume several tens of MWatts of power, which constitutes a large economic burden. 
+Consequently, a report from the US Department of Energy (DOE)~\cite{ASCAC:tech:2014} 
+identifies energy efficiency as one of the top ten research challenges 
+on the road to exascale. 
+For similar reasons, the European Union has set up an HPC program 
+focused on building low-power systems based on mobile technology~\cite{Rajovic2013}.
+
+An emerging design practice for HPC systems, known as \textit{overprovisioning}~\cite{patki:2013:eho:2464996.2465009}, 
+is to have more nodes than the maximum power budget could feed if run at peak capacity, 
+in contrast to traditional approaches, which are focused in having enough power even when all 
+nodes run at their peak.  Overprovisioning is driven by the observation that  most applications 
+in practice never reach peak power and hence do not fully utilize the available power envelope.
+In such \textit{overprovisioned} systems, we can lower the average power provisioned to each 
+node, allowing us to power more nodes within the same power budget. 
+Additionally, we can redistribute remaining unused power resources to existing nodes by 
+increasing their power allocation for periods of time when additional power is helpful in 
+speeding up computation, e.g., when computations are on the critical path. Combined, 
+both options allow us to shorten execution time and/or improve turnaround time.
+This approach is made possible by recent developments in hardware design that enable power 
+management and power capping from user space, as this is necessary to efficiently manage 
+power as a limited and shared resource.
+
+Manufacturing variability or process variation refers to the
+power and frequency heterogeneity observed across chips implementing the exact same 
+architecture as a consequence of uncontrollable material differences in the manufacturing 
+process~\cite{Rountree:2012:BDF:2357488.2357648}.
+In order to provide homogeneous performance,  chips of the same architecture must hide 
+frequency variability, which can only be achieved via variations in their power consumption.
+However, in a power constrained environment where all chips need to operate under a certain 
+power cap, this frequency variability can no longer be hidden
+~\cite{Rountree:2012:BDF:2357488.2357648}, 
+leading to heterogeneous performance.
+As a result, a theoretically homogeneous system turns into a heterogeneous.  
+While ignoring this manufacturing variability leads to performance and energy inefficiencies, 
+there are opportunities for achieving improvements at the power budgeting or parallel runtime 
+system levels when variability is properly managed~\cite{Chasapis:2016:RMM:2925426.2926279,Teodorescu:2008:VAS:1381306.1382152,Inadomi:2015:AMI:2807591.2807638,Gholkar:2016:PTH:2967938.2967961,Totoni:tech:2014}.
+
+Resource management in large HPC clusters, is typically moderated by dedicated software,
+known as workload managers (e.g. SLURM).  They are also responsible for managing running
+and pending jobs on the system.  Since they maintain a system-wide view of the whole system,
+they offer an ideal platform for managing power.  Indeed some proposals for extending 
+workload managers exist in the literature 
+\cite{Gholkar:2016:PTH:2967938.2967961,7515666,Ellsworth:2015:DPS:2807591.2807643,Etinski2012615} 
+, however they often rely on user input to estimate the power consumption, or are not
+considering manufacturing variability.
+In this Chapter we propose two energy efficient job scheduling policies, which use 
+different analytical models to accurately predict power consumptionm, also considering
+processor variability,  and drive scheduling decisions.  The aim of the scheduling policies
+is to maintain the system's power consumption under a user imposed power budget, while 
+optimizing the system's throughput and energy efficiency.

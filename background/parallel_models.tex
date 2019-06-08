@@ -1,0 +1,307 @@
+
+Programming large parallel machines is considered a job for expert users.  To ease the
+programming effort and make parallel machines accessible a lot of parallel programming
+models have been proposed.  The main goal of any programming model is to offer the means
+to express the available parallelism in an application.  Additional factors that
+distinguish a programming model is how the underlying machine is abstracted and how the
+execution and synchronization of parallel work is managed.  
+
+\subsection{Shared and Distributed Parallel Memory Models}
+An important factor that programming models need to handle is the underlying memory
+system.  How cores access memory can influence the cost of their communication.  In shared
+memory programming models, the most common programming paradigm is fork-join.  Workloads
+are decomposed into smaller ones and a new thread of execution is spawned for each.  Since
+all cores share the same physical address space, threads can access memory and communicate
+a very low cost, but synchronizing accesses is very important to maintain a consistent and
+correct view of the memory among all threads.  This threading model is the most prevalent
+programming model for shared memory machines, while many other shared memory models derive
+from it \cite{openmp13,Blumofe1995,Reinders:2007:ITB:1461409,Kale:1993:CPC:165854.165874}.  
+
+In distributed memory systems, execution threads, usually referred to as processes, have a
+private memory.  Workload decomposition needs to take account that data needs to also be
+segmented.  Each process only works on the data segment it has a copy of, but after work
+completion, results need to be aggregated.  A common approach to achieve communication is
+through a message passing library, like MPI \cite{Nagle:2005:MCR:1239662.1239666}.  Such
+libraries, offer the communication primitives to transfer send data from one node to
+another, in a point-to-point fashion or broadcast to everyone.
+
+Note that the distinction between shared and distributed memory programming models concern
+the way memory is abstracted and presented to the user.  For example and MPI application
+can use the shared memory subsystem to exchange messages, within the same node or
+processor.  Other models, like UCA \cite{El-Ghazawi:2006:UUP:1188455.1188483} can offer a
+unified memory view to the user, where the underlying library implementation can take care
+of moving data between different address spaces.  In the Futures programming model certain
+values are passed around without actually having been evaluated, until a callback
+mechanism is called when their value is required by the program.  Futures is a widely used
+shared memory programming model, implemented even in the standard C++ and Boost
+\cite{Schling:2011:BCL:2049814} libraries.  However, distributed memory implementations
+also exist \cite{Reinders:2007:ITB:1461409,DFChasapis}.  In practice, hybrid approaches
+are often used.  Shared memory models, like OpenMP, can be coupled with a distributed
+memory one, like MPI.  Inter- and intra-node communication and parallelization is handled
+by the corresponding model, exploiting the best both have to offer.
+
+\subsection{Synchronization and Parallel Programming Challenges}
+\label{sec:par_prog_challenges}
+
+Parallel execution brings new challenges for users.  In sequential execution the order
+commands run is well defined by the user.  Contrary, in a parallel environment commands
+may run concurrently and different threads of execution race for the shared resources
+(e.g. memory) on the system.  Competing for system resources needs to be managed by the
+user or dedicated software, such as a runtime system.  If not synchronized properly,
+parallel execution threads may starve or in the case of memory, wrong access order may
+violate RAW dependencies.  These situations are referred to as /emph{race conditions}.
+Different programming models offer varying solutions to the synchronization problem.
+Parallel programming models offer solutions like barrier primitives to define these
+synchronization points.  In a shared memory environment, where system resources are shared
+between threads, synchronization is achieved by using primitives like locks and
+semaphores.  These primitives guarantee that a resource will be accessed by only one
+thread at a time.  However, which thread and in which order a resource is accessed needs
+to be defined by the user.  The order and manner of access is especially important for the
+memory system, since racing threads may produce wrong results or evict memory which is in
+use by another thread.  In microarchitectural level, where memory instructions require
+multiple cycles to complete, atomic instructions guarantee that data will not be accessed
+before the instruction completes.  The fork-join model, followed by many shared memory
+models (Pthreads,OpenMP), also dictates that threads need to synchronize when joining.  
+
+In distributed memory environments, each process is typically operating on a separate copy
+of the data.  Occasions may rise where a process needs to broadcast its results or share
+them with a different process.  Synchronization is achieved by transferring the data
+through the network, with the use of a library like MPI.  Again, the responsibility for
+synchronizing processes is the user's.  In a distributed memory environment, where data is
+transferred typically over a network interface, the user needs to also consider the cost
+of doing so.  Decomposing the workload into large processes is general preferable, since
+communication among processes incurs significant overheads.  Although distributed memory
+models can easily abstract and be used with shared memory machines, it is generally
+preferable to combine them with shared memory programming models.  The shared memory model
+paradigm is more efficient in a shared memory environment, since it does not require
+explicitly moving data between cores, causing less overhead.  As already stated, this is a
+hybrid approach, where shared memory models are used for inter-node communication and
+distributed ones for the intra-node interactions.  
+
+Synchronization is not the only challenge users have to face in parallel environments.
+Decomposing the workload into smaller ones, which can be run concurrently, is also
+critical.  This step defines the available parallelism in the application, as well as the
+data movement and synchronization between different threads and processes.  Moreover, the
+homogeneity of the threads/processes workload is also very important.  The user must
+consider the distribution of the workload and the architecture of the underlying machine
+if he is to fully utilize the available parallelism and the machine's full processing
+power.  Statically and evenly distributing inhomogeneous workload will cause certain cores
+or nodes to finish before others and remain idle.  Alternative decomposition strategies
+can be more efficient, but harder to implement.
+
+\subsection{Asynchronous Tasks and Dataflow Model}
+\label{sec:task-model}
+Different parallel programming models compete in providing intuitive and novel ways to
+express parallelism.  A very successful parallel programming paradigm is task-based
+parallelism.  Tasks offer an easy and abstract way to express parallelism.  The OpenMP
+4.0~\cite{openmp13}, a widely used programming standard for shared memory machines, allows
+the user to annotate functions that can be run asynchronously.  Other programming models,
+like Cilk~\cite{Lee:2013:OPP:2486159.2486174}, allow the user to implement parallel
+functions, through library calls.  Task-based models require the programmer to synchronize
+data accesses between competing parallel tasks, with synchronization primitives.  They are
+also typically coupled with a runtime system, implemented as a library, which deals with
+task creation, synchronization and load balancing.  More sophisticated task-based models
+also offer tools to simplify task synchronization, and allow the runtime to be aware of
+the order tasks need to execute, while respecting data dependencies between them.
+Explicitly expressing the execution order of tasks enables the runtime to make less
+conservative decisions when scheduling tasks, essentially making dynamic load balancing
+more efficient.  It also supports dataflow annotations that describe data dependencies
+among tasks. This information can be used by the runtime system to synchronize task
+execution.  
+
+An intuitive way to express task data dependencies is the dataflow model, which is
+implemented by the most widely used programming models, like OpenMP 4.0\cite{openmp13}.
+In the dataflow model, the user is able to express the data footprint of a task, typically
+in the form of task arguments.  The user also needs to specify whether an argument is
+going to be read as input or written to as output, or both as input-output.  Task
+arguments are translated into a memory addresses at runtime and the dataflow relations, as
+defined by the user, can be used to construct a task dependency graph (TDG), which is an
+acyclic directed graph describing the dataflow relations between all available tasks.  The
+nodes on such a graph represent the tasks queued for execution and the directed edges
+represent the data dependencies between the tasks.   A task is ready to execute when there
+are no more input dependencies (input edges).  When a task finished, it's outgoing edges
+are removed and the graph is checked again for tasks that may now be free of dependencies.
+    
+\begin{figure}[ht!]%
+	\begin{lstlisting}
+void load() {
+	int i = 0;
+	while( load_image(image[i]) ) {
+		#pragma omp task in(image[i]) 
+		                 out(seg_images[i])
+		seg_images[i] = t_seg(image[i]);
+		#pragma omp task in(seg_images[i])
+				             out(extract_data[i])
+		extract_data[i] = t_extract(seg_images[i]);
+		#pragma omp task in(extract_data[i])
+		                 out(vectoriz_data[i])
+		vectoriz_data[i] = t_vec(extract_data[i]);
+		#pragma omp task in(vectoriz_data[i]) 
+		                 out(rank_results[i])
+		rank_results[i] = t_rank(vectoriz_data[i]);
+		#pragma omp task in(rank_data[i]) 
+		                 out(outstream)
+		t_out(rank_data[i], outstream);
+		i++;
+	}
+	#pragma omp taskwait
+}
+	\end{lstlisting}
+	\caption{\texttt{Ferret} implementation in OpenMP 4.0/\OMPSS{}}%
+	\label{lst:ferret-ompss}%
+\end{figure} 
+
+Figure \ref{lst:ferret-ompss} shows a simplified version of the \texttt{ferret} benchmark
+implemented in \OMPSS{}~\cite{Duran:PPL2011}.  \OMPSS{}~is an extension to the OpenMP 4.0
+model with similar syntax and some additional features like socket-aware scheduling for
+NUMA architectures.  The \texttt{ferret} application is parallelized with a pipeline
+model, where each task is a pipeline stage and the dataflow relations direct the order of
+execution of these stages.  The user can use pragma directives to identify functions that
+should run asynchronously.  These task pragmas can have dataflow relations expressed with
+the use of \texttt{in, out} and \texttt{inout} annotations. These declare whether a
+variable is going to be read, written or both by the task.  An underlying runtime system
+is responsible for scheduling tasks, track dependencies, balance the load  among available
+threads and ensure correct order of execution, as dictated by the dataflow relations.  In
+our example data dependencies will force tasks spawned in the same iteration to run in
+sequential order, while tasks from different iterations can run concurrently.  An
+exception is \texttt{t\_out} which shares a common output between all instances,
+\texttt{outstream}, to store the final results of \texttt{ferret}.
+
+Few studies exist that examine the performance of task parallelism compared to other
+models.  \cite{10.1007/978-3-540-85261-2_5} evaluate OpenMP tasks by implementing a
+few small kernel applications using the new OpenMP task construct.  Their evaluation tests
+the model's expressiveness and flexibility as well as performance.  \cite{Podobas503167}
+compare three models that implement task parallelism, Wool, Cilk++ and OpenMP.  They
+compare their performance using small kernels, as well as some microbenchmarks aimed to
+measure task creation and synchronization costs.  They show that Cilk++ and Wool have
+similar performance, while they outperform OpenMP tasks for fine grain workloads.  On
+coarser grain loads, all models have matching performance with OpenMP gaining in one case,
+due to superior task scheduling.
+
+BDDT~\cite{Tzenakis:2012:BBD:2370036.2145864} is a task-based parallel model, very similar
+to OmpSs, that also uses a runtime to track data dependencies among tasks.  BDDT uses
+block-level argument dependency tracking, where task arguments are processed into blocks
+of arbitrary size, which is defined by the user.  This offers some flexibility when
+tracking dependencies of arrays, without the need to modify the memory layout, while also
+maintaining precision (depending on the chosen block-size).  Moreover, it offers
+additional syntax semantics to exclude certain arguments from the dependency analysis,
+further reducing the overhead of online dependency tracking by reducing the size of the
+dependency graph.  BDDT is shown to outperform loop constructs implemented using OpenMP. 
+
+\subsection{Parallel Runtime Systems}  
+In Section \ref{sec:par_prog_challenges} we discuss the challenges users need
+to face when programming parallel machines.  Most parallel programming models
+today, such as the task-based dataflow model presented in Section
+\ref{sec:task-model}, implement runtime systems that deal with some of these
+challenges in different ways.  Some runtime systems may only offer
+synchronization primitives, like barriers and locks, or implement data transfer
+primitives, like broadcasting.  It is often the case though that a runtime
+system offers additional functionality to take some of the burden of the user's
+shoulders.  A common key feature is managing the parallel workload, distribute
+it among cores, instead of depending on the user to statically divide and
+distribute it.  Dynamically handling a parallel workload is an easy task for a
+runtime, which can redistribute work to idle cores or nodes.  This feature is
+often referred to as dynamic load balancing, and allows the user to ignore some
+of the underlying architectural details, like the heterogeneity of the cores or
+nodes and the manufacturing variability of CPUs.  Apart from relieving the
+programming effort, these features make the code more portable and maintainable
+across different machines. 
+
+The versatility of how a runtime system can be exploited to improve
+performance, energy consumption or expand a model's functionality is
+demonstrated by the sheer number of different approaches and techniques
+developed by research centers and industry.  Chronaki et al. \cite{7762236}
+improve performance of task-based models on asymmetric multi-core architectures
+by identifying task that are in the critical path, and scheduling such tasks on
+the faster processing units of the machine.  A critical task is a task that
+delaying its execution will prevent the completion of the whole application.
+Castillo et al. \cite{7516037} propose a minimal extension to hardware design
+that allows dynamic reconfiguration of multi-processors' per core
+computational power.  By identifying critical tasks, the runtime is used to
+guide the dynamic reconfiguration of hardware, so that tasks in the critical
+path are given more computational power.
+Myrmics~\cite{DBLP:journals/corr/LyberisPMN16} is a runtime system with task
+dependency tracking, designed to scale on heterogeneous architectures.  Brumar
+et al.~\cite{7967204} minimize redundant execution by exploiting repetitive
+patterns in parallel workloads.  In their approach, a parallel task may not be
+executed if a \emph{similar} one has already been executed before.  In this
+case, the same result is reused.  They define a methodology for measuring task
+\emph{similarity}.  This approach sacrifices result precision in order to improve
+performance.  Vassiliadis et al. \cite{Vassiliadis:2015:PMR:2688500.2688546}
+propose a task based model that aids the runtime system to identify less
+\emph{significant} tasks and then decide whether it should execute them
+accurately or approximately.  A less \emph{significant} task is defined as a task
+that has small impact on the accuracy of the final result of the application.
+They report reduction in energy consumption up to 83\%, when compared to a
+fully accurate execution.  Jaulmes et al.  \cite{7832827}
+expand the OmpSs programming model and its underlying runtime with error detection and
+protection, for iterative solvers, in a transparent manner from the user's
+perspective.  The effectiveness of automatic compared to manual vectorization in
+task-parallel models is studied by Caminal et al. \cite{helenaArticle}.  
+
+However, having a dedicated runtime aids in managing task creation,
+synchronization, load balancing, data transfers, etc is not free.  Significant
+overhead can be incurred by such a software system, which in many occasions can
+limit the scalability of a parallel code or even perform worse than the
+sequential version of the same code.  A typical way to deal with this overhead
+is to avoid decomposing a workload into very small, fine-grained tasks or
+processes, so that the actual work is always more than the execution time
+required for the runtime system.  This can limit the available
+parallelism significantly. Thus, the user often needs to find a
+\emph{sweet spot} for the decomposition size of the workload.  Any software
+approach however, is an order of magnitude slower than the equivalent hardware
+implementation.
+
+Future architectures should be designed in a way that they can use direct
+information from the runtime system and also provide an infrastructure for
+basic runtime functionalities (such as task creation and data tracking) to
+eliminate any related overhead \cite{JSFI19,Casas2015}. Tan et al.
+\cite{7967114} demonstrate the feasibility of the approach by implementing a
+hardware accelerator on an FPGA, Picos++, which deals with tracking and
+managing task data dependencies (e.g. OpenMP, OmpSs, IntelTBB).  This hardware
+approach delivers 1.8$\times$ performance speedup and up to 40\% less power
+consumption.  Etsion et al. \cite{etsion:micro2011} propose an abstraction to
+out-of-order pipeline that operates at task granularity, instead of ILP.
+Castillo et al. \cite{8327016} propose a hybrid software/hardware mechanism, where
+data dependence tracking is offloaded to hardware, but task scheduling
+is still managed at software level.  They report average speedup of 4.2\% 
+over a hardware implemented runtime and require 7.3x less area, while 
+the software scheduler is more flexible than a hardware implemented one.    
+
+A significant body of work focuses on exploiting information available to the
+runtime in order to guide and improve data management in memory. This is often
+achieved with hardware extensions that allow the runtime system to communicate
+with the memory subsystem.  Sanchez et al.
+\cite{SanchezBarrera:2018:RDM:3205289.3205310} extract control and data
+dependencies information from the runtime's task dependency graph in order to
+reduce data transfers.  RADAR \cite{Manivannan.2016.HPCA} uses data
+dependencies of tasks to track their memory footprint and find dead blocks in
+last level cache memory.  Dead blocks can be then evicted from the cache.  Pan
+et al. \cite{Pan.2015.SC} exploit the input annotations of tasks to identify
+data blocks that will be reused in future tasks and use this information to guide
+cache partitioning.  \'Alvarez et al.
+\cite{Alvarez:2018:RMS:3205289.3205312} present a proposal for managing stacked
+DRAM memories in HPC systems.  Stacked DRAM memories combine the benefits of
+high-bandwidth DRAM with the large space of conventional off-chip memory.  In
+their approach, the runtime is used to manage data transfers between memories
+using idle workers, keeping all this functionality transparent to the user.
+Papaefstathiou et al.~\cite{Papaefstathiou.2013.ICS} uses tasks' lifetime to
+guide prefetching and data replacement in cache memories.  In the same spirit, Dimic et
+al.~\cite{Dimic.2017.Europar} improve cache replacement policy to reduce the
+miss ratio of last level caches.  \'Alvarez et al.~\cite{Alvarez.2015.PACT}
+propose using data dependencies from the runtime system to manage scratchpad
+memories.  Caheny et al.~\cite{Caheny:2016:RCC:2967938.2967962,
+Caheny.2018.TPDS} propose adding another cache layer in the directory protocol
+and exploit information available in the runtime system to reduce coherence
+traffic in NUMA nodes.  The same authors \cite{Caheny:2018:RCC:3291656.3291703}
+present a hardware/software hybrid system, which uses task-based and dataflow
+model semantics to identify data that does not need memory coherence.  By
+disabling coherence for such data, the system improves performance and energy
+efficiency.  
+
+Part of this thesis is inspired by the aforementioned runtime approaches and
+exploits the underlying runtime to identify and mitigate the effects of
+manufacturing variability (see Sections \ref{sec:process_variability} and
+\ref{chap:power_aware_runtime}) present in multi-socket NUMA nodes.
+
+

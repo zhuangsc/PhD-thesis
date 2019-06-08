@@ -1,0 +1,69 @@
+
+In the recent past, significant performance benefits were obtained by increasing number of
+transistors on processor die, a phenomenon which became known as Moore's Law.  A different
+interpretation of Moore's law is that of Dennard Scaling, which states that performance
+per watt is doubling every two years, roughly.  To achieve this, engineers had to shrink
+down transistors, which also means that the threshold voltage and current had to also be
+scaled down.  As we reached a point of diminishing returns, neither Moore's nor Dennard's
+observations hold true.  Shrinking transistors below a certain size leads to increased
+sub-threshold conduction, leakage currents and heat dissipation.  It is not possible to
+deal with the above issues and increase performance, without affecting a chips power
+consumption and reliability \cite{Esmaeilzadeh:2013:PCM:2408776.2408797}.  Moreover,
+decreasing transistor size makes lithography extremely challenging causing artifacts that
+affect transistor parameters during the manufacturing process, such as distortions in film
+thickness and channel length. The most important parameters affected are threshold voltage
+($V_th$) and the effective gate length ($L_{eff}$), which can directly affect a transistor's
+switching speed.  $V_th$ impacts the power leakage of transistors, while the switching
+speed of transistors directly affects the chip's performance and power consumption
+\cite{Borkar:2003:PVI:775832.775920,915379}.  
+
+Since the manufacturing process cannot guarantee that transistors will operate at nominal
+parameter values, processors of the same production line (stepping and firmware) manifest
+variation in both their performance (frequency) and power consumption.  Most vendors use
+frequency binning, meaning that processors with the same performance characteristics are
+placed in the same group.  The same method is not employed however for binning together
+processors with the same power consumption characteristics.  As such, modules processors
+in current HPC systems are already inhomogeneous from the point of view of power.  Early
+results on 64 processors have shown a 10\% power variation for identical workloads at
+equivalent performance [41].  Despite the advances in fabrication process and power
+gating, the impact of manufacturing variability is expected to worsen in future processor
+generations \cite{1382598,Marathe:2017:ESP:3149412.3149421}. 
+
+\subsection{Impact of Manufacturing Variability in HPC Systems}
+In Section \ref{sec:cluster_homogeneity} we compared the homogeneous and heterogeneous
+cluster designs and discussed the challenges users face when programming for the latter.
+Typically HPC system operators obtain processors from the same bin, as by vendor
+characterization, so that processors operate at he same frequencies.  This way,
+homogeneity is guaranteed, at least for the units that it's intended, avoiding having to
+deal with the unpredicted variability caused by the manufacturing process.  However, as
+power is becoming a major concerned, an HPC systems can longer be perceived as homogeneous
+in terms of power consumption.  Since vendors do not offer any classification of processor
+variability, administrators of HPC systems ignore power consumption variability and treat
+the system as homogeneous.  In this work, as with a number of recent related work found in
+literature
+\cite{Teodorescu:2008:VAS:1381306.1382152,Inadomi:2015:AMI:2807591.2807638,Gholkar:2016:PTH:2967938.2967961,Ellsworth:2015:DPS:2807591.2807643,Bailey:2015:FLP:2807591.2807637,Totoni:tech:2014},
+it is demonstrated that it is important to consider power consumption variability in order
+to improve the system's power efficiency and performance.  Furthermore, computer
+architects have employed statistical model's \cite{4041872,1510283,article,4447311}  to
+measure variation of processor's, since vendors do not release any relevant information on
+their models.
+
+It is not uncommon for HPC clusters to operate under system-wide power constrains.
+However, since not all processors consume the same amount of power, it is not sufficient
+to evenly power cap them.  Moreover, power capping a processor will translates power
+consumption variability into frequency variability and thus, performance heterogeneity
+\cite{Rountree2012}.  As such, a previously homogeneous system is now heterogeneous,
+either from its power consumption or performance points of view, which in turn implies
+that efficient use of the machine requires additional programming effort and/or software
+support for mitigating its effects.  In this work we propose two different approaches for
+providing software support: First at runtime level, where we propose methodology for
+improving dynamic load balancing on power constraint sockets.  Secondly, we propose a new
+analytical method for predicting power consumption variability, and then use the model to
+guide job scheduling decisions.
+
+
+
+
+   
+
+ 

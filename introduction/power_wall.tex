@@ -1,0 +1,25 @@
+Power is becoming a major financial and environmental concern, restricting the compute capacity of High Performance Computing (HPC) systems. 
+Today's most power efficient supercomputer operates at 14.1GFLOPS/W~\cite{Green500:2017}, but even if we had a system able to operate at the 50GFLOPS/W rate, which is the limit that some funding agencies have set up for building an exascale machine, the full system would consume several tens of MWatts of power, which constitutes a large economic burden. 
+Consequently, a report from the US Department of Energy (DOE)~\cite{ASCAC:tech:2014} identifies energy efficiency as one of the top ten research challenges 
+on the road to exascale. % is building energy efficient systems.  
+%The current goal of the US DOE is to reach exascale capacity at a 20MW constraint \cite{ashby2010}.  
+For similar reasons, the European Union has set up an HPC program % is also concerned and 
+focused on building low-power systems based on mobile technology~\cite{rajovic2013}.
+%This issue is well known and is often is tackled by sacrificing performance in favor of limiting power consumption.  As a result, it is not uncommon for HPC clusters to operate
+%under power constrains.  
+\par
+An emerging design practice for HPC systems, known as \textit{overprovisioning}~\cite{patki:2013:eho:2464996.2465009}, 
+is to have more nodes than the maximum power budget could feed if run at peak capacity, in contrast to traditional approaches, which are focused in having enough
+power even when all nodes run at their peak. 
+Overprovisioning is driven by the observation that  most applications in practice never reach peak power and hence do not fully utilize the available power envelope.
+In such \textit{overprovisioned} systems, we can lower the average power provisioned to each node, allowing us to power more nodes within the same power budget. 
+%Additionally, we can redistribute remaining unused power resources to existing nodes by increasing their power allocation for periods of time when additional power is helpful in speeding up computation, e.g., when computations are on the critical path. Combined, both options allow us to shorten execution time and/or improve turnaround time.
+%
+%
+%either the extra nodes can take advantage of this available power, or it can be Alternatively, job turnaround time can be increased by redistributing power among all the available nodes.
+%This approach is made possible by recent developments in hardware design that enable power management and power capping from user space, as this is necessary to efficiently manage power 
+%as a limited and shared resource.
+\par
+The resulting need for reducing hardware power consumption has started to force computer architects and vendors to include power capping capabilities in their hardware designs. This allows applications to more efficiently exploit their entire power envelope of a system, while  guarding the system against intermediate power spikes. Prior work has shown that this can lead to significant performance benefits~\cite{patki:2013:eho:2464996.2465009,conductor2015}.
+
+

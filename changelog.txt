@@ -1,0 +1,48 @@
+
+- Fixed typos in text and figure captions
+- Updated abbreviations
+
+- Updated Section 2
+	- Added additional related work on runtimes and runtime-aware architectures in Section
+	  2.2.4 (p.16-17)
+	- Added additional related work on power-aware job scheduling in
+	  Section 2.5.3 (p.23-25)
+
+- Updated Section 3
+	- Added description for Quartz machine in Section 3.1 (p.27)
+	- Clarify that we only measure power of the processor and do not include dram in our
+	  reported measurements in Section 3.2.2 (p.28)
+	- Citing SLURM and Flux simulators in Section 3.3 (p.28-29) 
+	- Clarified that term "traces" refers to application execution traces in Section
+	  3.3 (p.29)
+	- Added simulator validation in Section 3.3 (p.29)
+	- Added a more detailed justification for implementing and using
+	  OmpSs/OpenMP 4.0 benchmarks in Section 3.4.2 (p.30-31)
+	- Section 3.4.2 mentions that benchmarks are run 5 times and median value is 
+	  reported (p. 31)
+	- Section 3.4.3 justifies and explains why and how we generate traffic/load (p.32)
+	- Defined the term traffic as the cluster's load in Section 3.4.3 (p.32)
+
+- Updated Section 4
+	- Added task-graphs in Section 4.3 (p.36-49)
+
+- Updated Section 5
+	- Section 5.3.1 justifies the 80W limit in evaluation (p.69-70) 
+	- Section 5.4.1 describes how execution stages are identified (p.72)
+
+- Updated Section 6 (this section has been mostly rewritten, but we
+list some major points)
+	- Clarified which policies/models are proposed by this work (e.g.
+	  contribution bullets in p.85)
+	- Updated policies' and prediction models' names inconsistencies
+	- Section 6.1.4 describes how power prediction is applied to
+	  multi-node applications (p.92)
+	- Section 6.2 better describe how our policies allocate sockets to
+	  multi-node applications (p.93)
+	- Section 6.3.1 better describes the configuration of multi-node
+	  applications (p.95)
+	- Section 6.3.1 also discusses briefly how temperature variation is
+	  treated in this work (p.95)
+	- Fixed Figure 6.5 legends (p.91)
+	- Fixed figure 6.6, jobs first go through queue (p.94)
+

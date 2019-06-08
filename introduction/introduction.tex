@@ -1,0 +1,301 @@
+
+\chapter{Introduction}
+\label{chap:introduction}
+ 
+According to Moore's Law the number of transistors in integrated circuits doubles every
+two years \cite{Moore:2000:CMC:333067.333074}.  This observation can have different
+interpretations, since more transistors mean additional or more complex components.
+Computer architects were able to exploit this by designing performance enhancing
+components, such as instruction pipelining, branch predictors and memory caches.
+Out-of-order execution of instructions, known as Instruction Level Parallelism (ILP), is
+also possible by implementing it at hardware level, which allowed computers to execute
+multiple instructions per cycle.  All these, along with a constantly increasing clock
+frequency, have steadily led to an increase in performance with every new generation of
+processors, again roughly every two years.  Moore's observation held true for more than
+three decades, however it reached a halting point in the early 2000's.  
+ 
+The post-Moore's Law era brings further implications to computer system design.  Dennard
+scaling \cite{1050511}, which relates to Moore's Law, states that as the size of
+transistors reduces, their power density stays the same.  This means that the performance
+per watt rate had also been increasing exponentially.  As with Moore's law however, this
+observation is no longer valid.  Intel's fastest single core processor (Intel Pentium 4),
+running at 3.8GHz, reached 100W in power consumption.  The power and thermal dissipation
+at higher frequencies make faster processors unfeasible with today's technology.   As a
+result, we can no longer rely on transistor technology or increasing clock frequency to
+deliver higher performance, as we have reached a point of diminishing returns.
+Furthermore, the increasing power demands of processors and the memory subsystem are not
+only a significant strain on the budget which often exceeds the cost of purchasing the
+machine \cite{Rimal:2009:TSC:1683301.1684085}, but have also reached a point where it is
+now arguably the defining limit for further performance enhancements. This is known as the
+Power Wall \cite{917539}, which references the obstacle that power and heat pose in modern
+processor design.
+
+At the beginning of the 21st century, computer architects took a different direction,
+which improved performance significantly and at a feasible power consumption.  The idea
+was to use multiple simple processors on the same chip, and exploit parallelism that
+algorithms may have, since ILP is inherently limited \cite{Wall:1991:LIP:106972.106991}.
+This led to the design of chip multi-processors (CMPs), which can take advantage of
+parallelism at application level.  Moreover, the simpler processors that compose a
+multi-core chip require less power to operate, while their net benefit in performance is
+significantly higher than that of a single more powerful processor.  The rise of the
+multi-core era raises new challenges, such as cores contesting for shared resources and
+departing from the deterministic nature of sequential algorithmic execution.  
+
+Moreover, the complexity of producing integrated circuits with transistors at such a
+microscopic scale has introduced artifacts in the manufacturing process, also known as
+manufacturing variability.  These artifacts can effect the transistor switching speed and
+leakage, thus their performance and power consumption.   Processor vendors today are
+unable to guarantee that their products, even processors of the same chip design, stepping
+and firmware, will consume the same amount of power or perform at the same frequency
+\cite{Rountree:2012:BDF:2357488.2357648}.  This form of variability is not only observed
+among chips, but also between cores within the same die.  Early studies show that
+manufacturing variability can cause variation in power consumption up to 10\%
+\cite{Rountree:2012:BDF:2357488.2357648} and in performance up to 20\%
+\cite{Marathe:2017:ESP:3149412.3149421}, for processors running identical workloads.
+Manufacturing variation is also observed to increase with every new generation of
+processors \cite{Marathe:2017:ESP:3149412.3149421}, making it an important issue for
+current and future processor design.  As a result, modern CPUs are inherently
+heterogeneous in terms of either performance or power consumption.  This form of
+heterogeneity further complicates programming CMPs, where parallel workloads cannot be
+statically distributed.
+
+Even though programming and designing parallel systems requires significant effort, the
+raw performance offered by such platforms outweighs the problems.  The excessive
+parallelism which is present in a large number of workloads from various domains of
+computing, offers the opportunity for performance to scale well beyond the limited number
+of cores found on single processor.  Supercomputers, which are used in a variety of fields
+- from scientific simulations of astronomical models and genome analysis, to industry for
+aerodynamic modeling etc., are composed of hundreds or even thousands of such commodity
+processors.  An example of a powerful contemporary system is the MareNostrum 4
+supercomputer located in Barcelona, which is ranked as the 22nd fastest in the world, and
+3rd in Europe \cite{TOP500}.  It has 153,216 cores and can reach a peak performance of
+10.296TFlops/s at 1,632kW of power consumption.  The current fastest supercomputer,
+according to the TOP500 list \cite{TOP500}, is Summit, located at Oak Ridge National
+Laboratory.  It consists of 2,282,544 cores that can reach a peak performance of
+187,659.3TFlops/s at 8,806kW power consumption.  However, the problems observed in a
+single chip, also scale exponentially on such enormous systems.  Power, in specific, is a
+major limiting factor from moving to the exascale era, since the cost for cooling and
+powering a machine consisting of millions of processors, an order of magnitude greater
+than contemporary supercomputers, is simply forbidding.  Manufacturing variability can
+also become a more serious concern, since it introduces heterogeneous performance or power
+consumption among the different nodes.
+
+To deal with increased complexity of designing parallel programs, many new programming
+models and paradigms emerged.  They all aim at abstracting architectural details, such as
+the memory subsystem, and expressing parallelism at application level.  When programming a
+single CMP, the most common and successful approach has been Fork-join models, like Thread
+level parallelism (TLP) and the more sophisticated OpenMP \cite{openmp13}.  Parallel work
+is divided by the user into multiple entities and run concurrently as different threads of
+execution.  This paradigm is common in shared memory systems, where all threads can access
+the same memory.  The user however is responsible for synchronizing the memory accesses
+and avoid racing conditions.  Writing and reading memory in the wrong order can produce
+erroneous results, while poor synchronization strategies can cause bottlenecks and race
+conditions.  In distributed memory systems (e.g. HPC clusters), where an application runs
+on many different nodes which do not have access to the same memory, programming paradigms
+like message passing (MPI \cite{Nagle:2005:MCR:1239662.1239666}) are used.  Programmers
+need to explicitly move data from one node to another in order for all processes to have
+an consistent view of the data, at all stages of an application's execution.  Data
+transfers are costly, in terms of cycles, and can again cause contention and race
+conditions, if not used properly.  In both shared and distributed memory systems,
+significant effort is required from the user in order to guarantee the correctness of the
+application's execution, as well as achieve good performance.  Often, this task requires a
+very deep understanding of the programming model and the underlying hardware.  More
+sophisticated programming models try to take the burden of the user by providing more
+intuitive ways to express parallelism.  Task parallel models for example, allow the user
+to abstract parallel work into task constructs.  This task is usually as simple as
+annotating certain function or code blocks as tasks, which can then be executed
+concurrently
+\cite{Fatahalian:2006:SPM:1188455.1188543,Blumofe1995,Bellens:SC2006,Ayguade:2009:DOT:1512157.1512430,Tzenakis:2012:BBD:2370036.2145864,Jenista:2011:OSO:2038037.1941563,Planas:2009:HTP:1572226.1572233,Duran:PPL2011}
+Task models often employ dataflow annotations, which allow the user to express memory
+accesses and data dependencies between tasks in the form of task arguments
+\cite{Jenista:2011:OSO:2038037.1941563,Ayguade:2009:DOT:1512157.1512430,Tzenakis:2012:BBD:2370036.2145864,Duran:PPL2011}.
+Models such as these, reduce the need for explicit synchronization.  The execution of
+parallel work and memory access synchronization is realized by dedicated runtimes, which
+are part of the programming models.  The underlying runtime can also take care of load
+balancing parallel work among cores and/or different nodes, remaining transparent to the
+user.  In practice, shared and distributed memory models are often mixed, where they deal
+with inter- and intra-node parallelization. 
+
+
+Exploiting the immense power offered by HPC clusters, requires the use of the
+aforementioned programming models, in order to express as much parallelism as possible in
+one's program.  However, machines such as these have multiple user and require dedicated
+software that manage shared resources (such as cores and memory) and the applications that
+are queued for execution (typically referred to as jobs).  The most commonly used workload
+manager is SLURM \cite{slurm_02}. The resulting ecosystem, which allows us to efficiently
+use these high-end machines, consists of a mix of sophisticated hardware and software.
+Multicore processors coupled with high bandwidth interconnection, programming models that
+allows us to exploit parallelism, runtime systems that take care of parallel execution at
+application level, and finally a workload manager, which manages jobs, while efficiently
+allocating the system's resources.  In their simplest form, HPC clusters are perceived as
+homogeneous machines, where each node runs at the same frequency and power requirements.
+Often more complex setups are used in practice, where for example general purpose CPU work
+along with GPUs.  Even in this scenario though, it is easy to classify nodes in
+homogeneous clusters.  Resource managers and runtime systems are also often used to hide a
+system's heterogeneity, by load balancing work dynamically.  Modern multi-core and
+multi-node systems, which can be composed of thousands CPUs, can no longer be perceived as
+homogeneous systems, neither in terms of CPU frequency nor power consumption, due to
+manufacturing variability.  Vendors do not offer any classification of their processors'
+variability due to manufacturing issues, making even more difficult for users to identify
+and take into account this new form of heterogeneity.  However its impact can be
+significant in both power consumption and performance.  Runtime systems and system-wide
+workload management software can act as platforms for developing methodologies that both
+identify and classify manufacturing variability and mitigating its effects.  
+
+
+%\subsection{Power Wall}
+%\input{introduction/power_wall}
+%\subsection{Manugacturing Variability}
+%\input{introduction/manufacturing_variability}
+
+\section{Thesis Objectives and Contributions}
+
+In this thesis we study manufacturing variability on modern processors and propose power-
+and variability-aware scheduling policies at runtime and system wide Job Scheduling
+levels.  Our goal is to mitigate the effects of manufacturing variability in modern
+processors in order to optimize their performance and power efficiency.  Our approach,
+treats power as a shared resource which needs to be carefully managed and allocated to
+parallel workloads.  We propose two different approaches, one at application runtime level
+and one at system wide resource management level.  The runtime approach deals with power
+constraint systems, where it monitors the application's performance during execution and
+redistributes power and work between the sockets of a node, till an optimized setup is
+reached.  In order to evaluate our runtime approach, we needed a benchmark suite
+representative of modern workloads and implemented using our runtime system.  For this we
+implement our own task-based version of the PARSEC benchmark suite, using OpenMP 4.0
+tasks.  The system wide approach tries to maximize the throughput of the system while
+minimizing power consumption.  Part of our objective is also to understand how our methods
+affect applications that are actually being used in modern HPC systems.
+
+
+\subsection{Benchmarking with Realistic Workloads}
+
+Benchmarking is a vital part of evaluating experimental software and hardware.  In HPC,
+benchmarking is usually restricted to small kernel applications.  The reasoning behind
+this trend however is that larger applications consist of smaller kernel ones.  Although
+this is true, it is not always the case that performance can only be gained by
+parallelizing or optimizing these kernel applications.  Coarser grain parallelism also
+plays an important factor in improving the performance of applications used in today's
+computing \PARSEC{} \cite{Bienia:PhD2011}.    In this thesis, we aim to evaluate the
+benefits of task-based parallelism beyond the scope of HPC kernels, focusing on a set of
+parallel applications representative of a wide range of domains from HPC to desktop and
+server applications.  To do so, we apply task-parallelism strategies to the \PARSEC{}
+benchmark suite~\cite{Bienia:PhD2011} and compare them in terms of programmability and
+performance with respect to the fork-join versions contained in the suite. 
+The main contributions of are:
+\begin{itemize}
+	\item We apply task-based parallelization strategies to 10 \PARSEC{} applications. 
+	\item We fully evaluate them in terms of performance, considering different scenarios 
+(from 1 to 16 cores) and achieving average improvements of 13\%. 
+In some particular cases, the improvements reach 42\%. 
+	\item We provide detailed programmability metrics based in lines of code, achieving an 
+average reduction of 28\% and reaching a maximum of 81\%.
+\end{itemize}
+
+Our superscalar version of the \PARSEC{} benchmark suite (PARSECSs), fills the gap in the
+evaluation methodology usually used in HPC, offering a set of applications actually used
+in todays computing. The implementation offered also uses the state-of-the-art concepts
+and models in parallel programming.
+
+\subsection{Variability-Aware Load-balancing at Runtime Level}
+
+To deal with manufacturing variability, we present a runtime guided hardware/software
+reconfiguration approach that effectively mitigates the effects of inhomogeneous hardware
+behavior in low power environments.  Further, we demonstrate that classical work stealing
+and load balancing techniques~\cite{Blumofe1999, Blumofe1995, Ravichandran2011, Zheng2011}
+are insufficient to mitigate this performance issue.  In the context of a NUMA node
+composed of several multi-core sockets, our technique is able to efficiently distribute a
+total node power budget among the node's different sockets, while also adjusting their
+corresponding concurrency levels.  In order to enable this, our approach dynamically
+selects the best power/concurrency level for each socket involved in the computation by
+performing a light weight initial training phase.  This initial training phase selects the
+optimal power/concurrency level to be assigned to each socket to reduce applications' load
+imbalance induced by power/performance inhomogeneity and thus increase performance. 
+
+The contributions are as follows:
+\begin{itemize}
+	\item We provide a precise description of the limitations of current, state of the art 
+load balancing techniques when dealing with inhomogeneous hardware behavior under node-level 
+power limits. 
+  \item We demonstrate how uneven power and thread assignments to sockets can mitigate the 
+inhomogeneous hardware behavior in dual socket NUMA nodes, resulting in up to 30\% increased 
+performance for some applications.
+	\item We describe a dynamic runtime technique to discover the optimal power/concurrency 
+assignment for each application on a given parallel machine that provides up to 22\% 
+performance improvements for some applications. 
+\end{itemize}
+
+%Chapter \ref{chap:power_aware_runtime} describes the above contributions in more detailed and offers an evaluation of the runtime approach.
+
+\subsection{Power Variability Prediction-driven Job Scheduling}
+
+We propose two variability-aware job scheduling policies to deal with manufacturing
+variability at system-wide level, by introducing power- and variability-awareness to the
+cluster resource and job manager.  Workloads at the HPC system level are managed by job
+schedulers that allocate resources to dispatched jobs.  Such jobs can run on distributed
+memory scenarios and, in this context, MPI~\cite{Nagle:2005:MCR:1239662.1239666} is the
+most common approach to handle distributed memory communications.  It is usually coupled
+with a shared memory programming model, like OpenMP~\cite{openmp13} or
+similar~\cite{10.1007/978-3-540-85261-2_5}. 
+
+Either across nodes or within a shared-memory node, both job and runtime schedulers deal
+with the resource allocation problem, albeit at different levels, offering opportunities
+to manage power consumption.  Indeed, examples of power-aware systems  that offer
+solutions either at the job scheduling
+\cite{Gholkar:2016:PTH:2967938.2967961,7515666,Ellsworth:2015:DPS:2807591.2807643,Etinski2012615}
+or at runtime system  \cite{Gholkar:2016:PTH:2967938.2967961,
+Chasapis:2016:RMM:2925426.2926279,Totoni:tech:2014,Teodorescu:2008:VAS:1381306.1382152,Inadomi:2015:AMI:2807591.2807638}
+levels already exist in the literature.
+
+This work goes beyond the state-of-the-art by proposing job scheduling policies driven by
+variability-aware power prediction models.  We extend power-aware scheduling and power
+prediction models to deal with manufacturing variability,  producing two novel
+variability- and power-aware job scheduling policies.  We consider the power consumption
+of the CPU, since it accounts for more than 50\%
+\cite{ShuaiwenSong:2009:EPA:1572226.1572228} of the total node's power consumption.  Our
+Policies rely on two different models and leverage their power requirement predictions of
+individual parallel jobs to make scheduling decisions that maximize performance while
+reducing energy consumption.  Many different variability-agnostic power and energy
+prediction models have been proposed
+~\cite{Bircher:2012:CSP:2196827.2196987,Bertran:2012:SEC:2457472.2457499,Bertran:2010:DRP:1810085.1810108,Goel:2010:PSP:1909624.1909734,Isci:2003:RPM:956417.956567}
+and are often employed to manage power distribution on clusters or mitigate the effects of
+manufacturing variability
+~\cite{Chasapis:2016:RMM:2925426.2926279,Inadomi:2015:AMI:2807591.2807638,Gholkar:2016:PTH:2967938.2967961,Ellsworth:2015:DPS:2807591.2807643,Bailey:2015:FLP:2807591.2807637,Teodorescu:2008:VAS:1381306.1382152,Totoni:tech:2014}.
+Our work shows how variability-aware power prediction models can be effectively used to
+guide job scheduling policies and bring significant benefits with respect to the
+variability-agnostic ones.
+\par
+In particular, this work makes the following contributions:
+\begin{itemize} 
+
+	\item Two new variability-aware power prediction models.  The first model assumes power
+variability to impact all applications equally and it is based on executions of a single
+benchmark on different sockets to measure the power consumption variability across them.
+Given the power profile of the targeted application obtained from a previous run on a
+certain socket, the model applies the measured variability ratios to predict its power
+consumption on all sockets.  The second model extends the Performance Monitoring
+Counters-based \acrlong{pmc} (PMC) approach to take power consumption variability into
+account.  PMCs are used to measure the activity of individual architectural components
+while the targeted application is running. Using a linear model trained off-line by
+running a reduced set of benchmarks on all sockets, the model predicts the power
+consumption of each architectural component for a certain application.  
+
+	\item Two power- and variability-aware job scheduling policies that optimize job turnaround 
+time and energy efficiency while respecting a system-wide power budget.  prediction model.
+Unlike previous work that does not consider variability during job scheduling decisions
+~\cite{Inadomi:2015:AMI:2807591.2807638,Teodorescu:2008:VAS:1381306.1382152,Ellsworth:2015:DPS:2807591.2807643,Gholkar:2016:PTH:2967938.2967961},
+our policies use variability-aware prediction model to guide scheduling.
+
+	\item A complete evaluation of the two variability-aware policies via a discrete event 
+simulator.  We implement additional scheduling policies for our evaluation, which
+represent traditional and state-of-the-art practices used in today's HPC systems.  Our
+evaluation demonstrates how variability-aware policies achieve energy savings up to
+\MaxEnergy\% and job turnaround time reductions up to \MaxJTT\%, considering different
+power budgets and two workload traffic scenarios (bursty and heavy).
+
+\end{itemize}    	
+
+
+
+\section{Thesis Structure}
+\input{introduction/doc_structure}
+

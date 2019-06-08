@@ -1,0 +1,40 @@
+
+\begin{abstract}
+Current large scale systems show increasing power demands, to the point that it has become
+a huge strain on facilities and budgets.  The increasing restrictions in terms of power
+consumption of High Performance Computing (HPC) systems and data centers have forced
+hardware vendors to include power capping capabilities in their commodity processors.
+Power capping opens up new opportunities for applications to directly manage their power
+behavior at user level.  However, constraining power consumption causes the individual
+sockets of a parallel system to deliver different performance levels under the same power
+cap, even when they are equally designed, which is an effect caused by manufacturing
+variability.  Modern chips suffer from heterogeneous power consumption due to
+manufacturing issues, a problem known as manufacturing or process variability.  As a
+result, systems that do not consider such  variability caused by manufacturing issues lead
+to performance degradations and wasted power. In order to avoid such negative impact,
+users and system administrators must actively counteract any manufacturing variability. 
+\par
+In this thesis we show that parallel systems benefit from taking into account the
+consequences of manufacturing variability, in terms of both performance and energy
+efficiency. In order to evaluate our work we have also implemented our own task-based
+version of the PARSEC benchmark suite. This allows to test our methodology using
+state-of-the-art parallelization techniques and real world workloads.  We present two
+approaches to mitigate manufacturing variability, by power redistribution at runtime level
+and by power- and variability-aware job scheduling at system-wide level.  A parallel
+runtime system can be used to effectively deal with this new kind of performance
+heterogeneity by compensating the uneven effects of power capping.  In the context of a
+NUMA node composed of several multi-core sockets, our system is able to optimize the
+energy and concurrency levels assigned to each socket to maximize performance.  Applied
+transparently within the parallel runtime system, it does not require any programmer
+interaction like changing the application source code or manually reconfiguring the
+parallel system.  We compare our novel runtime analysis with an offline approach and
+demonstrate that it can achieve equal performance at a fraction of the cost.  The next
+approach presented in this theis, we show that it is possible to predict the impact of
+this variability on specific applications by using variability-aware power prediction
+models.  Based on these power models, we propose two job scheduling policies that consider
+the effects of manufacturing variability for each application and that ensures that power
+consumption stays under a system wide power budget. We evaluate our policies under
+different power budgets and traffic scenarios, consisting of both single- and multi-node
+parallel applications.
+% utilizing up to 4096 cores in total.  
+\end{abstract}

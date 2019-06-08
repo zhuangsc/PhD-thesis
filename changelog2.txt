@@ -1,0 +1,30 @@
+
+- Fixed various typos 
+
+- Updated Section 3
+ - Updated Introduction to define some basic assumption about the underlying tools and
+   feature that should be available on the platform (p.27)
+ - Updated Section 3.2.2 to explaining how power capping is achieved and what direct side
+   effects it has to the processors (p.28-29)
+ - Section 3.2.2 also explains that we only measure CPU power consumption, as well as why
+   we made this choice (p.28)
+
+- Updated Chapter 4
+ - Updated Introduction to better state the objective of this Chapter (which is to offer
+   an evaluation platform for high-level task parallelism) (p.36)
+ - Updated Introduction to clarify how this Chapter is relevant to the rest of this
+   Thesis (p. 36)  
+
+- Updated Chapter 5
+ - Updated Section 5.5.2, adding a small discussion on how finer grain tasks could also
+   mitigate the effects of manufacturing variability, but also why this is not always
+   practical (p.70)
+ - Updated Section 5.4 with an example on how the runtime analysis works and added a small 
+   discussion on other approaches to identifying representative applications segments (p.74-75)  
+
+- Updated Chapter 6
+ - Updated Introduction to clarify the objective of the work presented in this chapter (p.85, 87)
+ - Updated Introduction clarifying that variability is indeed application dependent (p.86-87)
+ - Updated Section 6.3.2 to comment on error tolerance in the scheduling
+   policies (p.99)
+

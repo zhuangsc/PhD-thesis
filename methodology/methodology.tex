@@ -1,0 +1,341 @@
+
+\chapter{Experimental Setup}
+\label{chap:methodology}
+
+In this Chapter we describe the hardware and software platforms used for the experimental
+evaluation of this work.  In this work we assume that we work with parallel workloads that
+are implemented with a programming model that allows dynamically controlling its
+concurrency level.  Applications should also be able to be decomposed into concurrent
+tasks.  The underlying hardware platform should offer the ability to impose user defined
+power caps, at least per each socket (such as Intel CPU models that are equally or older
+than the Sandy Bridge family of processors).  Moreover, older CPU models do not
+demonstrate notable manufacturing variability.
+We also assume the presence of a workload manager to manage running applications on an 
+HPC cluster.   
+
+\section{Hardware Platforms} 
+\label{sec:platforms}
+For our experimental evaluation we use two distinct HPC
+clusters, the MareNostrum III supercomputer at Barcelona Supercomputing Center and the
+Catalyst and Quartz clusters at Lawrence Livermore National Lab.  Marenostrum III is one
+of Europe's largest supercomputers and represents the state-of-the-art in production
+environments in HPC.  Our initial evaluation of the PARSECSs is conducted on MareNostrum
+III, however, since it's a large production machine, access to specific MSR registers,
+required for monitoring and capping power on Intel chips, is restricted.  For this reason
+we also use the Catalyst and Quartz cluster, where MSRs are accessible by the user through
+special kernel modules. 
+
+\begin{itemize}
+	\item \emph{MareNostrum III}: It consists of 3,056 compute nodes in total. Each node is
+IBM System X server iDataPlex dx360 M4, composed of two 8-core Intel Sandy Bridge
+processors E5-2.60Hz, 20MB of shared last-level cache. There are eight 4GB DDR3 DIMM's
+running at 1.6GHz (a total of 32GB per node and 2GB per core). 
+
+	\item \emph{Catalyst}: The Catalyst cluster~\cite{llnlconfluence} consists of 324 NUMA
+nodes, each with two 12-core Intel Xeon E5-2695v2 sockets and equipped with 128GB of main
+memory.  It can reach a peak performance of 149.3 PFLOPS.  Access to MSR counters is
+granted to normal users through a kernel module.  We use 128 of these nodes (256 sockets)
+in our experiments, which totals to 3,072 cores.
+
+	\item \emph{Quartz}: The Quartz cluster~\cite{llnlconfluence} consists of 2,634 NUMA
+nodes, each with two 16-core Intel Xeon E5-2695v4 sockets and equipped with 128GB of main
+memory.  It can reach a peak performance of 3,251.4 PFLOPS.  For our experiments we use We
+use 128 of these nodes (256 sockets) in our experiments (4,096 cores in total).  As with
+the case of Catalyst, access to the RAPL interface is granted through a kernel module.
+This is a larger production machine we use to gather application execution traces and later
+use in our workload manager simulator.
+
+\end{itemize}
+
+\section{Software Stack}
+
+\subsection{Runtime System}
+We use the OpenMP 4.0 standard to implement the PARSECSs benchmark suite.  We make use of
+the Nanos++ OpenMP runtime system (version 0.8a).  Because of it's modular design it is
+ideal to expand it's functionality and offers all OpenMP 4.0 features along with some
+experimental ones.  Note that we only use the standard OpenMP 4.0 features in our
+implementation.  We also use Nano++ for developing our power-aware runtime approach.
+Nanos++ is coupled with the Mercurium source-to-source compiler (version 1.99), and gcc
+4.7 as the back-end compiler.  
+%To analyze the behavior of the \PARSEC{} benchmark suite (version 3.0), we use the Extrae
+%instrumentation package~\cite{Labarta2006} (version 2.5) and the Paraver trace
+%viewer~\cite{Labarta2006} (version 4.5). 
+%We run all benchmarks using their respective native inputs as described in Table~\ref{tab:parsec}. 
+
+\subsection{Analysis tools and Power Capping Framework}
+We use a number of tools to perform various types of analyses on our benchmarks.  We use
+the Extrae instrumentation package~\cite{Labarta2006} (version 2.5) and the Paraver trace
+viewer~\cite{Labarta2006} (version 4.5) to analyze and compare the PARSEC and PARSECSs
+benchmark suites.
+ 
+
+\textit{Performance and Power Monitoring} 
+Our methodology requires to monitor performance counters plus power consumption rates.  We
+use \textit{perf} version 3.10 and \textit{mpstat} version 10.5.1 for monitoring
+architectural and core component activity.  For measuring power and enforcing power limits
+we use Intel's RAPL registers, which expand typical hardware counters, offering precise
+readings on power consumption and temperature, as well as offering the functionality to
+constrain core power consumption to a certain limit.  On Sandy and Ivy Bridge CPUs, these
+special registers are accessible per socket, but on newer architectures like Haskwell,
+they offer the same features per core.  We implement a daemon built on top of
+\textit{libmsr}~\cite{libmsr}, which is a user friendly framework for accessing RAPL
+registers safely from user space, through a special kernel module.  Our study focuses on
+the variability on processors.  In our experiments we measured variance in DRAM power
+consumption of less than 1\% (measured using the RAPL interface), among different
+sockets when running the same benchmark.  For this reason, we only report the power 
+consumption of processors.  We use the same framework for power capping sockets on
+Catalyst and Quartz.  These power caps are enforced at hardware level by reducing the 
+effective frequency of all cores, to match the requested power budget.
+The user can specify a time window and a maximum average power for that window.
+The processor guarantees that it will not exceed this average.
+Intuitively, longer windows may allow better performance
+for applications that utilize the CPU in bursts; if the burst
+exceeds the window size, the processor will have to be
+throttled.
+
+The sample rate is 100ms for power monitoring and 1s for performance counters.  Although
+we are able to monitor an applications real power consumption on a finer grain, our
+predictions are limited to 1s granularity, since they depend on the performance counter
+data collected at the coarser granularity.
+
+\section{Workload Manager Simulator}
+\label{sec:simulator}
+For testing our scheduling policies, we implement a discrete event simulator, and
+implement our scheduling policies on top of it.  Although there already exist workload
+manager simulators for SLURM \cite{slurm_sim} and Flux \cite{flux_sim}, they do not model
+power.  Moreover, these simulators also require tracing the applications.  We found it to
+be more practical to implement our own to better control what traces need to be generated
+and how power is to be handled and modeled. 
+
+The simulator  requires all jobs to be first executed on the physical hardware
+to gather performance and power profiles,  which are then used to simulate
+their execution under different scheduling schemes. The performance and power
+profiles are referred to as traces in this document.  They track performance
+and power information over time, throughout a job's execution.  These traces
+are different to job queues' traces, which contain information on the time a
+job is issued, scheduled and completed, as well as which resources were
+allocated for its execution.  Idle power is modeled as the average power consumed by each
+socket, as measured on the actual hardware.  Using a simulator allows us to
+rapidly test and evaluate new policies without any accuracy loss since the
+simulations are led by power traces obtained from real parallel executions.
+Our design allows the user to implement scheduling policies using python
+scripts.  In our setup we implement SLURM's \cite{slurm_02} default job
+scheduling policy, since it's the de-facto resource management tool on
+production clusters.  The additional policies suggested by this work expand the
+functionality of SLURM's default scheduler with power- and
+variability-awareness.
+
+\subsubsection{Validation of Workload Manager Simulator}
+To validate the simulator we run a small scale experiment using 8 nodes (16
+sockets) on Quartz.  The workload we use consists of a mix of a 100 instances
+of the PARSECSs benchmarks.  Each instance is a single socket job and is
+randomly chosen out of the total 10 PARSECSs benchmarks.  We run a bash script
+that periodically issues 10 instances (every 60s) until all the job instances
+are issued.  Then, it waits for all jobs to finish execution.  We generate a
+trace with the timestamp of when every job was issued and on which node it was
+run on.  We also keep track of the total time it takes for all the jobs to
+complete along with the total energy the sockets consumed (including idle time).        
+
+We then use the simulator to repeat the experiment and reproduce the results measured on
+the actual machine.  We use the same set of nodes and 100 instances.  
+%The simulator requires application traces of the applications run on all sockets.  
+We run all PARSECSs
+applications on all 16 sockets to gather the traces and power profiles (on a different run 
+from the original experiment described in the previous paragraph).  Then we issue the same
+100 jobs again, this time on the simulator, at the same intervals as with the original run
+on the actual machine.  The simulator will also use the workload trace to get the socket each
+job run on, and try to replicate the same socket to job allocation, if possible.
+This way, it tries to essentially recreating the same scheduling decisions SLURM took on the actual machine.
+When all jobs finish execution, we measure the total execution time and energy
+consumption.
+
+Comparing total execution time and energy consumption between the two experiments shows
+that the simulator is 1.6\% slower than the actual execution on the cluster.  Moreover,
+the jobs' total power consumption is higher on the simulator by 1.1\%.  These results
+show that our simulator has very good accuracy and the results discussed in Section 
+\ref{chap:power_aware_job_scheduling} are representative of the impact our scheduling
+policies would have on the actual machine.
+
+\begin{table}
+        \centering
+        \caption{Benchmark training set for PMC-based power prediction model.}
+        \label{tab:training_set}
+				\def\arraystretch{1.5}%
+				\begin{tabular}{ | c | m{12cm} | }
+                \hline
+                \textbf{Benchmark} & \textbf{Description} \\
+                \hline
+                \hline
+                cholesky & cholesky factorization kernel \\
+                \hline
+                knn & K-nearest neighbours kernel \\
+                \hline
+                matmul & Floating point matrix multiplication kernel \\
+                \hline
+                md5 & MD5 message-digest algorithm \\
+                \hline
+                prk2\_stencil & Tests the efficiency with which a space-invariant symmetric filter (stencil) applies to images \\
+                \hline
+                qr\_tile & Tiled QR factorization kernel \\
+                \hline
+                sparseLU & Sparse LU factorization kernel\\
+                \hline
+                stap & Space-Time Adaptive Processing for radar detection of an objects position \\
+                \hline
+                symmatinv & Symmetric matrix inversion kernel \\
+                \hline
+                vector-redu & Computes the sum of the elements of a vector \\
+                \hline
+                mem\_bench & A micro-benchmark that stretches different memory levels \\
+                \hline
+        \end{tabular}
+%	\vspace{-.5cm}
+\end{table}
+
+
+\section{Benchmark Applications}
+\subsection{Prediction Model Training}
+To train our models we use a set of small kernel and micro-benchmarks, listed in
+Table~\ref{tab:training_set}, that capture different behaviors.  In addition to these
+kernels, we design a microbenchmark that stresses each level of the memory hierarchy, in
+order to measure the impact that each cache level has on power consumption.  Our set
+consists of kernel applications which are representative HPC workloads, however often
+larger and more exhaustive set of benchmarks are selected for training
+\cite{Bertran:2012:SEC:2457472.2457499}.  Although larger sets can give better results, by
+capturing a wider variety of application behaviors, we demonstrate that our set provides
+comparable results, while it's easy to deploy.  In comparison, Bertran et. al
+\cite{Bertran:2012:SEC:2457472.2457499} use a large set of 100 micro-benchmarks, fine
+tuned to the underlying architecture.  This set would be ideal for our prediction models
+as well, however it is not portable and requires significant effort and understanding of
+the underlying architecture, which makes its deployment challenging.
+
+\begin{table}
+        \centering
+        \caption{NAS Multi-Zone benchmarks are multinode applications that use both MPI and OpenMP
+		to express parallelism.  MPI is used for inter-node communication and OpenMP is used 
+		for intra-node parallelizations of loops.}
+        \label{tab:nas_mz_set}
+				\def\arraystretch{1.5}%
+				\begin{tabular}{ | c | m{12cm} | }
+                \hline
+                \textbf{Benchmark} & \textbf{Description} \\
+                \hline
+                \hline
+                BT-MZ & Block Tri-diagonal solver. The workload consists of a mesh, unevenly divided among processes. \\
+                \hline
+                LU-MZ & Lower-Upper Gauss-Seidel solver. The workload consists of a mesh, evenly divided among process. \\
+                \hline
+                SP-MZ & Scalar Penta-diagonal solver. The workload consists of a mesh, evenly divided among processes. \\
+                \hline
+        \end{tabular}
+%	\vspace{-.5cm}
+\end{table}
+
+
+
+\subsection{Runtime and Job Scheduler Evaluation Benchmarks}
+\label{sec:benchmarks}
+To evaluate the runtime and job scheduling policies considered in this thesis, we use the
+ PARSECSs benchmark suite, which we developed after the PARSEC benchmark suite (further
+described in Section \ref{sec:parsec}).  The PARSECSs benchmark suite consists of emerging
+workloads for shared memory architectures, representative of applications run on typical
+HPC systems.  Our implementations use the OmpSs/OpenMP 4.0 programming model, which allows
+us to use current and emerging realistic workloads under a sophisticated programming
+environment.  This is essential for evaluating our runtime solution for mitigating
+manufacturing variability and improving the energy efficiency of the programming model, as the
+original PARSEC suite is implemented in Pthreads, and only a couple of them use OpenMP 3.0
+constructs, such as parallel loops.  Using a model like OmpSs/OpenMP 4.0, allows us to
+easily modify and test our runtime approach without the need to re-implement our methodology for every
+benchmark using the Pthreads model.  Moreover, using tasks and dataflow relations allows
+us to express more complex parallelization strategies, that are not possible to implement
+with the typical fork-join model of Pthreads and OpenMP 3.0.  This allows us to evaluate
+our proposal using applications that better represent contemporary parallel workloads.
+We discuss our implementations of the PARSECSs in more detail in Chapter
+\ref{chap:task_based_benchmarks}.  
+
+In the case of the job scheduling techniques, we use the PARSECSs
+as our set of single socket parallel jobs.  However,  multi-node jobs are also common in HPC
+environment.  For this reason we expand our benchmark set with the
+MPI+OpenMP versions of the NAS multi-zone benchmarks ~\cite{Jin:2006:PCM:1143496.1143503} (NAS-MZ), posing
+as our multi-node jobs.  The NAS-MZ benchmarks are described in table \ref{tab:nas_mz_set}. 
+%are also a well known set of kernel applications that can run on a large set of nodes, often used in HPC.  
+The multi-node jobs
+run with different configurations for 8, 16 and 64 MPI processes, where each process runs
+on a single socket.  All instances and processes run on 16 cores, with the exception of
+\textit{facesim} (8 cores), \textit{fluidanimate} (8 cores), \textit{lu-mz\_D.8} and
+\textit{lu-mz\_D.8} (1 core per MPI process).  Our diverse set of applications can run
+from a single core up to 768 cores, for the larger MPI codes.  We run all benchmarks 5
+times and report median values.  This is done to minimize the impact of noise or unrelated
+to manufacturing variability inference in our experiments.  However, note that variation
+in performance and power observed in all of our experiments were below 2\% (when repeating 
+the same run on the same socket).
+
+%\subsection{The PARSEC benchmark suite}
+%\input{methodology/parsec_suite.tex}
+
+\subsection{Job Scheduler Workload Generation}
+\label{sec:cluster_traffic}
+Typically workload manager schedulers are evaluated using workload traces from the job
+queues of actual HPC clusters \cite{Etinski2012615,FEITELSON20142967}.  However, in our
+case this is not applicable, since these type of traces do not contain information on
+power and manufacturing variability.  Moreover, we are not able to create a job queue trace
+out of the clusters we have access to, since reading performance counters such as the RAPL
+interface requires root access.  This is not an option for us on these production
+machines.  For these reasons we generate our own cluster workload combining single- and
+multi-node applications, so that we can measure the performance and power profiles of the
+workload.  A similar methodology is used in other power and manufacturing variability
+related studies \cite{Patki:2015:PRM:2749246.2749262,Ellsworth:2015:DPS:2807591.2807643},
+but in our approach we use a wider number and range of applications.  The applications
+used are described in Section \ref{sec:benchmarks}.  
+
+We generate two random job distributions as our workload on the cluster,
+corresponding to bursty and heavy loads.  The bursty scenario consists of 763,
+periodically creating a heavy load that requires a large number of sockets to
+be served, even exceeding the systems total capacity, having jobs wait.
+However, there are also time periods that the system may be idle or have only a
+few jobs to serve. The heavy load scenario consists of 2286 jobs, where there
+are always enough jobs to occupy the whole system, for 98\% of the total
+execution (2\% corresponds to initial submission when the whole system is idle
+and the few last jobs remaining at finalization, before all jobs complete and system returns to idle state).  
+In the rest of this document, we use the term traffic when referring to the cluster's load. 
+
+\subsection{Configuration Exploration Space}
+Our runtime approach needs to try different configurations of power distribution and
+number of active cores in order to find a favorable one.  Exhaustively exploring all
+possible configurations is not feasible, so we describe how we choose our configuration
+space.  We consider power bounds of 80W, 100W and 120W for total node power. If we allow a
+power limit of 80W, we consider 5 different ways of distributing the power among the two
+sockets of the NUMA node: 30W:50W, 35W:45W, 40W:40W, 45W:35W and 50W:30W as well as 36
+ways of specifying the maximum concurrency allowed in each 2-socket NUMA node: 2-2, 4-2,
+6-2, 8-2, 10-2, 12-2, 2-4, etc.  up to 12-12. In total, this leads to a total of 180
+combinations.  Similarly, when allowing a power limit of 100W there are 8 ways of
+distributing it, which combined with the 36 possible ways of distributing the concurrency,
+leads us to a total of 324 combinations. Similarly, when the total power budget reaches
+120W, the total number of combinations is 468. Overall, for each particular application we
+have 972 different combinations.  Other Considerations: The results of these experiments
+are machine dependent since each particular 12-core socket reacts in a different way when
+a power limit is set.  Ideally, all 972 configurations per application should be executed
+on many NUMA nodes to really account for many possible hardware reactions when a power
+limit is set. However, due to the size of our experimental campaign, we randomly chose a
+single 2-socket NUMA node for each considered application and run all 972 combinations on
+it. Although this random choice can slightly influence the relative results between the
+benchmarks, the general conclusions we extract from them remain unchanged.
+
+\subsection{General Considerations}
+Special care is needed when conducting our experiments in order to ensure that we minimize
+interference not related to manufacturing variability (such as OS noise and NUMA effects).
+To deal with such random effects, we run our benchmarks 5 times on each socket and observe 
+the variability within the same node.  Our benchmarks demonstrate inter-node variability
+is very low compared to the one observed when running the same application on
+different nodes (inter-node variability is less than 2\%, while the intra-node one can be
+over 15\%).  If in any case we observe higher than normal inter-node performance
+variability, we discard the results and repeat the experiment.  A similar strategy is used
+to deal with power consumption variability due to temperature variations.  We always
+measure temperature and discard results that are not within the range of 38-42 $^\circ$C.
+TurboBoost has also been disabled to make sure that the hardware mechanisms that can alter
+the effective frequency of cores, other than throttling to maintain the power cap, 
+do not interfere.  
+%We are confident that variation relevant to the above that is captured
+%in our experiments is significantly lower than manufacturing variability and does not harm
+%our results. 
+

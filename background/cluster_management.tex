@@ -1,0 +1,55 @@
+
+In Section \ref{sec:cluster_design} we discuss how an HPC cluster is designed.  Typically,
+an HPC cluster consists of multiple computing nodes, not necessarily of the same design
+and computing capacity.  Building and maintaining an HPC cluster is a considerable
+investment.  As such, the idle time of an HPC cluster should be minimized by any
+institution or organization owning one, to make the most out of the machine.  It is not
+uncommon to share an HPC cluster between multiple users, since few applications require
+its full computing power.  Moreover, nodes may break but the system should still operate
+with the rest, while a workload may require specific nodes, in an heterogeneous
+environment.  The different workloads themselves may have different priorities and/or
+dependencies between them.  All these aspects need to carefully managed to maximize a
+cluster's job throughput.  All HPC cluster's today use dedicated software to manage their
+workload and resources, such as SLURM \cite{slurm_02} and PBS
+\cite{Feng:2007:PUP:1254882.1254906}.
+
+In a typical cluster environment, the user writes a special script which runs the actual
+parallel application and a few additional directives.  These directives describe
+parameters related to the execution of the application, like the number of nodes and time
+the application requires in order to run.  The script is then submitted to a queue, which
+is maintained by the workload manager.  The submitted script and the application are
+referred to as a job.  A user, or multiple users, may submit multiple jobs.  The workload
+manager decides when and on which nodes a job will run.  The order that jobs are run is
+dictated by the scheduling policy and the resources available.  As such, a workload
+manager has two main functions: job scheduling and resource management.
+
+\subsection{Job Scheduling}
+Simple FIFO queues are not the most efficient way to run jobs on an HPC cluster. System
+administrators may specify the scheduling parameters or implement their own policies to
+match their needs.  Even in the simplest setups however, a FIFO queue is not sufficient.
+Since jobs have varying execution time and may run on multiple or a single node.  Consider
+the following example:  We have a cluster of 126 nodes, while job A needs to run for 30
+minutes on 64 nodes and job B for 20 minutes on 100 nodes.  If job A is running, job B
+must wait for A to complete, since there are not enough nodes.  Now consider that there
+are more jobs after B.  Job C requires 16 nodes and 10 minutes to run.  In a simple FIFO
+scheduling policy job C will need to wait for both jobs A and B to complete, which is
+waiting for 50 minutes.  An alternative scenario, is for the workload manager to look
+forward in the queue, since B cannot be scheduled, for jobs that require less nodes and
+will complete within 30 minutes, so that running them before job B will not delay its
+execution more than job A would.  This policy is called \emph{backfilling} and is the most
+common one in contemporary workload managers \cite{10.1007/11407522_1}.  
+
+\subsection{Resource Management} 
+Resources are shared between jobs, so the workload manager needs to take care of which job
+gets which resource.  It is not necessary that a node will run only a single job, so the
+workload manager must take care of how it allocates cores and memory as well as the nodes
+themselves.  Another important factor that a workload manager must consider is the
+topology of the network and the distance of the nodes.  A multi-node job will perform
+better if nodes are closer together, as synchronization and data movement would cost less.
+In this work we argue that power, which is limited, should also be managed by the workload
+manager.  In Section \ref{sec:power_aware_job_sched} we discuss the matter further and
+provide related work which explores the potential benefits of power-aware scheduling
+policies.  In Chapter \ref{chap:power_aware_job_scheduling}, we present our approach,
+which employs power prediction models to drive scheduling decisions, considering the
+available power on the cluster.
+

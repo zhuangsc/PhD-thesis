@@ -1,0 +1,69 @@
+
+In the last few years processor clock frequencies have stagnated, while exploiting
+Instruction-Level Parallelism (ILP) has already reached the point of diminishing returns.
+Multi-core designs arose as a solution to overcome some of the technological constraints
+that uniprocessor chips have, but they exacerbated some others as a counterpart.
+Multi-core architectures can potentially provide the desired performance by exploiting
+Thread Level Parallelism (TLP) of large scale parallel workloads on chip. Such large
+amount of parallelism is managed by the software, which means that the programmer needs to
+implement highly efficient and architecture-aware parallel codes to achieve the expected
+performance. This is obviously much harder than programming a uniprocessor chip, which is
+commonly referred as the \emph{Programmability Wall}~\cite{Chapman:2007multicore}.
+Moreover, dealing with this wall will be even harder in the near future with the arrival
+of many-core systems with tens or hundreds of heterogeneous cores and accelerators
+on-chip.
+
+Threading is the most common way to program multicore processors. POSIX threads
+(Pthreads)~\cite{Butenhof:1997:PPT:263953} and OpenMP~\cite{Chapman:2007:UOP:1370966} are
+two of the most common programming models to implement threading schemes.  Additionally,
+MPI~\cite{Nagle:2005:MCR:1239662.1239666} can be incorporated to threading codes to handle
+parallelism in a distributed memory environment.  However, to develop efficient threading
+codes can be a really hard job due to the increasing amount of concurrency handled by
+many-core processors and the current trend towards more heterogeneity within the chip.
+Synchronization points are often needed in threading codes to control the data flow and to
+enforce correctness.  However, the cost of these schemes increases with the amount of
+parallelism handled on chip, seriously hurting performance due to issues like load
+imbalance or NUMA effects.  Also, relaxing synchronization costs often involves
+significant programming efforts as it requires the deployment of complex and application
+specific mechanism like thread pools.
+
+Task
+parallelism~\cite{Fatahalian:2006:SPM:1188455.1188543,Blumofe1995,Bellens:SC2006,Ayguade:2009:DOT:1512157.1512430,Tzenakis:2012:BBD:2370036.2145864,Jenista:2011:OSO:2038037.1941563,Planas:2009:HTP:1572226.1572233,Duran:PPL2011}
+is an alternative parallel paradigm where the load is organized into tasks that can be
+asynchronously executed.  Also, some task-based programming models allow the programmer to
+specify data or control dependencies between the different tasks, which allows
+synchronization points relaxation by explicitly specifying the data involved in the
+operation~\cite{Jenista:2011:OSO:2038037.1941563,Ayguade:2009:DOT:1512157.1512430,Tzenakis:2012:BBD:2370036.2145864,Duran:PPL2011}.
+
+The task-based execution model requires to track the dependencies among tasks, which can
+be explicitly specified by the programmer
+~\cite{Jenista:2011:OSO:2038037.1941563,Zuckerman:2011:UCP:2000417.2000424} or dynamically
+handled by an underlying runtime
+system~\cite{DuranIJPP09,Tzenakis:2012:BBD:2370036.2145864,Duran:PPL2011}.  When
+dependencies are detected among tasks, a deterministic execution order is applied by the
+runtime system to enforce correctness.  In this way, all the potential parallelism of the
+code is exposed to the runtime system, which can exploit it depending on the available
+hardware.  Additional optimizations like load balancing or work
+stealing~\cite{Blumofe1995,Duran:PPL2011} can be applied at the runtime system layer
+without requiring any platform-specific consideration from the programmer. 
+
+The potential of task-based programming models is expected to be significant in a wide
+range of areas.  In this Chapter we show our task-based implementation of the PARSEC
+benchmarks (PARSECSs).  Our objective is to provide an evaluation framework for task-based
+parallel models with data dependence tracking.  This combination allows programmers to
+exploit parallelism in applications that is not feasible, or require tremendous effort
+from the programmers part, when using other parallel models.  The PARSEC benchmark suite 
+is a suitable test best, since the applications include are not restricted to small 
+kernels.  Instead, the diverse set of workloads and computing domains covered offers the
+opportunities for task parallel and dataflow based models to exploit such parallelism.  
+
+These emerging parallelization paradigms offer a more diverse test bed than typical
+fork-join models with barrier synchronization.  This allows us to better understand the
+impact of manufacturing variability on modern parallel workloads.  Moreover, task-based
+programming models are coupled with runtime systems, which deal with load balancing,
+dependence tracking, thread synchronization and data allocation.  These are all necessary
+tools to deliver good performance and should already be able to deal with manufacturing
+variability to some extend.  In this work we don't aim to simply expose manufacturing
+variability, our goal is to effectively mitigate it.  By studying its impact on a state-of-the-art 
+runtime system, we can offer a solution that is relevant and significant by today's
+standards.    

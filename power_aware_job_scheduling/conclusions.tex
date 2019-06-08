@@ -1,0 +1,23 @@
+In this work, we demonstrate that taking into account manufacturing variability
+to drive job scheduling policies provides significant benefits in terms of
+performance and power consumption.  We propose two job scheduling policies,
+each one using a different power prediction model: the first assumes that power
+variability impacts all application equally, while the second one aims at
+obtaining the power variability impact per application by training the model for
+each individual socket. We compare both approaches with a range of
+state-of-the-art approaches as well as an approach using an oracle model. 
+\par
+We examine the benefits of our policies under bursty and heavy traffic scenarios
+and different power budgets.  We observe significant improvements on job
+turnaround time (up to \MaxJTT\% and \AvgJTT\% on average) and energy
+consumption (reducing it up to \MaxEnergy\% and \AvgEnergy\% on average) when
+compared to state-of-the-art approaches that do not consider appropriately the
+manufacturing variability in existing processors.  Moreover, the model-driven
+policies proposed in this work accurately predict the variability per socket
+and, as a result, they guarantee that power consumption always remains below
+the system-wide budget, while the policies that rely on user estimations or
+prior power profiling fail to do so.  
+%As variability is expected to increase
+%\cite{Marathe:2017:ESP:3149412.3149421} in future CPUs, we expect that a robust
+%model like our \PMCVSSched~ should be used.
+
