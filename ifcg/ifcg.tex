@@ -1,6 +1,6 @@
 
-\chapter{Realistic Task-based Workloads}
-\label{chap:task_based_benchmarks}
+\chapter{Iteration-Fusing Conjugate Gradient}
+\label{chap:ifcg}
 
 \newcommand{\MAXPERF}{42\%}
 \newcommand{\AVERAGEPERF}{13\%}
@@ -10,33 +10,33 @@
 %\newcommand{\cmark}{\ding{51}}%
 %\newcommand{\xmark}{\ding{55}}%
 
-\input{task_benchmarks/introduction}
+\input{ifcg/introduction}
 \section{Benchmarking in HPC}
 \label{sec:hpc_benchmarking}
 \input{background/benchmarking_hpc}
 \section{The PARSEC Benchmark Suite}
 \label{sec:parsec}
-\input{task_benchmarks/parsec_suite}
+\input{ifcg/parsec_suite}
 \label{sec:parsecss_implementation}
 \section{Application Parallelization}
-\input{task_benchmarks/implementation}
+\input{ifcg/implementation}
 \section{Programmability}
-\input{task_benchmarks/programmability}
+\input{ifcg/programmability}
 
 \begin{figure}[p]
         \centering
         \begin{subfigure}{0.8\textwidth}
-                \includegraphics[width=\textwidth]{task_benchmarks/figures/blackscholes_scale}
+                \includegraphics[width=\textwidth]{ifcg/figures/blackscholes_scale}
                 \label{fig:blackscholes_scale}
         \end{subfigure}%
 \hfill
         \begin{subfigure}{0.8\textwidth}
-                \includegraphics[width=\textwidth]{task_benchmarks/figures/bodytrack_scale}
+                \includegraphics[width=\textwidth]{ifcg/figures/bodytrack_scale}
                 \label{fig:bodytrack_scale}
         \end{subfigure}
         
 				\begin{subfigure}[b]{0.8\textwidth}
-                \includegraphics[width=\textwidth]{task_benchmarks/figures/canneal_scale}
+                \includegraphics[width=\textwidth]{ifcg/figures/canneal_scale}
                 \label{fig:canneal_scale}
         \end{subfigure}
       \caption{Comparison of scalability between the task-based implementations and the original (Pthreads/OpenMP) versions.}
@@ -46,17 +46,17 @@
 \begin{figure}[p]
 				\centering
         \begin{subfigure}[b]{0.8\textwidth}
-                \includegraphics[width=\textwidth]{task_benchmarks/figures/dedup_scale}
+                \includegraphics[width=\textwidth]{ifcg/figures/dedup_scale}
                 \label{fig:dedup_scale}
         \end{subfigure}
 \hfill
         \begin{subfigure}[b]{0.8\textwidth}
-                \includegraphics[width=\textwidth]{task_benchmarks/figures/facesim_scale}
+                \includegraphics[width=\textwidth]{ifcg/figures/facesim_scale}
                 \label{fig:facesim_scale}
         \end{subfigure}
 \hfill
 				\begin{subfigure}[b]{0.8\textwidth}
-                \includegraphics[width=\textwidth]{task_benchmarks/figures/ferret_scale}
+                \includegraphics[width=\textwidth]{ifcg/figures/ferret_scale}
                 \label{fig:ferret_scale}
         \end{subfigure}%
       \caption{Comparison of scalability between the task-based implementations and the original (Pthreads/OpenMP) versions.}
@@ -66,17 +66,17 @@
 \begin{figure}[p]
 				\centering
 				\begin{subfigure}[b]{0.8\textwidth}
-                \includegraphics[width=\textwidth]{task_benchmarks/figures/fluidanimate_scale}
+                \includegraphics[width=\textwidth]{ifcg/figures/fluidanimate_scale}
                 \label{fig:fluidanimate_scale}
         \end{subfigure}
 \hfill
         \begin{subfigure}[b]{0.8\textwidth}
-                \includegraphics[width=\textwidth]{task_benchmarks/figures/freqmine_scale}
+                \includegraphics[width=\textwidth]{ifcg/figures/freqmine_scale}
                 \label{fig:freqmine_scale}
         \end{subfigure}
 \hfill        
 				\begin{subfigure}[b]{0.8\textwidth}
-                \includegraphics[width=\textwidth]{task_benchmarks/figures/streamcluster_scale}
+                \includegraphics[width=\textwidth]{ifcg/figures/streamcluster_scale}
                 \label{fig:streamcluster_scale}
         \end{subfigure}
 			\caption{Comparison of scalability between the task-based implementations and the original (Pthreads/OpenMP) versions.}
@@ -86,7 +86,7 @@
 \begin{figure}[ht]
 				\centering
         \begin{subfigure}[b]{0.8\textwidth}
-                \includegraphics[width=\textwidth]{task_benchmarks/figures/swaptions_scale}
+                \includegraphics[width=\textwidth]{ifcg/figures/swaptions_scale}
                 \label{fig:swaptions_scale}
         \end{subfigure}
       \caption{Comparison of scalability between the task-based implementations and the original (Pthreads/OpenMP) versions.}
@@ -100,7 +100,7 @@
 
 \section{Performance}
 \label{sec:task_bench_evaluation}
-\input{task_benchmarks/evaluation}
+\input{ifcg/evaluation}
 
 \section{Summary}
-\input{task_benchmarks/summary}
+\input{ifcg/summary}

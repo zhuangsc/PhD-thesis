@@ -9,7 +9,7 @@ prices for a portfolio of ten million European options.
 
 \begin{figure}[t!]%
 	\center
-	\includegraphics[width=0.5\columnwidth]{task_benchmarks/figures/blackscholes_taskgraph}%
+	\includegraphics[width=0.5\columnwidth]{ifcg/figures/blackscholes_taskgraph}%
 	\caption{Task-graph of blackscholes application.  No dependencies exit between tasks,
 only barrier synchronization between iterations.}
 	\label{fig:blackscholes_tg}%
@@ -45,14 +45,14 @@ implementations.
 	\vspace{1cm}
 	\centering
   \begin{subfigure}{0.9\textwidth}
-		\includegraphics[width=\textwidth]{task_benchmarks/figures/bodytrack-ompss-native-8-2dp_tasks_pthreads}
+		\includegraphics[width=\textwidth]{ifcg/figures/bodytrack-ompss-native-8-2dp_tasks_pthreads}
 		\caption{Trivial Task-based Strategy}
 	\label{fig:bodytrack-2dp_tasks-trace_pthreads}
   \end{subfigure}%
 \\
 \vspace{1cm}
 \begin{subfigure}{0.9\textwidth}
-		\includegraphics[width=\textwidth]{task_benchmarks/figures/bodytrack-ompss-native-8-2dp_tasks_ompss}
+		\includegraphics[width=\textwidth]{ifcg/figures/bodytrack-ompss-native-8-2dp_tasks_ompss}
 		\caption{Optimal Task-based Strategy}
 	\label{fig:bodytrack-2dp_tasks-trace_ompss}
   \end{subfigure}
@@ -67,7 +67,7 @@ the body using edges and the foreground silhouette as features of interest.
 
 \begin{figure}[t!]%
 	\center
-	\includegraphics[width=\columnwidth]{task_benchmarks/figures/bodytrack_taskgraph}%
+	\includegraphics[width=\columnwidth]{ifcg/figures/bodytrack_taskgraph}%
 	\caption{Task-graph of bodytrack application.  Edges show task data dependencies.}
 	\label{fig:bodytrack_tg}%
 	\vspace{.5cm}
@@ -155,7 +155,7 @@ problem is stored as a list with routing costs between nodes.
 
 \begin{figure}[t!]%
 	\center
-	\includegraphics[width=.8\columnwidth]{task_benchmarks/figures/canneal_taskgraph}%
+	\includegraphics[width=.8\columnwidth]{ifcg/figures/canneal_taskgraph}%
 	\caption{Task-graph of canneal application.  Only barrier synchronization among tasks.}
 	\label{fig:canneal_tg}%
 	\vspace{.5cm}
@@ -189,7 +189,7 @@ fine-grain tasking and is not evaluated at the Symeonidou's work.
 
 \begin{figure}[t!]%
 	\center
-	\includegraphics[width=.4\columnwidth]{task_benchmarks/figures/dedup_taskgraph}%
+	\includegraphics[width=.4\columnwidth]{ifcg/figures/dedup_taskgraph}%
 	\caption{Task-graph of dedup application.  Data dependency edges force the correct order
 of writting the data chunks to the output.}
 	\label{fig:dedup_tg}%
@@ -249,7 +249,7 @@ which are served by a single thread each.
 
 \begin{figure}[!t]%
 	\centering
-	\includegraphics[width=0.9\columnwidth]{task_benchmarks/figures/dedup-ompss-native-8-2dp_tasks}%
+	\includegraphics[width=0.9\columnwidth]{ifcg/figures/dedup-ompss-native-8-2dp_tasks}%
 	\caption{Parallel execution of the task-based version of \texttt{dedup} on an 8-core machine and native input size. Different task types correspond to different colors.}%
 	\label{fig:dedup-2dp_tasks-trace}%
 	\vspace{.5cm}
@@ -362,7 +362,7 @@ The benchmark application is configured for image similarity search.
 
 \begin{figure}[t!]%
 	\center
-	\includegraphics[width=0.9\columnwidth]{task_benchmarks/figures/ferret_tg}%
+	\includegraphics[width=0.9\columnwidth]{ifcg/figures/ferret_tg}%
 	\caption{Task-graph of ferret showing the pipelined execution model.  Edges show data dependencies among different tasks.}
 	\label{fig:ferret_tg}%
 	\vspace{.5cm}
@@ -428,7 +428,7 @@ Smoothed Particle Hydrodynamics (SPH) method~\cite{Muller:2003:PFS:846276.846298
 
 \begin{figure}[t!]%
 	\center
-	\includegraphics[width=.6\columnwidth]{task_benchmarks/figures/fluidanimate_taskgraph}%
+	\includegraphics[width=.6\columnwidth]{ifcg/figures/fluidanimate_taskgraph}%
 	\caption{Task-graph of fluidanimate application. Edges represent data dependencies among
 tasks}
 	\label{fig:fluidanimate_tg}%
@@ -455,7 +455,7 @@ same barrier and lock synchronization scheme, using the OmpSs synchronization pr
 
 \begin{figure}[t!]%
 	\center
-	\includegraphics[width=.8\columnwidth]{task_benchmarks/figures/freqmine_taskgraph}%
+	\includegraphics[width=.8\columnwidth]{ifcg/figures/freqmine_taskgraph}%
 	\caption{Task-graph of freqmine application.  Edges represent data dependencies among
 tasks.}
 	\label{fig:freqmine_tg}%
@@ -478,7 +478,7 @@ The original \PARSEC{} benchmark uses OpenMP2.0 for loop parallelization inside 
 
 \begin{figure}[ht!]%
 	\center
-	\includegraphics[width=.6\columnwidth]{task_benchmarks/figures/streamcluster_taskgraph}%
+	\includegraphics[width=.6\columnwidth]{ifcg/figures/streamcluster_taskgraph}%
 	\caption{Task-graph of streamcluster application.  Edges represent data dependencies among
 tasks.}
 	\label{fig:streamcluster_tg}%
@@ -522,7 +522,7 @@ Economics application that uses the Heath-Jarrow-Morton (HJM)\cite{RePEc:ecm:eme
 
 \begin{figure}[ht!]%
 	\center
-	\includegraphics[width=.8\columnwidth]{task_benchmarks/figures/swaptions_taskgraph}%
+	\includegraphics[width=.8\columnwidth]{ifcg/figures/swaptions_taskgraph}%
 	\caption{Task-graph of swaptions application.}
 	\label{fig:swaptions_tg}%
 	\vspace{.5cm}

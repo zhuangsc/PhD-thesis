@@ -65,7 +65,7 @@ NUMA effects. Through experimentation we observe that the best results can be ob
 
 \begin{figure}[t]
   \centering
-  \includegraphics[width=.9\textwidth]{task_benchmarks/figures/parsec_comparison}
+  \includegraphics[width=.9\textwidth]{ifcg/figures/parsec_comparison}
   \caption{Speedup comparison for Pthreads and OmpSs with the same granularity, as well as our optimized OmpSs version, when run on 16 cores. Results are normalized to the sequential version of the original code.}
   \label{fig:granularity_comparison}
 	\vspace{0.5cm}
@@ -114,13 +114,13 @@ Finally, in case of simple fork-join applications (i. e. \texttt{blackscholes}) 
 \begin{figure*}[p]
   \centering
   \begin{subfigure}{0.75\textwidth}
-                \includegraphics[width=\textwidth]{task_benchmarks/figures/worker-runtime-breakdowns-8}
+                \includegraphics[width=\textwidth]{ifcg/figures/worker-runtime-breakdowns-8}
                 \caption{Average time over 8 threads}
                 \label{fig:runtime_breakdown_8}
   \end{subfigure}
 	\hfill
   \begin{subfigure}{0.75\textwidth}
-                \includegraphics[width=\textwidth]{task_benchmarks/figures/master-runtime-breakdowns-8}
+                \includegraphics[width=\textwidth]{ifcg/figures/master-runtime-breakdowns-8}
                 \caption{Main thread runtime breakdowns}
                 \label{fig:master_runtime_breakdown_8}
   \end{subfigure}
