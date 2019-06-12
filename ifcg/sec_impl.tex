@@ -30,18 +30,39 @@ Figure \ref{prec} displays the evolution of the relative residual $||b-Ax_{i}||_
 Data concerning IFCG1 and IFCG2 are expressed in a coarser-grain pattern than Pipelined and Preconditioned CG's data points since we calculate the relative residual every 100 iterations (i. e. \emph{FUSE}=100).
 We can see that the convergence of the IFCG1 and IFCG2 algorithms is the same as Pipelined CG.
 Interestingly, Figure~\ref{prec} also displays how the basic Preconditioned CG algorithm has better convergence properties than Pipelined CG, which is consistent with previously reported numerical results~\cite{ghysels14, cools16}.
-We omit results concerning the rest of the matrices in Table~\ref{table:matrices} since they exhibit the exact same behavior as the one observed with ~\emph{consph}.
+We omit results concerning the rest of the matrices in Table~\ref{table:ifcg_matrices} since they exhibit the exact same behavior as the one observed with ~\emph{consph}.
 Our experiments show how the numerical behavior in terms of the relative residual $||b-Ax_{i}||_{2}/||b||_{2}$ achieved by IFCG1 and IFCG2 matches the state-of-the-art. 
-\begin{figure*}[bhtp]
-        \centerline{
-                \includegraphics[scale=0.30]{ifcg/figs/charts/pcg.pdf}
-                \includegraphics[scale=0.30]{ifcg/figs/charts/ifcg.pdf}
-                \includegraphics[scale=0.30]{ifcg/figs/charts/ifcg2.pdf}
-        }
-        \vspace{-0.6cm}
-        \caption{Graphs of tasks representing two Iterations of Pipelined CG (left), IFCG1 (center) and IFCG2 (right), $N=3$.}
-        \label{tdg}
-\end{figure*}
+\begin{table}[H]
+\fontsize{9}{9}\selectfont
+\centering
+\resizebox{.80\textwidth}{!}{  
+\begin{tabular}{|c|c|c|c|}
+\hline
+\textbf{Name} & \textbf{Dimension} & \textbf{Nonzeros} & \textbf{Nonzeros\%}\\
+\hline \hline
+G3\_circuit & 1585478 & 7660826 & 0.0003\% \\
+\hline
+thermal2 & 1228045 & 8580313 & 0.0006\% \\
+\hline
+ecology2 & 999999 & 4995991 & 0.0005\% \\
+\hline
+af\_shell8 & 504855 & 17579155 & 0.0068\% \\
+\hline
+G2\_circuit & 150102 & 726674 & 0.003\% \\
+\hline
+cfd2 & 123440 & 3085406 & 0.02\% \\
+\hline
+consph & 83334 & 6010480 & 0.087\% \\
+\hline
+%nd24k & 72000 & 28715634 & 55.4\% \\
+%\hline
+\end{tabular}
+}
+\vspace{0.2cm}
+\caption{Matrices used for experiments}
+\label{table:ifcg_matrices}
+\vspace{-0.5cm}
+\end{table}
 
 \subsection{Parallel Execution of the IFCG Algorithms}
 \label{sec:ifcg_implementation}
@@ -54,7 +75,6 @@ Therefore, we need to specify at the source code level a parallel scheme that me
 and there are several ways to do so. 
 
 One option is to statically specify at the application source code level the way different kernels overlap with each other, which should be done by means of sophisticated parallel programming techniques like pools of threads or active waiting loops that trigger work once its input data is ready.
-%The usage of such techniques is indeed a possibility although their optimality is tightly related to the parallel hardware.
 However, the optimality of these techniques depends a lot on the parallel hardware where the parallel execution takes place.
 Therefore, a static approach is not practical since it needs to be adapted to each parallel execution scenario.
 In this paper we follow a dynamic approach that conceives the parallel execution as a directed acyclic graph where the nodes represent pieces of code (also known as tasks) and the edges are control or data dependencies between them.
@@ -89,34 +109,15 @@ In contrast, IFCG1 displays a much more flexible parallel pattern that can easil
 IFCG2, by further extracting two AXPYs operations (s, p) that only depend on $\beta$, is able to create even more concurrency.
 The implications and analysis of these varying level of parallelism shown by the different algorithms are explained in Section~\ref{sec:ifcg_results}.
 
-\begin{table}[H]
-\fontsize{9}{9}\selectfont
-\centering
-\resizebox{.80\textwidth}{!}{  
-\begin{tabular}{|c|c|c|c|}
-\hline
-\textbf{Name} & \textbf{Dimension} & \textbf{Nonzeros} & \textbf{Nonzeros\%}\\
-\hline \hline
-G3\_circuit & 1585478 & 7660826 & 0.0003\% \\
-\hline
-thermal2 & 1228045 & 8580313 & 0.0006\% \\
-\hline
-ecology2 & 999999 & 4995991 & 0.0005\% \\
-\hline
-af\_shell8 & 504855 & 17579155 & 0.0068\% \\
-\hline
-G2\_circuit & 150102 & 726674 & 0.003\% \\
-\hline
-cfd2 & 123440 & 3085406 & 0.02\% \\
-\hline
-consph & 83334 & 6010480 & 0.087\% \\
-\hline
-%nd24k & 72000 & 28715634 & 55.4\% \\
-%\hline
-\end{tabular}
-}
-\vspace{0.2cm}
-\caption{Matrices used for experiments}
-\label{table:ifcg_matrices}
-\vspace{-0.5cm}
-\end{table}
+\begin{figure*}[bhtp]
+        \centerline{
+                \includegraphics[scale=0.30]{ifcg/figs/charts/pcg.pdf}
+                \includegraphics[scale=0.30]{ifcg/figs/charts/ifcg.pdf}
+                \includegraphics[scale=0.30]{ifcg/figs/charts/ifcg2.pdf}
+        }
+        \vspace{-0.6cm}
+        \caption{Graphs of tasks representing two Iterations of Pipelined CG (left), IFCG1 (center) and IFCG2 (right), $N=3$.}
+        \label{tdg}
+\end{figure*}
+
+

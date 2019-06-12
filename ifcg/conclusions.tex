@@ -1,0 +1,11 @@
+This chapter presents the IFCG1 and IFCG2 algorithms, which are variants of the CG algorithm where most of the inter-iteration barriers are removed and linear kernels are split into several subkernels. 
+The main difference between IFCG1 and IFCG2 is that the first one aims at hiding parallel reduction costs while the second one avoids idle time by starting the execution of the linear subkernels as soon as possible.
+The \emph{FUSE} parameter specifies how often both IFCG1 and IFCG2 check for convergence. 
+To maximize the performance of these algorithms the \emph{FUSE} parameter needs to be set up to the optimal value by means of an exhaustive search.
+This parameter is not input dependent and we find its optimal value to be 20.
+
+To compare the performance of IFCG1 and IFCG2 against other relevant variants of the CG algorithm, we consider 8 matrices from the Florida Sparse Matrix Collection~\cite{florida} with varying sparsity degrees and dimensions.
+We find that IFCG1 and IFCG2 achieve significant performance improvements with respect to the state-of-the-art due to their flexibility to overlap computations belonging to different iterations.
+We also show how reducing the number of global synchronization points makes IFCG1 and IFCG2 much less sensitive to system noise perturbations than their state-of-the-art counterparts.
+Also, both IFCG1 and IFCG2 display the same numerical stability properties as the most relevant previous techniques.
+
