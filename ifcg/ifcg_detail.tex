@@ -1,0 +1,135 @@
+In this section we present the Iteration-Fusing Conjugate Gradient (IFCG) approach, 
+which breaks down some of the Pipelined CG computations into smaller pieces to relax data dependencies and reduce idle time.
+Also, IFCG enables the overlap of different iterations by removing inter-iteration barrier points.
+We present two algorithms that implement the IFCG approach: 
+The first one (IFCG1) improves the Pipelined CG formulation by letting different iterations to overlap as much as possible while the second one (IFCG2) aims at increasing performance even more by splitting Pipelined CG's single synchronization point into two and exploiting additional opportunities to reduce idle time.
+While both IFCG1 and IFCG2 algorithms apply the IFCG approach, they aim at increasing performance by targeting different goals.
+ 
+\subsection{IFCG1 Algorithm}
+IFCG1 is an evolution of the Pipelined CG algorithm described in section~\ref{sec:ifcg_PreconCG}. 
+IFCG1 aims at increasing the potential for overlapping different pieces of computation by breaking down the Pipelined CG kernels into smaller pieces or subkernels.
+Each subkernel just needs a subset of the data required by the whole kernel.
+For example, as mentioned a few paragraphs above, the update of the $z$ vector in line 12 of \textbf{Algorithm \ref{alg:pcg}} requires the whole $n_i$ vector and the $\beta_{i}$ scalar.
+Instead of considering the update of $z$ as a single operation, IFCG1 breaks it down into $N$ pieces in a way that instead of computing the whole $z_{i} := n_{i} + \beta_{i}z_{i-1}$ it computes $N$
+updates of the form $z_{ij} := n_{ij} + \beta_{i}z_{(i-1)j}$ where $z_i = \{z_{i1}, z_{i2}, ..., z_{iN}\}$ and $i$ refers to the $i$th iteration.
+In this way, the computation of $z_{ij}$ only depends on a subset $n_{ij}$ of the $n_i$ vector and the scalar $\beta_i$.
+The only operation that can not always be broken down into pieces is the computation of the preconditioning vector $w_i$ (step 5 of \textbf{Algorithm \ref{alg:pcg}}). 
+While some preconditioning schemes can be decomposed into pieces (e. g. Block-Jacobi preconditioning with incomplete Cholesky factorization within the blocks) some others do not admit a straightforward decomposition (e. g. multi-grid preconditioning), 
+although preconditioners that can be decomposed are often applied~\cite{ghysels14}.
+
+\begin{algorithm}[t]
+\caption{IFCG1}
+\label{alg:ifcg}
+{\fontsize{9}{9}\selectfont
+\begin{algorithmic}[1]
+        \State $r_{0} := b - Ax_{0}; u_{0} := M^{-1}r_{0}; w_{0} := Au_{0}$
+        \For {$i = 0 \ldots i_{max}$}
+                \For {$j = 1 \ldots N$}
+                \Comment \textcolor{red}{The computation is split in N blocks}
+                        \State $\gamma_{ij} := (r_{ij}, u_{ij})$
+                        \State $\delta_{ij} := (w_{ij}, u_{ij})$
+                        \State $m_{ij} := M^{-1}w_{ij}$
+                        \State $n_{ij} := A_{j}m_{i}$
+                \EndFor
+
+                \State $\gamma_{i} := \sum\limits_{j=1}^N \gamma_{ij}; \delta_i := \sum\limits_{j=1}^N \delta_{ij}$
+                \Comment \textcolor{red}{Global reduction}
+
+                \If {$i > 0$}
+                        \State $\beta_{i} := \gamma_{i}/\gamma_{i-1}; \alpha_{i} := \gamma_{i}/(\delta - \beta_{i}\gamma_{i}/\alpha_{i-1})$
+                \Else
+                        \State $\beta_{i} := 0; \alpha_{i} := \gamma_{i}/\delta_i$
+                \EndIf
+
+                \For {$j = 1 \ldots N$}
+                        \State $z_{ij} := n_{ij} + \beta_{i}z_{(i-1)j}$
+                        \State $q_{ij} := m_{ij} + \beta_{i}q_{(i-1)j}$
+                        \State $s_{ij} := w_{ij} + \beta_{i}s_{(i-1)j}$
+                        \State $p_{ij} := u_{ij} + \beta_{i}p_{(i-1)j}$
+                        \State $x_{(i+1)j} := x_{ij} + \alpha_{i}p_{ij}$
+                        \State $r_{(i+1)j} := r_{ij} - \alpha_{i}s_{ij}$
+                        \State $u_{(i+1)j} := u_{ij} - \alpha_{i}q_{ij}$
+                        \State $w_{(i+1)j} := w_{ij} - \alpha_{i}z_{ij}$
+                \EndFor
+        \EndFor
+\end{algorithmic}
+}
+\end{algorithm}
+
+Besides breaking down linear algebra kernels into pieces, the second innovative aspect of the IFCG approach is the elimination of inter-iteration synchronizations to check algorithm's convergence.
+Instead of checking for convergence at the end of each iteration, IFCG only checks it once every $n$ iterations.
+The number of iterations between two checks is called the \emph{FUSE} parameter.
+
+We apply these two approaches (decomposition of linear kernels and elimination of inter-iterations checks) across the whole Pipelined CG algorithm, which ends up producing the IFCG1 algorithm (\textbf{Algorithm \ref{alg:ifcg}}). 
+IFCG1 can potentially overlap steps 4-7 of iteration $i$ with steps 16-23 of iteration $i-1$. 
+Also, each repetition of steps 16-23 depends on just one of the $N$ repetitions of steps 6-7, significantly relaxing data-dependencies between the algorithm's main kernels.
+
+\begin{algorithm}[htpb]
+\caption{IFCG2}
+\label{alg:ifcg2}
+{\fontsize{9}{9}\selectfont
+\begin{algorithmic}[1]
+        \State $r_{0} := b - Ax_{0}; u_{0} := M^{-1}r_{0}; w_{0} := Au_{0}$
+        \For {$i = 0 \ldots i_{max}$}
+                \For {$j = 1 \ldots N$}
+                        \State $\gamma_{ij} := (r_{ij}, u_{ij})$
+                        \State $\delta_{ij} := (w_{ij}, u_{ij})$
+                        \State $m_{ij} := M^{-1}w_{ij}$
+                        \Comment \textcolor{red}{The most expensive step}
+                \EndFor
+
+                \State $\gamma_{i} := \sum\limits_{j=1}^N \gamma_{ij}$
+                \Comment \textcolor{red}{Global reduction on $\gamma_{i}$}
+                \If {$i > 0$}
+                        \State $\beta_{i} := \gamma_{i}/\gamma_{i-1}$
+                \Else
+                        \State $\beta_{i} := 0$
+                \EndIf
+                \For {$j = 1 \ldots N$}
+                        \Comment \textcolor{red}{AXPYs that only depend on $\beta_{i}$}
+                        \State $s_{ij} := w_{ij} + \beta_{i}s_{(i-1)j}$
+                        \State $p_{ij} := u_{ij} + \beta_{i}p_{(i-1)j}$
+
+                \EndFor
+
+                \State $\delta_i := \sum\limits_{j=1}^N \delta_{ij}$
+                \Comment \textcolor{red}{Global reduction on $\delta$}
+                \If {$i > 0$}
+                        \State $\alpha_{i} := \gamma_{i}/(\delta_i - \beta_{i}\gamma_{i}/\alpha_{i-1})$
+                \Else
+                        \State $\alpha_{i} := \gamma_{i}/\delta_i$
+                \EndIf
+
+                \For {$j = 1 \ldots N$}
+                        \State $q_{ij} := m_{ij} + \beta_{i}q_{(i-1)j}$
+
+                        \State $n_{ij} := A_{j}m_{i}$
+
+                        \State $z_{ij} := n_{ij} + \beta_{i}z_{(i-1)j}$
+
+                        \State $x_{(i+1)j} := x_{ij} + \alpha_{i}p_{ij}$
+                        \State $r_{(i+1)j} := r_{ij} - \alpha_{i}s_{ij}$
+                        \State $u_{(i+1)j} := u_{ij} - \alpha_{i}q_{ij}$
+                        \State $w_{(i+1)j} := w_{ij} - \alpha_{i}z_{ij}$
+                \EndFor
+        \EndFor
+\end{algorithmic}
+%\vspace{-0.5cm}
+}
+\end{algorithm}
+
+\subsection{IFCG2 Algorithm}
+\label{sec:ifcg2}
+
+The IFCG2 algorithm splits Pipelined CG and IFCG1's single synchronization point, which is composed of two reductions, into two synchronization points composed of a single reduction operation each.
+IFCG2 aims at updating the $s_i$ and $p_i$ vectors, which only depend on one of the two reductions and on some data generated by iteration $i-1$, as soon as possible.
+The IFCG2 algorithm is detailedly shown in \textbf{Algorithm \ref{alg:ifcg2}}.
+The global reductions producing $\delta_i$ and $\gamma_i$ are run in separate steps.
+Also, the updates on vectors $s_i$ and $p_i$ do not need to wait for the reduction producing $\delta_i$ to finish as they can be overlapped with it.
+Computing $q_i$ and $n_i$ is left after the second reduction since these computations require $m_i$ and we want the reductions to be overlapped as much as possible with the most expensive computational kernel, the preconditioning of vector $\omega_i$ (step 6 of \textbf{Algorithm \ref{alg:ifcg2}}).
+
+There is an interesting trade-off between the IFCG1 and IFCG2 algorithms: While the first one is focused on reducing the cost of the two global reductions by overlapping them with computations, which implies delaying the update of the $s_i$ and $p_i$ vectors, the second tries to run these updates as soon as possible, which requires splitting the single synchronization point composed of two reductions into two parallel dot-products.  
+As such, the IFCG1 formulation aims at reducing the cost of reduction operations while the IFCG2 aims at starting the computations as soon as possible to avoid idle time. 
+IFCG1 and IFCG2 algorithms are thus two complementary approaches that constitute an evolution of the Pipelined CG algorithm aiming at increasing performance.
+Besides the parallel programming and performance aspects, which are detailedly 
+discussed in sections~\ref{sec:ifcg_implementation} and~\ref{sec:ifcg_results}, it is also important to verify that both IFCG algorithms have similar numerical stability properties as state-of-the-art approaches like Pipelined CG.

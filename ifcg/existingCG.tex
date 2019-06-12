@@ -1,0 +1,74 @@
+We describe the basic Preconditioned Conjugate Gradient Algorithm and one of its most important evolutions, the Pipelined Conjugate Gradient~\cite{ghysels14}, 
+which aims at improve CG's performance by reducing the cost of its global reductions.
+
+\subsection{Preconditioned Conjugate Gradient}
+The fundamental Preconditioned Conjugate Gradient (PCG) algorithm is a Krylov subspace method that iteratively builds a solution in terms of a basis of conjugate vectors built by projecting the maximum descent direction, i.e. the gradient, into the closest conjugate direction.  
+PCG is shown in \textbf{Algorithm~\ref{alg:pcg0}}.
+Performance-wise, steps 4 and 8 are important bottlenecks since they involve a global reduction.
+Pre-conditioning the vector $r_{i+1}$ (carried out by step 7) is also typically expensive.
+\begin{algorithm}[H]%algorithm* occupies full page
+\caption{PCG}
+\label{alg:pcg0}
+{\fontsize{9}{9}\selectfont
+\begin{algorithmic}[1]
+	\State $r_{0} := b - Ax_{0}; u_{0} := M^{-1}r_{0}; p_{0} := u_{0}$ 
+	\For {$i = 0 \ldots i_{max}$}
+		\State $s := Ap_{i}$
+		\State $\alpha := (r_{i}, u_{i})/(s, p_{i})$
+		\State $x_{i+1} := x_{i} + \alpha p_{i}$
+		\State $r_{i+1} := r_{i} - \alpha s$
+		\State $u_{i+1} := M^{-1}r_{i+1}$
+		\State $\beta := (r_{i+1}, u_{i+1})/(r_{i}, u_{i})$
+		\State $p_{i+1} := u_{i+1} + \beta p_{i}$
+	\EndFor
+	\State \textcolor{red} {Inter-iteration synchronization}
+\end{algorithmic}
+}
+\end{algorithm}
+
+\subsection{Pipelined Conjugate Gradient}
+\label{sec:ifcg_PreconCG}
+The Pipelined Conjugate Gradient (Pipelined CG)~\cite{ghysels14} is an alternative formulation of the PCG algorithm aiming at i) reducing the cost of the two PCG's reduction operations
+per iteration by concentrating them into a single double reduction point and ii) hiding the cost of this double reduction by overlapping it with other PCG kernels: SpMV and the preconditioner.
+The Pipelined CG formulation is mathematically equivalent to PCG and, 
+indeed, both techniques would give the exact same solution if they operated with infinite precision.
+However, when operating under realistic scenarios, i.e. 32- or 64-bits floating point representations, Pipelined CG exhibits worse numerical accuracy than PCG since the way Pipelined CG builds the basis of conjugate vectors is more sensitive to round-off errors, which ends up having an impact on the basis' orthogonality.
+
+The Pipelined CG technique is detailedly shown in \textbf{Algorithm \ref{alg:pcg}}. 
+The two reductions are computed at the beginning of each iteration (lines 3-4), which makes it possible to combine them. 
+Additionally, this double reduction operation is overlapped with two costly computations: the application of the preconditioner to vector $w_i$ (line 5) and a sparse matrix-vector product (line 6).
+It is important to state that, although the potential of Pipelined CG in terms of overlapping computations and hiding reduction costs is remarkable, the algorithm still has limitations.
+For example, the update of the $z$ vector in line 12 needs the whole $n_i$ vector and the $\beta_{i}$ scalar to be carried out.
+However, such restriction can be relaxed by breaking down the $z$ update into several pieces that only have to wait for their $n$ counterpart and the $\beta_{i}$ scalar to be carried out.
+In this way, some pieces of the $z$ vector can be updated without the need for waiting until the whole $n_i$ vector is produced.   
+
+
+\begin{algorithm}[t]%algorithm* occupies full page
+\caption{Pipelined CG}
+\label{alg:pcg}
+{\fontsize{9}{9}\selectfont
+\begin{algorithmic}[1]
+	\State $r_{0} := b - Ax_{0}; u_{0} := M^{-1}r_{0}; w_{0} := Au_{0}$ 
+	\For {$i = 0 \ldots i_{max}$}
+		\State $\gamma_{i} := (r_{i}, u_{i})$
+		\State $\delta_i := (w_{i}, u_{i})$
+		\State $m_{i} := M^{-1}w_{i}$
+		\State $n_{i} := Am_{i}$
+		\If {$i > 0$}
+			\State $\beta_{i} := \gamma_{i}/\gamma_{i-1}; \alpha_{i} := \gamma_{i}/(\delta_i - \beta_{i}\gamma_{i}/\alpha_{i-1})$
+		\Else
+			\State $\beta_{i} := 0; \alpha_{i} := \gamma_{i}/\delta_i$
+		\EndIf
+		\State $z_{i} := n_{i} + \beta_{i}z_{i-1}$
+		\State $q_{i} := m_{i} + \beta_{i}q_{i-1}$
+		\State $s_{i} := w_{i} + \beta_{i}s_{i-1}$
+		\State $p_{i} := u_{i} + \beta_{i}p_{i-1}$
+		\State $x_{i+1} := x_{i} + \alpha_{i}p_{i}$
+		\State $r_{i+1} := r_{i} - \alpha_{i}s_{i}$
+		\State $u_{i+1} := u_{i} - \alpha_{i}q_{i}$
+		\State $w_{i+1} := w_{i} - \alpha_{i}z_{i}$
+	\EndFor
+	\State \textcolor{red} {Inter-iteration synchronization}
+\end{algorithmic}
+}
+\end{algorithm}

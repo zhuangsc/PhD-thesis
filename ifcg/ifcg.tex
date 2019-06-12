@@ -1,5 +1,5 @@
 
-\chapter{Iteration-Fusing Conjugate Gradient}
+\chapter{Communication Reduction in Conjugate Gradient Method}
 \label{chap:ifcg}
 
 \newcommand{\MAXPERF}{42\%}
@@ -9,98 +9,14 @@
 
 %\newcommand{\cmark}{\ding{51}}%
 %\newcommand{\xmark}{\ding{55}}%
-
+\section{Introduction}
 \input{ifcg/introduction}
-\section{Benchmarking in HPC}
-\label{sec:hpc_benchmarking}
-\input{background/benchmarking_hpc}
-\section{The PARSEC Benchmark Suite}
-\label{sec:parsec}
-\input{ifcg/parsec_suite}
-\label{sec:parsecss_implementation}
-\section{Application Parallelization}
-\input{ifcg/implementation}
-\section{Programmability}
-\input{ifcg/programmability}
-
-\begin{figure}[p]
-        \centering
-        \begin{subfigure}{0.8\textwidth}
-                \includegraphics[width=\textwidth]{ifcg/figures/blackscholes_scale}
-                \label{fig:blackscholes_scale}
-        \end{subfigure}%
-\hfill
-        \begin{subfigure}{0.8\textwidth}
-                \includegraphics[width=\textwidth]{ifcg/figures/bodytrack_scale}
-                \label{fig:bodytrack_scale}
-        \end{subfigure}
-        
-				\begin{subfigure}[b]{0.8\textwidth}
-                \includegraphics[width=\textwidth]{ifcg/figures/canneal_scale}
-                \label{fig:canneal_scale}
-        \end{subfigure}
-      \caption{Comparison of scalability between the task-based implementations and the original (Pthreads/OpenMP) versions.}
-			\label{fig:scalability_graphs_1}
-\end{figure}
-
-\begin{figure}[p]
-				\centering
-        \begin{subfigure}[b]{0.8\textwidth}
-                \includegraphics[width=\textwidth]{ifcg/figures/dedup_scale}
-                \label{fig:dedup_scale}
-        \end{subfigure}
-\hfill
-        \begin{subfigure}[b]{0.8\textwidth}
-                \includegraphics[width=\textwidth]{ifcg/figures/facesim_scale}
-                \label{fig:facesim_scale}
-        \end{subfigure}
-\hfill
-				\begin{subfigure}[b]{0.8\textwidth}
-                \includegraphics[width=\textwidth]{ifcg/figures/ferret_scale}
-                \label{fig:ferret_scale}
-        \end{subfigure}%
-      \caption{Comparison of scalability between the task-based implementations and the original (Pthreads/OpenMP) versions.}
-			\label{fig:scalability_graphs_2}
-\end{figure}
-
-\begin{figure}[p]
-				\centering
-				\begin{subfigure}[b]{0.8\textwidth}
-                \includegraphics[width=\textwidth]{ifcg/figures/fluidanimate_scale}
-                \label{fig:fluidanimate_scale}
-        \end{subfigure}
-\hfill
-        \begin{subfigure}[b]{0.8\textwidth}
-                \includegraphics[width=\textwidth]{ifcg/figures/freqmine_scale}
-                \label{fig:freqmine_scale}
-        \end{subfigure}
-\hfill        
-				\begin{subfigure}[b]{0.8\textwidth}
-                \includegraphics[width=\textwidth]{ifcg/figures/streamcluster_scale}
-                \label{fig:streamcluster_scale}
-        \end{subfigure}
-			\caption{Comparison of scalability between the task-based implementations and the original (Pthreads/OpenMP) versions.}
-			\label{fig:scalability_graphs_3}
-\end{figure}
-
-\begin{figure}[ht]
-				\centering
-        \begin{subfigure}[b]{0.8\textwidth}
-                \includegraphics[width=\textwidth]{ifcg/figures/swaptions_scale}
-                \label{fig:swaptions_scale}
-        \end{subfigure}
-      \caption{Comparison of scalability between the task-based implementations and the original (Pthreads/OpenMP) versions.}
-			\label{fig:scalability_graphs_4}
-			\vspace{.5cm}
-\end{figure}
-
-
-
-
-
-\section{Performance}
-\label{sec:task_bench_evaluation}
-\input{ifcg/evaluation}
-
-\section{Summary}
-\input{ifcg/summary}
+\section{The Preconditioned and The Pipelined CG Algorithms}
+\label{sec:ifcg_existingCG}
+\input{ifcg/existingCG}
+\section{Iteration-Fusing Conjugate Gradient}
+\label{sec:ifcg_ifcg}
+\input{ifcg/ifcg_detail}
+\section{Characteristics of The IFCG Algorithms}
+\label{sec:ifcg_characteristics}
+\input{ifcg/sec_impl}
