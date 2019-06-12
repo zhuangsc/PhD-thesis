@@ -1,0 +1,93 @@
+\section{Introduction}
+
+%\begin{itemize}
+
+%\item DNN are very important due to their ability to achieve high accuracy for tasks such as speech recognition, image classification or natural language processing.
+%\item Companies like Google, Microsoft or Facebook are using DNN as the machine learning component in their production system
+The use of Deep Neural Networks~(DNNs) is becoming ubiquitous 
+in areas like computer vision (e.g., image recognition and object detection)~\cite{alexnet, Inception}, speech recognition~\cite{Acoustic}, language translation~\cite{Language}, and many more~\cite{Ciregan2012}. 
+DNNs provide very competitive pattern detection capabilities and, more specifically, Convolutional Neural Networks~(CNNs) classify very large image sets with remarkable accuracy~\cite{Krizhevsky2012}.
+Indeed, DNNs already play a very significant role in the large production systems of major IT companies and research centers, which has in turn driven the development of advanced software frameworks for the deep learning area~\cite{tensorflow} as well as DNN-specific hardware accelerators~\cite{Merolla668,Jouppi2017}. 
+As an example, deep learning solutions are being coupled with physical computational models  for solving pattern classification problems in the context of large-scale climate simulations~\cite{Kurth2017}.
+Despite all these accomplishments, deep learning models still suffer from several fundamental problems: the neural network topology is determined through a long and iterative empirical process, the training procedure has a huge cost in terms of time and computational resources, and the inference process of large network models incurs considerable latency to produce an output, which is not acceptable in domains requiring real-time responses like autonomous driving.
+
+The DNN training process typically relies on the backpropagation 
+procedure~\cite{Werbos74}, which requires solving an optimization problem 
+aimed at discovering the values of network weights that better fit the training data.
+A possible way to carry out the backpropagation process is the Gradient Descent 
+(GD) method~\cite{Press88}, which aims at fitting the weights to the training data by considering, at each iteration, the steepest descent direction in terms of an error function. 
+A popular variant of the GD procedure is the Stochastic Gradient Descent 
+(SGD) method~\cite{KieferWolfowitz1952}, which computes the gradient against several randomly chosen samples at each iteration. 
+%{\bf SGD converges faster than GD since it updates network parameters more times.}
+%In addition, it exposes much more parallelism to the parallel hardware. 
+Today's common practice to train DNNs is to split the data set into several subsets, called batches, and let each iteration of SGD to compute a descent direction or gradient that contains contributions of all the samples belonging to the same batch.
+SGD converges faster than GD since it updates network parameters at the end of each batch once all samples are processed.
+
+To tackle the large amount of Floating Point computations required to train a DNN, GPUs are usually employed~\cite{You17}. 
+They exploit the large amount of data-level parallelism of deep learning workloads. 
+Although GPUs and other hardware accelerators have been successfully employed to 
+boost the training process, data exchanges involving different accelerators may incur 
+significant performance penalties. 
+%\item This paper reduces the data transfer burden by exploiting the ?? flexibility for reduced accuracy scenarios.
+
+This paper describes and evaluates a method to accelerate the training of DNNs by reducing the cost 
+of data transfers across heterogeneous high-end architectures integrating 
+multiple GPUs. By relying on DNNs 
+tolerance to data representation formats smaller than the commonly used 32-bit Floating Point (FP) standard~\cite{gupta15, flexpoint17}, this paper describes how to 
+dynamically adapt the size of data sent to GPU devices without 
+hurting the quality of the training process. 
+Our solution is designed to efficiently use the incoming bandwidth of the GPU accelerators.
+It relies on an adaptive scheme that dynamically adapts the data representation format required 
+by each DNN layer and compresses network parameters before sending them over the parallel system.
+This scheme enables DNNs training to progress in a similar rate as if the 32-bit FP format was used.
+This paper makes the following contributions:% over the state-of-the-art:
+
+\begin{itemize}
+
+\item It proposes the {\it Adaptive Weight Precision (AWP)} algorithm, which 
+dynamically adapts the numerical representation of DNN weights during training. 
+AWP relies on DNNs' tolerance for reduced data representation formats.  
+It defines the appropriated data representation format per each network layer during  
+training without hurting network accuracy.
+
+\item It proposes a new {\it Approximate Data Transfer (ADT)} procedure to compress 
+DNN's weights according to the decisions made by the AWP algorithm. 
+ADT relies on both thread- and SIMD-level parallelism  
+and is compatible with architectures like IBM's POWER 
+or x86. ADT is able to compress large 
+sets of weights with minimal overhead, which enables the large performance benefits of our approach.
+
+\item It evaluates ADT and AWP on 
+two high-end systems: The first is composed of two x86 Haswell multicore 
+devices plus four Tesla GK210 GPU accelerators and the second system integrates two POWER9 chips and four NVIDIA Volta V100 GPUs. 
+Our evaluation considers the Alexnet~\cite{alexnet}, the VGG~\cite{vgg} and the Resnet~\cite{resnet} network models applied to 
+the ImageNet ILSVRC-2012 dataset~\cite{imagenet}.
+Our experiments report average performance benefits of 6.18\% and 11.91\% on the x86 and the POWER systems, respectively.
+Our solution does not reduce the quality of the training process since networks final accuracy is the same as if they had been trained with the 32-bit Floating Point format.
+\end{itemize}
+
+Many proposals describe how data representation formats smaller than the 32-bit Floating Point IEEE standard can be applied to deep learning workloads without harming their accuracy~\cite{bottou08, gupta15, Micikevicius2018}.
+This paper presents the first approach that uses reduced data formats to minimize data movement during DNN training.
+This paper is particularly relevant from the high-performance computing perspective since it proposes
+a methodology to accelerate DNNs training in heterogeneous high-end systems, which are extensively used to run deep learning workloads~\cite{You17}. 
+
+This paper is structured as follows:
+Section~\ref{sec:background} motivates our proposals. 
+Section~\ref{sec:adaptive} describes our first contribution, the Adaptive Weight 
+Precision algorithm (AWP). 
+Section~\ref{sec:approx} details the Approximate Data 
+Transfer (ADT) procedure. 
+Section~\ref{sec:setup} explains the experimental 
+setup of this paper. 
+Section~\ref{sec:evalutation} describes the  
+experiments we conduct to evaluate AWP and ADT on three 
+state-of-the-art neural networks. 
+Section~\ref{sec:Relatedworks} describes the most relevant related work.  
+Finally, 
+Section~\ref{sec:conclusion} summarizes the main conclusions of this paper.
+
+%\item We propose BitPack, an algorithm to dynamically adapt the data transfer accuracy depending on the status of the Backpropagation procedure.
+
+%\item We demonstrate BitPack's ability to achieve performance gains on a multi-GPU case composed of 4 GPUs and a multi-core CPU host.
+
+%\end{itemize}

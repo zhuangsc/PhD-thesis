@@ -1,0 +1,30 @@
+\section{Conclusion}
+\label{sec:conclusion}
+
+This paper proposes $A^2DTWP$, which reduces data movement 
+across heterogeneous environments composed of several GPUs and multicore CPU devices 
+in the context of deep learning workloads.
+The $A^2DTWP$ framework is composed of the AWP algorithm and the ADT procedure.
+AWP is able to dynamically define the weights data representation format
+during training. 
+This paper demonstrates that AWP is
+effective without any deterioration on the learning capacity of
+the neural network.
+To transform AWP decisions into real performance gains, 
+we introduce the ADT procedure, which efficiently compresses network's weights before sending them to the GPUs. 
+This procedure exploits both thread- and SIMD-level parallelism. 
+By combining AWP with ADT we are able to achieve a significant performance gain 
+when training network models such as Alexnet, VGG or Resnet.
+Our experimental campaign considers different batch sizes and two different multi-GPU high-end systems.
+
+This paper is the first in proposing a solution that relies on  
+reduced numeric data formats to mitigate the cost of sending DNNs weights to 
+different hardware devices during training.
+While our evaluation targets heterogeneous high-end systems composed of several GPUs 
+and CPU multicore devices, techniques presented by this paper are easily generalizable 
+to any context involving several hardware accelerators exchanging large 
+amounts of data.
+Taking into account the prevalence of deep learning-specific accelerators in large
+production systems~\cite{Jouppi2017}, the contributions of this paper are 
+applicable to a wide range of scenarios involving different kinds of accelerators.
+

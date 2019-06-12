@@ -27,7 +27,7 @@ Despite this extensive body of work devoted on improving the CG algorithm, perfo
 %For example, CG formulations that have just one synchronization point per iteration and also overlap it with the SpMV kernel are reported to achieve a speedup of 13x when run on 20 cores while classical CG just achieves speedups of 6x~\cite{ghysels14}. 
 %Even though this is a remarkable improvement, the achieved scalability is still very far from the linear one~\cite{ghysels14}.  
 
-In this work we propose the \emph{Iteration-Fusing Conjugate Gradient (IFCG)} method, a new formulation of the CG algorithm that outperforms the existing proposals by applying a scheme that aggressively overlaps iterations, which is something not considered by previous work. 
+In this chapter we propose the \emph{Iteration-Fusing Conjugate Gradient (IFCG)} method, a new formulation of the CG algorithm that outperforms the existing proposals by applying a scheme that aggressively overlaps iterations, which is something not considered by previous work. 
 Our approach 
 %effectively hides the cost of global synchronization points 
 does not update the residual at the end of each iteration and splits numerical kernels into subkernels to relax data-dependencies.
@@ -57,9 +57,11 @@ Specifically, this chapter improves the state-of-the-art by doing the following 
 This chapter is structured as follows: 
 In section~\ref{sec:ifcg_existingCG} we describe in detail some state-of-the-art approaches that motivate the IFCG algorithms.
 Section~\ref{sec:ifcg_ifcg} contains a detailed description of the IFCG1 and IFCG2  algorithms.
-Section~\ref{sec:ifcg_stability} compares the numerical stability of IFCG1 and IFCG2 with other relevant state-of-the-art techniques.
-Section~\ref{sec:ifcg_implementation} explains how task-based parallelism is applied to IFCG1 and IFCG2 and how they are executed in parallel.
-Section~\ref{sec:ifcg_setup} describes in detail the experimental setup of this chapter.
+Section~\ref{sec:ifcg_characteristics} compares the numerical stability of IFCG1 
+and IFCG2 with other relevant state-of-the-art techniques and explains how task-based 
+parallelism is applied to IFCG1 and IFCG2 and how they are executed in parallel.
+%Section~\ref{sec:ifcg_setup} describes in detail the experimental setup of this chapter.
 Section~\ref{sec:ifcg_results} shows a comparison of IFCG1 and IFCG2 against other state-of-the-art techniques when run on a 16-core node composed of two 8-core sockets. 
-It also discusses other important aspects like the inter-iteration overlap achieved by IFCG1 and IFCG2 and a comparison of the system jitter tolerance of these algorithms against state-of-the-art approaches.
+It also discusses other important aspects like the inter-iteration overlap achieved 
+by IFCG1 and IFCG2 and a comparison of the system jitter tolerance of these algorithms against state-of-the-art approaches.
 Finally, section~\ref{sec:ifcg_conclusions} contains several conclusions on this work and describes future directions.

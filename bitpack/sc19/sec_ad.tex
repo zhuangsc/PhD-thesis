@@ -1,0 +1,88 @@
+\section{The Adaptive Weight Precision (AWP) Algorithm}
+\label{sec:adaptive}
+
+The Adaptive Weight Precision (AWP) algorithm relies on the tolerance of DNNs to data representation formats smaller than the 32-bit Floating Point standard.
+Indeed, previous work indicates that,
+unlike scientific codes focused on solving partial differential equations or large linear systems,
+neural networks do not always require 32-bit representation during training~\cite{bottou08, gupta15}. 
+Even more, adding stochastic noise to certain variables during the learning phase
+improves DNNs accuracy~\cite{murray94, bishop95, aud13}.
+Nevertheless, when facing unknown scenarios in terms of new workloads or parameter settings,
+the data representation requirements of DNNs 
+are non-trivial to be determined and, to make things more complicated, they may change as the training phase progresses.
+
+\begin{algorithm}%[H]%algorithm* occupies full page
+\caption{Adaptive Weight Precision (AWP) Algorithm}
+\label{alg:norm}
+{\fontsize{8}{8}\selectfont
+\begin{algorithmic}[1]
+    \State BitsPerLayer := [$B_0, B_1, \hdots, B_{NumLayers}$]
+    \Comment List storing the number of bits corresponding to the data representation of each layer
+    \State IntervalCounter := [0, 0, $\hdots$, 0]
+    \Comment List storing the number of times the relative change rate
+             fails to meet the threshold per layer
+    \For {batch := 0 \ldots NumBatches}
+        \State Apply backpropagation to batch
+        \For {layer := 0 \ldots NumLayers}
+            %\State $\text{norm}_{batch, layer} := |\text{W}_{batch, layer}|$
+            \State $\delta := \frac{(|\text{W}_{batch, layer}| - |\text{W}_{batch-1, layer}|)}{|\text{W}_{batch-1, layer}|}$
+            \If {$\delta$ < T}
+                \State $\text{IntervalCounter}_{layer}$ +=  1
+            \EndIf
+            \If {$\text{IntervalCounter}_{layer}$ == INTERVAL}
+                \State $\text{BitsPerLayer}_{layer}$ += N
+                %\Comment N is the number of bits to increase
+                \State $\text{IntervalCounter}_{layer}$ := 0
+            \EndIf
+        \EndFor
+        \EndFor
+\end{algorithmic}
+}
+\end{algorithm}
+
+The AWP algorithm dynamically  
+determines data representation requirements per each network layer by monitoring the 
+evolution of the $l^2$-norm of the weights.
+AWP identifies the number of bits that are needed to represent 
+DNNs weights and guarantees the progress of the training process.
+AWP assigns the same data representation format to all weights 
+belonging to a certain network layer.
+The training starts with a relatively small data representation that is independently 
+increased for each layer. 
+%In other words, the adjustment of the data format 
+%monotonically increases the number of bits to store weights.
+%In our context, for the set of $n$ weights $\{ w_1 \hdots w_n \}$ belonging to a certain layer, 
+%the $l^2$-norm is used in the following way:
+%
+%\begin{equation*}
+%    |W|=\sqrt{\sum_{k=1}^{n} |w_k|^2}, 
+%    \quad \mathrm{whereas} \quad 
+%    W = 
+%    \begin{pmatrix}
+%        w_1 \\
+%        w_2 \\
+%        \vdots \\
+%        w_n
+%    \end{pmatrix}, \quad k=1,...,n.
+%\end{equation*}
+
+Algorithm~\ref{alg:norm} displays a pseudo-code description of AWP.
+Once the backpropagation process has been applied to a given batch, AWP iterates over all network layers.
+%Per each layer, AWp computes the change rate~$\delta$ and compares it with a threshold~$T$.
+%To do so, 
+The algorithm computes per each batch and network layer the $l^2$-norm of all its weights' values 
+and derives the relative change rate~$\delta$ of the $l^2$-norm 
+with regard to the previously processed batch. 
+For the batch $i$, the change rate is defined as  
+$\delta_i=(|W_i| - |W_{i-1}|)/|W_{i-1}|$, where $W_i$ is the vector of weights 
+of a certain layer while batch $i$ is processed. 
+Every time the change rate is below a given threshold \textit{T} for a certain 
+layer, the algorithm accounts for it by increasing the $IntervalCounter$ parameter.
+The algorithm increases $N$~bits of precision if the change 
+rate is below \textit{T} during a certain number of batches defined by the parameter
+\textit{INTERVAL} 
+and sets the $IntervalCounter$ parameter of the corresponding layer to zero.
+Section~\ref{sec:evaluation1} describes how we determine the values of parameters \textit{T}, \textit{INTERVAL}, and \textit{N}.
+%Once this counter reaches a certain value \textit{INTERVAL} for a certain layer, the algorithm 
+%decides to increase the number of bits representing this layer's weights and 
+%sets the $IntervalCounter$ variable of the corresponding layer to zero.
