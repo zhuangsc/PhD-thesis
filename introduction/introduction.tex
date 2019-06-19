@@ -1,10 +1,83 @@
-
 \chapter{Introduction}
 \label{chap:introduction}
+Modern parallel systems make extensive use of their massive amount of CPU core 
+counts or their peripheral accelerators (GPU, FPGA, ASIC etc.). In order to 
+effectively parallelize the problem at hand, algorithm designers need to 
+meticulously split the problem into smaller chunks that can be executed on the 
+individual computational units. \textbf{\textcolor{red}{expansion needed}}
+
+Not all problems are created equal. For some, denoted as \textit{embarrassingly parallel}, 
+the task is relatively simple because they can be easily solved in a divide and 
+conquer fashion. Each component is inherently independent in that it does not 
+require the computational results from its counterparts. 
+\textbf{\textcolor{red}{examples, refs}}
+
+Others on the other hand, oftentimes have non-parallelizable sections that 
+create interleaving parallel-sequential-parallel patterns during the execution where 
+synchronization is required. It is also a commonplace that parallel sections 
+possess dependencies in which case communication inevitably occur.
+\textbf{\textcolor{red}{examples, refs}}
+
+As peripherals, the various types of accelerators are connected through external 
+buses like PCI, NVlink etc. Necessary data has to be transferred from the host 
+CPUs to the accelerators before carrying out any meaningful computation. It is 
+prominent among iterative-based numerical methods and with the rise of deep 
+neural networks.
+
+Synchronization and communication put the involved computational units on hold 
+thus impede the execution progress. The scale of the parallel system is the 
+primary impact factor of the efficiency of the communication for the following 
+reasons.
+\begin{itemize}
+    \item The physical proximity of the communicating nodes determines the 
+        quality of the communication. In a distributed system with nodes scattered 
+        at different physical locations, the communication inbalance could create 
+        serious bottlenecks.
+    \item The need to send data back and forth is alleviated on a shared-memory 
+        system where all the computational units have access to entire memory region. 
+        Nevertheless, such systems are inherently limited by size. Another type 
+        of underlying memory hierarchy is distributed-memory systems where each 
+        node is in possess of a portion of the entire memory. The acquisition 
+        of contents from other memory regions has to be resolved by passing 
+        messages which could raise contention on the bus system.
+\end{itemize}
  
 \section{Thesis Objectives and Contributions}
+This thesis strives to alleviate the communication by reducing either the 
+occurrences of communication points or the quantity of data in the domain of 
+iterative numerical methods and deep neural networks, while in the meantime 
+retaining the quality of the results the algorithms produce. 
 
-\subsection{Communication Reduction in Conjugate Gradient Methods}
+\subsection{Communication Reduction in Conjugate Gradient Method}
+The conjugate gradient method solves a linear system in an iterative manner. 
+Conventionally, synchronization is needed at the end of each iteration in a 
+parallel implementation for some bookkeeping tasks such as checking the 
+convergence and applying the residual replacement strategy. 
+We propose the \emph{Iteration-Fusing Conjugate Gradient} which fuses some of the 
+iterations by removing the inter-iteration synchronization points within those fused 
+iterations and moving the bookkeeping tasks to the end of the last iteration from the fusion. 
+Also we use a task-based parallel programming model to split numerical kernels 
+into subkernels to relax data-dependencies. By carrying out these two optimizations, 
+our approach allows computations belonging to different iterations to overlap if 
+there are no specific data or control dependencies between them.
+The main contributions of this approach are:
+\begin{itemize}
+       \item The Iteration-Fusing Conjugate Gradient (IFCG) approach, which aims 
+           at aggressively overlapping different iterations. IFCG is implemented 
+           by means of two algorithms: IFCG1 and IFCG2.
+       \item A task-based implementation of the IFCG1 and IFCG2 algorithms that 
+           automatically overlaps computations from different iterations without 
+           the need for explicit programmer specification on what computations should be overlapped.
+       \item A comprehensive evaluation comparing IFCG1 and IFCG2 with the most 
+           relevant state-of-the-art formulations of the CG algorithm. 
+           IFCG1 and IFCG2 provide parallel performance improvements up to 42.9\% 
+           and 41.5\% respectively and average improvements of 11.8\% and 7.1\% with 
+           respect to the state-of-the-art techniques and show similar numerical stability.
+        \item A demonstration that under realistic system noise regimes IFCG 
+            algorithms behave much better than previous approaches. IFCG algorithms 
+            achieve an average 18.0\% improvement over the best state-of-the-art 
+            techniques under realistic system noise regimes.
+\end{itemize}
 
 \subsection{Communication Reduction in Training Deep Neural Network Models}
 
