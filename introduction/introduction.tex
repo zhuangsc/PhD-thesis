@@ -80,9 +80,40 @@ The main contributions of this approach are:
 \end{itemize}
 
 \subsection{Communication Reduction in Training Deep Neural Network Models}
+We describe and evaluate a method to accelerate the training of DNNs by reducing the cost 
+of data transfers across heterogeneous high-end architectures integrating multiple GPUs. By relying on DNNs 
+tolerance to data representation formats smaller than the commonly used 32-bit Floating 
+Point (FP) standard~\cite{gupta15, flexpoint17}, we describe how to dynamically adapt 
+the size of data sent to GPU devices without hampering the quality of the training process. 
+Our solution is designed to efficiently use the incoming bandwidth of the GPU accelerators.
+It relies on an adaptive scheme that dynamically adapts the data representation format required 
+by each DNN layer and compresses network parameters before sending them over the parallel system.
+This scheme enables DNNs training to progress in a similar rate as if the 32-bit FP format was used.
+This work makes the following contributions:
+\begin{itemize}
+    \item It proposes the {\it Adaptive Weight Precision (AWP)} algorithm, which 
+        dynamically adapts the numerical representation of DNN weights during training. 
+        AWP relies on DNNs' tolerance for reduced data representation formats.  
+        It defines the appropriated data representation format per each network layer during  
+        training without hurting network accuracy.
+
+    \item It proposes a new {\it Approximate Data Transfer (ADT)} procedure to compress 
+        DNN's weights according to the decisions made by the AWP algorithm. 
+        ADT relies on both thread- and SIMD-level parallelism  
+        and is compatible with architectures like IBM's POWER 
+        or x86. ADT is able to compress large 
+        sets of weights with minimal overhead, which enables the large performance benefits of our approach.
+
+    \item It evaluates ADT and AWP on 
+        two high-end systems: The first is composed of two x86 Haswell multicore 
+        devices plus four Tesla GK210 GPU accelerators and the second system integrates two POWER9 chips and four NVIDIA Volta V100 GPUs. 
+        Our evaluation considers the Alexnet~\cite{alexnet}, the VGG~\cite{vgg} and the Resnet~\cite{resnet} network models applied to 
+        the ImageNet ILSVRC-2012 dataset~\cite{imagenet}.
+        Our experiments report average performance benefits of 6.18\% and 11.91\% on the x86 and the POWER systems, respectively.
+        Our solution does not reduce the quality of the training process since networks final accuracy is the same as if they had been trained with the 32-bit Floating Point format.
+\end{itemize}
 
 \subsection{Communication Reduction in Deep Learning Model Parallelism}
 
 
 \section{Thesis Structure}
-%\input{introduction/doc_structure}
