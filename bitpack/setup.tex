@@ -1,0 +1,179 @@
+The experimental setup considers a large image dataset, three state-of-the-art 
+neural network models and two high-end platforms.
+The following sections describe all theses elements in detail.
+
+\subsection{Image Dataset}
+We consider the ImageNet ILSVRC-2012 dataset~\cite{imagenet}.
+The original ImageNet dataset includes three sets of images of 1000 classes 
+each:
+training set (1.3 million images), validation set (50,000 images) and
+testing set (100,000 images).
+Considering 1000 classes makes the training process around 170 hours long, which 
+is prohibitively expensive since our large experimental campaign considers 
+different network models, batch sizes and hardware platforms.
+To reduce the execution time of our experiments we consider a subset of 200 
+classes for both the training and the validation dataset, which keeps the 
+training time under manageable margins.
+%  To speedup our experiments without hampering
+%the quality of the results, we select a same set of 200 classes for both the
+%training set and the validation set as our dataset.
+For the rest of this paper, we refer to the 200 classes dataset as ImageNet200.
+Since it is a common practice~\cite{vgg}, we evaluate the ability of a certain 
+network in properly dealing with the ImageNet200 dataset in terms of the top-5 
+validation error computed over the validation set.
+
+\subsection{DNN Models and Training Parameters}
+We apply the AWP algorithm along with the ADT procedure on three 
+state-of-the-art DNN models: a modified version of Alexnet~\cite{alexnet} with 
+an extra fully-connected layer of size 4096, the configuration A of the VGG 
+model~\cite{vgg} and the Resnet network~\cite{resnet}.  All hidden layers are 
+equipped with a Rectified Linear Units (ReLU)~\cite{alexnet}.
+The exact configurations of the three neural networks are shown in 
+Table~\ref{table:bitpack_config}.  The Alexnet model is composed of 5 convolutional 
+layers and 4 fully-connected ones, VGG contains 8 convolutional layers and 3 
+fully-connected ones and Resnet is composed of 33 convolutional layers and a 
+single fully-connected one.
+
+% Please add the following required packages to your document preamble:
+% \usepackage{multirow}
+\begin{table}[]
+\caption{Neural network configurations: The convolutional layer parameters are 
+    denoted as ``conv<receptive field size>-<number of channels>''. The ReLU 
+    activation function is not shown for brevity. The building blocks of Resnet
+    and the number of times they are applied are shown in a single cell.}
+    \centering
+    \begin{tabular}{|P{3.5cm}|P{3.5cm}|P{3.5cm}|}
+\hline
+    \textbf{Alexnet} & \textbf{VGG}  & \textbf{Resnet-34}  \\ \hline
+\multicolumn{3}{|c|}{input(224x224 RGB image)}                                                                                                                                                 
+        \\ \hline
+conv11-64                                                  & conv3-64                                                      
+        & conv7-64                                                           \\ 
+        \hline
+\multicolumn{3}{|c|}{maxpool}                                                                                                                                                                  
+        \\ \hline
+conv5-192                                                 & conv3-128                                                     
+        & \begin{tabular}[c]{@{}c@{}}conv3-64\\ conv3-64\\ x3\end{tabular}   \\ 
+            \hline
+\multicolumn{2}{|c|}{maxpool}                                                                                             
+        &                                                                    \\ 
+        \hline
+conv3-384                                                 & 
+        \begin{tabular}[c]{@{}c@{}}conv3-256\\ conv3-256\end{tabular} & 
+            \begin{tabular}[c]{@{}c@{}}conv3-128\\ conv3-128\\ x4\end{tabular} 
+                \\ \hline
+\multicolumn{2}{|c|}{maxpool}                                                                                             
+        &                                                                    \\ 
+        \hline
+conv3-384                                                  & 
+        \begin{tabular}[c]{@{}c@{}}conv3-512\\ conv3-512\end{tabular} & 
+            \begin{tabular}[c]{@{}c@{}}conv3-256\\ conv3-256\\ x6\end{tabular} 
+                \\ \hline
+\multicolumn{2}{|c|}{maxpool}                                                                                             
+        &                                                                    \\ 
+        \hline
+conv3-256                                                 & 
+        \begin{tabular}[c]{@{}c@{}}conv3-512\\ conv3-512\end{tabular} & 
+            \begin{tabular}[c]{@{}c@{}}conv3-512\\ conv3-512\\ x3\end{tabular} 
+                \\ \hline
+\multicolumn{2}{|c|}{maxpool}                                                                                             
+        & avgpool                                                            \\ 
+        \hline
+\multicolumn{2}{|c|}{FC-4096}                                                                                             
+        & \multicolumn{1}{l|}{\multirow{2}{*}{}}                             \\ 
+        \cline{1-2}
+\begin{tabular}[c]{@{}c@{}}FC-4096\\ FC-4096\end{tabular} & 
+    \multicolumn{1}{c|}{FC-4096}                                  & 
+        \multicolumn{1}{l|}{}                                              \\ 
+        \hline
+\multicolumn{3}{|c|}{FC-200}                                                                                                                                                                   
+        \\ \hline
+\multicolumn{3}{|c|}{softmax}                                                                                                                                                                  
+        \\ \hline
+\end{tabular}
+\label{table:bitpack_config}
+\end{table}
+
+We use momentum SGD~\cite{momentum} to guide the training process with momentum 
+set to 0.9.  The training process is regularized by weight decay and  the 
+$L_{2}$ penalty multiplier is set to $5\times10^{-4}$.  We apply a dropout 
+regularization value of 0.5 to fully-connected layers.
+We initialize the weights using a zero-mean normal distribution with variance 
+$10^{-2}$.  The biases are initialized to $0.1$ for Alexnet and $0$ for both VGG 
+and Resnet networks.
+For the Alexnet and VGG models we consider training batch sizes of 64, 32 and 
+16.
+To train the largest network we consider, Resnet, we consider batch sizes of 
+128, 64 and 32.
+The 16 batch size incurs in a prohibitively expensive training process for 
+Resnet and, therefore, we do not use it in our experimental campaign. 
+%
+%There are several factors to take into consideration that affect the
+%benefits provided by this papers' proposals.
+%Among the most important ones we have the number of weights of the considered 
+%neural network, which define the size of the data transfers over which our 
+%solution is deployed, or the batch size, which defines the number of samples 
+%each batch is composed of.  Since the network weights are updated every time a 
+%batch is processed, the smaller the batch size is, the more frequent are the 
+%weight updates and, thus, the larger is the potential of our solution for 
+%improving performance.
+%In order to cover these factors,
+%we train both neural networks using a set of three batch sizes: 64, 32 and 16.
+%
+
+For Alexnet we set the initial learning rate to $10^{-2}$ for the 64 batch size 
+and decrease it by factors of 2 and 4 for the 32 and 16 batch sizes, 
+respectively.
+In the case of VGG we set the initial learning rate to $10^{-2}$ for the 64, 32 
+and 16 batch sizes, as in the state-of-the-art~\cite{vgg}.  In the case of 
+Resnet the learning rate is $10^{-2}$ for the batch size of 32 and 0.1 for the 
+rest.  For all network models we apply exponential decay to the learning rate 
+throughout the whole training process in a way the learning rate decays every 30 
+batches by a factor of 0.16, as previous work suggests~\cite{alexnet2}.
+For Resnet we obtain better results by adapting precision at the Resnet building 
+blocks level~\cite{resnet} instead of doing so in a per-layer basis.
+%\textcolor{cyan}{Our preliminary experiments suggest that by applying our 
+%approach to all of the layers separately on Resnet does not provide any 
+%benefit. Instead, we group the layer in terms of the resnet building 
+%blocks~\cite{resnet} and apply our approach on that level.}
+
+\subsection{Implementation}
+Our code is written in Python on top of Google Tensorflow~\cite{tensorflow}.
+Tensorflow is a data-flow and graph-based numerical library where the actual 
+computation is carried out according to a computational graph constructed 
+beforehand.
+The computational graph defines the order and the type of computations that are 
+going to take place. It supports NVIDIA's NCCL library.
+
+To enable the use of both Bitpack and Bitunpack routines, we integrate them into 
+Tensorflow using its C++ API.
+Tensorflow executes the two routines before sending the weights from the CPU to 
+the GPU and right after receiving the weights on the GPU side, respectively.
+The Bitpack routine is implemented using the OpenMP 4.0 programming model.  
+There are two versions of this routine using either Intel's AVX2 or AltiVec 
+instructions, as explained in Section~\ref{sec:bitpack_approx}.
+Bitunpack is implemented using CUDA 8.0 and CUDA 10.0 respectively on the two 
+platforms~\cite{cuda}.
+
+\subsection{Hardware Platforms}
+\label{sec:platform}
+We conduct our experiments on two clusters featuring the x86 and POWER 
+architectures.
+The x86 machine is composed of two 8-core Intel Xeon
+\textregistered E5-2630 v3 (Haswell) at 2.4 GHz and a 20 MB L3 shared cache 
+memory each.  It is also equipped with two Nvidia Tesla K80 accelerators, each 
+of which hosts two Tesla GK210 GPUs.
+It has 128 GB of main memory, distributed in 8 DIMMs of 16 GB DDR4 @ 2133 MHz.
+The 16-core CPU and the four GPUs are connected via a PCIe 3.0 x8 8GT/s.
+The operating system is RedHat Linux 6.7.
+Overall, the peak performance of the two 8-core sockets plus the four Tesla 
+GK210 GPUs is 6.44 TFlop/s.
+
+The POWER machine is composed of two 20-core IBM POWER9 8335-GTG at 3.00 GHz.  
+It contains four NVIDIA Volta V100 GPUs.  Each node has 512 GB of main memory, 
+distributed in 16 DIMMS of 32 GB @ 2666 MHz.
+The GPUs are connected to the CPU devices via a NVIDIA NVLink 2.0 
+interconnection~\cite{nvlink}.
+The operating system is RedHat Linux 7.4.
+The peak performance of the two 20-core sockets plus the four V100 GPUs is 28.85 
+TFlop/s.
