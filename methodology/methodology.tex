@@ -83,8 +83,11 @@ a programmer to build a neural network from ground up every time.
 
 Software libraries that implement common arithmetic functions, perform auto-differentiation 
 set off to alleviate the hassle. Such libraries are called deep learning frameworks 
-and has become a common practice to build neural networks. In order to 
-facilitate the development and debugging of building neural networks,
+and has become a common practice to build neural networks. Common frameworks are 
+Keras, Theano, TensorFlow, PyTorch etc. These frameworks are usually build 
+neural networks by constructing a computational graph that defines the type and 
+sequence of operations prior to the actual computation.
+In order to facilitate the development and debugging of building neural networks,
 modern deep learning frameworks also encapsulate and expose APIs of the entire 
 neural networks etc.
 
@@ -96,7 +99,10 @@ This flexible architecture enables you to deploy computation to one or more CPUs
 GPUs in a desktop, server, or mobile device without rewriting code. TensorFlow 
 also includes TensorBoard, a data visualization toolkit. 
 
-Operations in \textbf{\textcolor{red}{To be continued.}}
+TensorFlow also takes a graph-based approach to construct neural networks in which 
+each node in the graph represents an op. An op is a function that runs on the 
+desired devices. Its functionality can thus be extended by adding customized ops 
+using its C++ interface and API.
 
 \subsection{KANN}
 KANN is a standalone and lightweight library in C for constructing and training 
