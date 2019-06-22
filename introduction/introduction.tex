@@ -1,45 +1,49 @@
 \chapter{Introduction}
 \label{chap:introduction}
-Modern parallel systems make extensive use of their massive amount of CPU core 
-counts or their peripheral accelerators (GPU, FPGA, ASIC etc.). In order to 
-effectively parallelize the problem at hand, algorithm designers need to 
-meticulously split the problem into smaller chunks that can be executed on the 
-individual computational units. \textbf{\textcolor{red}{expansion needed}}
+Modern HPC systems make extensive use of their massive amount of CPU core count 
+and their peripheral accelerators (GPU, FPGA, ASIC etc.) to achieve a high 
+performance~\cite{gropp10, sierra, titan, mn4}.  In order to effectively utilize 
+such systems, algorithm designers have to parallelize the problems at hand. The 
+problems need to be meticulously split into smaller chunks that can be executed 
+on the individual computational units simultaneously. 
 
-Not all problems are created equal. For some, denoted as \textit{embarrassingly parallel}, 
-the task is relatively simple because they can be easily solved in a divide and 
-conquer fashion. Each component is inherently independent in that it does not 
-require the computational results from its counterparts. 
-\textbf{\textcolor{red}{examples, refs}}
+Not all parallelization problems are created equal. For some, denoted as 
+\textit{embarrassingly parallel problem}, the task is relatively simple because 
+they can be easily solved in a divide and conquer fashion. Each component is 
+inherently independent in that it does not require the computational results 
+from its counterparts.  
 
-Others on the other hand, oftentimes have non-parallelizable sections that 
-create interleaving parallel-sequential-parallel patterns during the execution where 
-synchronization is required. It is also a commonplace that parallel sections 
-possess dependencies in which case communication inevitably occur.
-\textbf{\textcolor{red}{examples, refs}}
+While on the other hand, others oftentimes have non-parallelizable sections that 
+create interleaving parallel-sequential-parallel patterns during the execution 
+where synchronization is required. It is also a commonplace that parallel 
+sections possess dependencies in which case communication inevitably occur.
+Such problems are ubiquitous in numerical linear algebra and other fields of 
+computational mathematics like matrix multiplication, matrix decomposition, 
+eigenvalue solvers, mathematical optimization problems just to name a 
+few~\cite{communication0, communication1, communication2, communication3}.
 
 As peripherals, the various types of accelerators are connected through external 
-buses like PCI, NVlink etc. Necessary data has to be transferred from the host 
-CPUs to the accelerators before carrying out any meaningful computation. It is 
-prominent among iterative-based numerical methods and with the rise of deep 
-neural networks.
+buses like PCIe, NVlink~\cite{nvlink} etc. Necessary data has to be transferred 
+from the host CPUs to the accelerators before carrying out any meaningful 
+computation. It is prominent among iterative-based numerical methods and with 
+the rise of deep neural networks.
 
-Synchronization and communication put the involved computational units on hold 
-thus impede the execution progress. The scale of the parallel system is the 
-primary impact factor of the efficiency of the communication for the following 
-reasons.
+Imbalanced synchronization and communication put the involved computational 
+units on hold thus impede the execution progress. The scale of the parallel 
+system is the primary impact factor of the efficiency of the communication for 
+the following reasons.
 \begin{itemize}
     \item The physical proximity of the communicating nodes determines the 
-        quality of the communication. In a distributed system with nodes scattered 
-        at different physical locations, the communication inbalance could create 
-        serious bottlenecks.
+        quality of the communication. In a distributed system with nodes 
+        scattered at different physical locations, the communication inbalance 
+        could create serious bottlenecks.
     \item The need to send data back and forth is alleviated on a shared-memory 
-        system where all the computational units have access to entire memory region. 
-        Nevertheless, such systems are inherently limited by size. Another type 
-        of underlying memory hierarchy is distributed-memory systems where each 
-        node is in possess of a portion of the entire memory. The acquisition 
-        of contents from other memory regions has to be resolved by passing 
-        messages which could raise contention on the bus system.
+        system where all the computational units have access to entire memory 
+        region.  Nevertheless, such systems are inherently limited by size.  
+        Another type of underlying memory hierarchy is distributed-memory 
+        systems where each node is in possess of a portion of the entire memory.  
+        The acquisition of contents from other memory regions has to be resolved 
+        by passing messages which could raise contention on the bus system.
 \end{itemize}
  
 \section{Thesis Objectives and Contributions}
@@ -49,17 +53,18 @@ iterative numerical methods and deep neural networks, while in the meantime
 retaining the quality of the results the algorithms produce. 
 
 \subsection{Communication Reduction in Conjugate Gradient Method}
-The conjugate gradient method solves a linear system in an iterative manner. 
+The conjugate gradient method solves a linear system in an iterative manner.  
 Conventionally, synchronization is needed at the end of each iteration in a 
 parallel implementation for some bookkeeping tasks such as checking the 
-convergence and applying the residual replacement strategy. 
-We propose the \emph{Iteration-Fusing Conjugate Gradient} which fuses some of the 
-iterations by removing the inter-iteration synchronization points within those fused 
-iterations and moving the bookkeeping tasks to the end of the last iteration from the fusion. 
-Also we use a task-based parallel programming model to split numerical kernels 
-into subkernels to relax data-dependencies. By carrying out these two optimizations, 
-our approach allows computations belonging to different iterations to overlap if 
-there are no specific data or control dependencies between them.
+convergence and applying the residual replacement strategy.  We propose the 
+\emph{Iteration-Fusing Conjugate Gradient} which fuses some of the iterations by 
+removing the inter-iteration synchronization points within those fused 
+iterations and moving the bookkeeping tasks to the end of the last iteration 
+from the fusion.  Also we use a task-based parallel programming model to split 
+numerical kernels into subkernels to relax data-dependencies. By carrying out 
+these two optimizations, our approach allows computations belonging to different 
+iterations to overlap if there are no specific data or control dependencies 
+between them.
 The main contributions of this approach are:
 \begin{itemize}
        \item The Iteration-Fusing Conjugate Gradient (IFCG) approach, which aims 
@@ -67,50 +72,61 @@ The main contributions of this approach are:
            by means of two algorithms: IFCG1 and IFCG2.
        \item A task-based implementation of the IFCG1 and IFCG2 algorithms that 
            automatically overlaps computations from different iterations without 
-           the need for explicit programmer specification on what computations should be overlapped.
+           the need for explicit programmer specification on what computations 
+           should be overlapped.
        \item A comprehensive evaluation comparing IFCG1 and IFCG2 with the most 
-           relevant state-of-the-art formulations of the CG algorithm. 
-           IFCG1 and IFCG2 provide parallel performance improvements up to 42.9\% 
-           and 41.5\% respectively and average improvements of 11.8\% and 7.1\% with 
-           respect to the state-of-the-art techniques and show similar numerical stability.
+           relevant state-of-the-art formulations of the CG algorithm.  IFCG1 
+           and IFCG2 provide parallel performance improvements up to 42.9\% and 
+           41.5\% respectively and average improvements of 11.8\% and 7.1\% with 
+           respect to the state-of-the-art techniques and show similar numerical 
+           stability.
         \item A demonstration that under realistic system noise regimes IFCG 
-            algorithms behave much better than previous approaches. IFCG algorithms 
-            achieve an average 18.0\% improvement over the best state-of-the-art 
-            techniques under realistic system noise regimes.
+            algorithms behave much better than previous approaches. IFCG 
+            algorithms achieve an average 18.0\% improvement over the best 
+            state-of-the-art techniques under realistic system noise regimes.
 \end{itemize}
 
 \subsection{Communication Reduction in Training Deep Neural Network Models}
-We describe and evaluate a method to accelerate the training of DNNs by reducing the cost 
-of data transfers across heterogeneous high-end architectures integrating multiple GPUs. By relying on DNNs 
-tolerance to data representation formats smaller than the commonly used 32-bit Floating 
-Point (FP) standard~\cite{gupta15, flexpoint17}, we describe how to dynamically adapt 
-the size of data sent to GPU devices without hampering the quality of the training process. 
-Our solution is designed to efficiently use the incoming bandwidth of the GPU accelerators.
-It relies on an adaptive scheme that dynamically adapts the data representation format required 
-by each DNN layer and compresses network parameters before sending them over the parallel system.
-This scheme enables DNNs training to progress in a similar rate as if the 32-bit FP format was used.
+We describe and evaluate a method to accelerate the training of DNNs by reducing 
+the cost of data transfers across heterogeneous high-end architectures 
+integrating multiple GPUs. By relying on DNNs tolerance to data representation 
+formats smaller than the commonly used 32-bit Floating Point (FP) 
+standard~\cite{gupta15, flexpoint17}, we describe how to dynamically adapt the 
+size of data sent to GPU devices without hampering the quality of the training 
+process.  Our solution is designed to efficiently use the incoming bandwidth of 
+the GPU accelerators.
+It relies on an adaptive scheme that dynamically adapts the data representation 
+format required by each DNN layer and compresses network parameters before 
+sending them over the parallel system.
+This scheme enables DNNs training to progress in a similar rate as if the 32-bit 
+FP format was used.
 This work makes the following contributions:
 \begin{itemize}
     \item It proposes the {\it Adaptive Weight Precision (AWP)} algorithm, which 
-        dynamically adapts the numerical representation of DNN weights during training. 
-        AWP relies on DNNs' tolerance for reduced data representation formats.  
-        It defines the appropriated data representation format per each network layer during  
-        training without hurting network accuracy.
+        dynamically adapts the numerical representation of DNN weights during 
+        training.  AWP relies on DNNs' tolerance for reduced data representation 
+        formats.  It defines the appropriated data representation format per 
+        each network layer during  training without hurting network accuracy.
 
-    \item It proposes a new {\it Approximate Data Transfer (ADT)} procedure to compress 
-        DNN's weights according to the decisions made by the AWP algorithm. 
-        ADT relies on both thread- and SIMD-level parallelism  
-        and is compatible with architectures like IBM's POWER 
-        or x86. ADT is able to compress large 
-        sets of weights with minimal overhead, which enables the large performance benefits of our approach.
+    \item It proposes a new {\it Approximate Data Transfer (ADT)} procedure to 
+        compress DNN's weights according to the decisions made by the AWP 
+        algorithm.  ADT relies on both thread- and SIMD-level parallelism  and 
+        is compatible with architectures like IBM's POWER or x86. ADT is able to 
+        compress large sets of weights with minimal overhead, which enables the 
+        large performance benefits of our approach.
 
-    \item It evaluates ADT and AWP on 
-        two high-end systems: The first is composed of two x86 Haswell multicore 
-        devices plus four Tesla GK210 GPU accelerators and the second system integrates two POWER9 chips and four NVIDIA Volta V100 GPUs. 
-        Our evaluation considers the Alexnet~\cite{alexnet}, the VGG~\cite{vgg} and the Resnet~\cite{resnet} network models applied to 
-        the ImageNet ILSVRC-2012 dataset~\cite{imagenet}.
-        Our experiments report average performance benefits of 6.18\% and 11.91\% on the x86 and the POWER systems, respectively.
-        Our solution does not reduce the quality of the training process since networks final accuracy is the same as if they had been trained with the 32-bit Floating Point format.
+    \item It evaluates ADT and AWP on two high-end systems: The first is 
+        composed of two x86 Haswell multicore devices plus four Tesla GK210 GPU 
+        accelerators and the second system integrates two POWER9 chips and four 
+        NVIDIA Volta V100 GPUs.  Our evaluation considers the 
+        Alexnet~\cite{alexnet}, the VGG~\cite{vgg} and the Resnet~\cite{resnet} 
+        network models applied to the ImageNet ILSVRC-2012 
+        dataset~\cite{imagenet}.
+        Our experiments report average performance benefits of 6.18\% and 
+        11.91\% on the x86 and the POWER systems, respectively.
+        Our solution does not reduce the quality of the training process since 
+        networks final accuracy is the same as if they had been trained with the 
+        32-bit Floating Point format.
 \end{itemize}
 
 \subsection{Communication Reduction in Deep Learning Model Parallelism}

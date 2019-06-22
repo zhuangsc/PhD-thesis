@@ -123,7 +123,7 @@ year = {1993},
   series = {PACT '08},
 }
 
-@MISC{OpenMP4.0,
+@book{OpenMP4.0,
   title =        {Application Program Interface},
   year =         2013,
   publisher =    {{OpenMP} Architecture Review Board},
@@ -243,7 +243,7 @@ year={2011},
 ISSN={1530-2075},
 month={May},}
 
-@inproceedings{Hoefler10,
+@INPROCEEDINGS{Hoefler10,
  author = {Hoefler, Torsten and Schneider, Timo and Lumsdaine, Andrew},
  title = {Characterizing the Influence of System Noise on Large-Scale Applications by Simulation},
  series = {SC '10},
@@ -287,11 +287,11 @@ booktitle = {Advances in Neural Information Processing Systems},
 pages = {161-168}
 }
 
-@online{nvlink,
+@misc{nvlink,
   author = {Nvidia Corp.},
   title = {NVLINK FABRIC},
   year = 2016,
-  url = {https://www.nvidia.com/en-us/data-center/nvlink/},
+  howpublished = {\url{https://www.nvidia.com/en-us/data-center/nvlink/}},
   urldate = {2018}
 }
 
@@ -411,6 +411,15 @@ url = {http://papers.nips.cc/paper/4824-imagenet-classification-with-deep-convol
     BOOKTITLE = {CVPR09},
     YEAR = {2009},
     BIBSOURCE = "http://www.image-net.org/papers/imagenet_cvpr09.bib"
+}
+
+@article{cifar10,
+author = {Krizhevsky, Alex},
+year = {2012},
+month = {05},
+pages = {},
+title = {Learning Multiple Layers of Features from Tiny Images},
+journal = {University of Toronto}
 }
 
 @ARTICLE{ieee754,
@@ -836,132 +845,6 @@ month={Nov},}
   bibsource = {dblp computer science bibliography, https://dblp.org}
 }
 
-@article{theano,
-  author    = {Rami Al{-}Rfou and
-               Guillaume Alain and
-               Amjad Almahairi and
-               Christof Angerm{\"{u}}ller and
-               Dzmitry Bahdanau and
-               Nicolas Ballas and
-               Fr{\'{e}}d{\'{e}}ric Bastien and
-               Justin Bayer and
-               Anatoly Belikov and
-               Alexander Belopolsky and
-               Yoshua Bengio and
-               Arnaud Bergeron and
-               James Bergstra and
-               Valentin Bisson and
-               Josh Bleecher Snyder and
-               Nicolas Bouchard and
-               Nicolas Boulanger{-}Lewandowski and
-               Xavier Bouthillier and
-               Alexandre de Br{\'{e}}bisson and
-               Olivier Breuleux and
-               Pierre Luc Carrier and
-               Kyunghyun Cho and
-               Jan Chorowski and
-               Paul F. Christiano and
-               Tim Cooijmans and
-               Marc{-}Alexandre C{\^{o}}t{\'{e}} and
-               Myriam C{\^{o}}t{\'{e}} and
-               Aaron C. Courville and
-               Yann N. Dauphin and
-               Olivier Delalleau and
-               Julien Demouth and
-               Guillaume Desjardins and
-               Sander Dieleman and
-               Laurent Dinh and
-               Melanie Ducoffe and
-               Vincent Dumoulin and
-               Samira Ebrahimi Kahou and
-               Dumitru Erhan and
-               Ziye Fan and
-               Orhan Firat and
-               Mathieu Germain and
-               Xavier Glorot and
-               Ian J. Goodfellow and
-               Matthew Graham and
-               {\c{C}}aglar G{\"{u}}l{\c{c}}ehre and
-               Philippe Hamel and
-               Iban Harlouchet and
-               Jean{-}Philippe Heng and
-               Bal{\'{a}}zs Hidasi and
-               Sina Honari and
-               Arjun Jain and
-               S{\'{e}}bastien Jean and
-               Kai Jia and
-               Mikhail Korobov and
-               Vivek Kulkarni and
-               Alex Lamb and
-               Pascal Lamblin and
-               Eric Larsen and
-               C{\'{e}}sar Laurent and
-               Sean Lee and
-               Simon Lefran{\c{c}}ois and
-               Simon Lemieux and
-               Nicholas L{\'{e}}onard and
-               Zhouhan Lin and
-               Jesse A. Livezey and
-               Cory Lorenz and
-               Jeremiah Lowin and
-               Qianli Ma and
-               Pierre{-}Antoine Manzagol and
-               Olivier Mastropietro and
-               Robert McGibbon and
-               Roland Memisevic and
-               Bart van Merri{\"{e}}nboer and
-               Vincent Michalski and
-               Mehdi Mirza and
-               Alberto Orlandi and
-               Christopher Joseph Pal and
-               Razvan Pascanu and
-               Mohammad Pezeshki and
-               Colin Raffel and
-               Daniel Renshaw and
-               Matthew Rocklin and
-               Adriana Romero and
-               Markus Roth and
-               Peter Sadowski and
-               John Salvatier and
-               Fran{\c{c}}ois Savard and
-               Jan Schl{\"{u}}ter and
-               John Schulman and
-               Gabriel Schwartz and
-               Iulian Vlad Serban and
-               Dmitriy Serdyuk and
-               Samira Shabanian and
-               {\'{E}}tienne Simon and
-               Sigurd Spieckermann and
-               S. Ramana Subramanyam and
-               Jakub Sygnowski and
-               J{\'{e}}r{\'{e}}mie Tanguay and
-               Gijs van Tulder and
-               Joseph P. Turian and
-               Sebastian Urban and
-               Pascal Vincent and
-               Francesco Visin and
-               Harm de Vries and
-               David Warde{-}Farley and
-               Dustin J. Webb and
-               Matthew Willson and
-               Kelvin Xu and
-               Lijun Xue and
-               Li Yao and
-               Saizheng Zhang and
-               Ying Zhang},
-  title     = {Theano: {A} Python framework for fast computation of mathematical
-               expressions},
-  journal   = {CoRR},
-  volume    = {abs/1605.02688},
-  year      = {2016},
-  url       = {http://arxiv.org/abs/1605.02688},
-  archivePrefix = {arXiv},
-  eprint    = {1605.02688},
-  timestamp = {Mon, 27 Nov 2017 09:22:50 +0100},
-  biburl    = {https://dblp.org/rec/bib/journals/corr/Al-RfouAAa16},
-  bibsource = {dblp computer science bibliography, https://dblp.org}
-}
-
 @article{cudnn,
   author    = {Sharan Chetlur and
                Cliff Woolley and
@@ -1233,4 +1116,149 @@ abstract = "A momentum term is usually included in the simulations of connection
   title     = {Mixed Precision Training},
   journal   = {Seventh International Conference on Learning Representations (ICLR)},
   year      = {2018},
+}
+
+@misc{kann,
+  title = {KANN: A lightweight C library for artificial neural networks},
+  year = 2019,
+  howpublished = {\url{https://github.com/attractivechaos/kann}},
+}
+
+@article{pytorch,
+  title={Automatic differentiation in PyTorch},
+  author={Paszke, Adam and Gross, Sam and Chintala, Soumith and Chanan, 
+      Gregory and Yang, Edward and DeVito, Zachary and Lin, Zeming and 
+          Desmaison, Alban and Antiga, Luca and Lerer, Adam},
+  year={2017}
+}
+
+@ARTICLE{theano,
+   author = {{Theano Development Team}},
+    title = "{Theano: A {Python} framework for fast computation of mathematical expressions}",
+  journal = {arXiv e-prints},
+   volume = {abs/1605.02688},
+ primaryClass = "cs.SC",
+ keywords = {Computer Science - Symbolic Computation, Computer Science - Learning, Computer Science - Mathematical Software},
+     year = 2016,
+    month = may,
+      url = {http://arxiv.org/abs/1605.02688},
+}
+
+@misc{keras,
+  title={Keras},
+  author={Chollet, Fran\c{c}ois and others},
+  year={2015},
+  howpublished={\url{https://keras.io}},
+}
+
+@INPROCEEDINGS{sierra, 
+    author={J. A. {Kahle} and J. {Moreno} and D. {Dreps}}, 
+    booktitle={2019 IEEE International Solid- State Circuits Conference - 
+        (ISSCC)}, 
+    title={2.1 Summit and Sierra: Designing AI/HPC Supercomputers}, 
+    year={2019}, 
+    volume={}, 
+    number={}, 
+    pages={42-43}, 
+    keywords={mainframes;parallel machines;DOE CORAL program;National 
+        Laboratories;Oak Ridge;Lawrence Livermore;exascale computing;Department 
+            of Energy;AI/HPC supercomputers;Summit and Sierra supercomputer 
+            systems;computing capability;Supercomputers;Benchmark 
+            testing;Bandwidth;Clocks;Graphics processing units;Data centers}, 
+    doi={10.1109/ISSCC.2019.8662426}, 
+    ISSN={2376-8606}, 
+    month={Feb},
+}
+
+@inproceedings{titan,
+     author = {Zimmer, Christopher and Maxwell, Don and McNally, Stephen and 
+         Atchley, Scott and Vazhkudai, Sudharshan S.},
+     title = {GPU Age-aware Scheduling to Improve the Reliability of Leadership 
+          Jobs on Titan},
+     booktitle = {Proceedings of the International Conference for High 
+           Performance Computing, Networking, Storage, and Analysis},
+     series = {SC '18},
+     year = {2018},
+     location = {Dallas, Texas},
+     pages = {7:1--7:11}, articleno = {7}, numpages = {11},
+     url = {http://dl.acm.org/citation.cfm?id=3291656.3291666}, acmid = {3291666},
+     publisher = {IEEE Press},
+     address = {Piscataway, NJ, USA},
+} 
+@misc{mn4,
+  title = {MareNostrum 4 Technical Information},
+  year = 2019,
+  howpublished = {\url{https://www.bsc.es/marenostrum/marenostrum/technical-information}},
+}
+
+@inproceedings{communication0,
+  author    = {Benjamin Lipshitz and
+               Grey Ballard and
+               James Demmel and
+               Oded Schwartz},
+  title     = {Communication-avoiding parallel strassen: implementation and performance},
+  booktitle = {{SC} Conference on High Performance Computing Networking, Storage
+               and Analysis, {SC} '12, Salt Lake City, UT, {USA} - November 11 -
+               15, 2012},
+  pages     = {101},
+  year      = {2012},
+  url       = {https://doi.org/10.1109/SC.2012.33},
+  doi       = {10.1109/SC.2012.33},
+  timestamp = {Tue, 23 May 2017 01:07:26 +0200},
+  biburl    = {https://dblp.org/rec/bib/conf/sc/LipshitzBDS12},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+
+@article{communication1,
+  author    = {Grey Ballard and
+               James Demmel and
+               Olga Holtz and
+               Oded Schwartz},
+  title     = {Minimizing Communication in Numerical Linear Algebra},
+  journal   = {{SIAM} J. Matrix Analysis Applications},
+  volume    = {32},
+  number    = {3},
+  pages     = {866--901},
+  year      = {2011},
+  url       = {https://doi.org/10.1137/090769156},
+  doi       = {10.1137/090769156},
+  timestamp = {Fri, 26 May 2017 22:53:28 +0200},
+  biburl    = {https://dblp.org/rec/bib/journals/siammax/BallardDHS11},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+
+@inproceedings{communication2,
+  author    = {Edgar Solomonik and
+               Grey Ballard and
+               James Demmel and
+               Torsten Hoefler},
+  title     = {A Communication-Avoiding Parallel Algorithm for the Symmetric Eigenvalue
+               Problem},
+  booktitle = {Proceedings of the 29th {ACM} Symposium on Parallelism in Algorithms
+               and Architectures, {SPAA} 2017, Washington DC, USA, July 24-26, 2017},
+  pages     = {111--121},
+  year      = {2017},
+  url       = {https://doi.org/10.1145/3087556.3087561},
+  doi       = {10.1145/3087556.3087561},
+  timestamp = {Tue, 06 Nov 2018 16:59:33 +0100},
+  biburl    = {https://dblp.org/rec/bib/conf/spaa/SolomonikBDH17},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+
+@article{communication3,
+  author    = {Edgar Solomonik and
+               Grey Ballard and
+               James Demmel and
+               Torsten Hoefler},
+  title     = {A communication-avoiding parallel algorithm for the symmetric eigenvalue
+               problem},
+  journal   = {CoRR},
+  volume    = {abs/1604.03703},
+  year      = {2016},
+  url       = {http://arxiv.org/abs/1604.03703},
+  archivePrefix = {arXiv},
+  eprint    = {1604.03703},
+  timestamp = {Mon, 13 Aug 2018 16:47:31 +0200},
+  biburl    = {https://dblp.org/rec/bib/journals/corr/SolomonikBDH16},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
 }

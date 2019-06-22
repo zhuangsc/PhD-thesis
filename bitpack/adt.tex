@@ -58,7 +58,7 @@ The Bitunpack procedure runs on the GPUs.
 It can be trivially parallelized since each weight is mapped
 to a single 32-bit FP variable, which means that GPUs can process a
 large amount of weights simultaneously and efficiently build the DNN model.
-In fact, Bitunpack incurs negligible overhead as Section~\ref{sec:bitpack_performance} shows.
+In fact, Bitunpack incurs negligible overhead as Section~\ref{sec:performance} shows.
 
 ADT manipulates the internal representation of network weights by discarding some bits.
 We use the standard 32-bit IEEE-754 single-precision Floating Point format
