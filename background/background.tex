@@ -1,6 +1,5 @@
 \chapter{Background}
 \label{chap:background}
-
 The readers benefit from an understanding regarding the state-of-the-art and the 
 current challenges presented in the field of parallel computing and deep 
 learning in order to grasp the works carried out from this thesis.
@@ -70,8 +69,8 @@ synchronization or communication.
 \label{sec:ppm}
 Parallel programming models can roughly be categorized into two class: one for 
 shared-memory system and the other for distributed-memory system. The 
-classification is due to the distinct ways these models deal with the 
-underlying memory system.
+classification is due to the distinct ways these models deal with the underlying 
+memory system.
 
 \subsection{Shared-Memory Programming Model}
 OpenMP~\cite{openmp, OpenMP4.0} is a standard programming model on a 
@@ -142,7 +141,7 @@ rendezvous-send~\cite{wiki_mpi}.
 Systems of equations are used to represent physical problems that involve the 
 interaction of various properties. The variables in the system represent the 
 properties being studied, and the equations describe the interaction between the 
-variables. The system is easiest to study when the equations are all linear. 
+variables. The system is easiest to study when the equations are all linear.  
 Often the number of equations is the same as the number of variables, for only 
 in this case is it likely that a unique solution will exist. Although not all 
 physical problems can be reasonably represented using a linear system with the 
@@ -159,13 +158,156 @@ A=
     a_{m1}&a_{m2}&...&a_{mn}\\
 \end{pmatrix}
 $$
-where $x \in \Re^n$, $b \in \Re^m$ and $A \in \Re^m x \Re^n$
+where $x \in \Re^n$, $b \in \Re^m$ and $A \in \Re^m x \Re^n$.
+
+Two classes of numerical methods are available for solving the system:
+\begin{itemize}
+    \item Direct Methods that provide the exact solution $x$ by a finite 
+        sequence of operations.
+    \item Iterative Methods that start with a first approximation $x^{(0)}$ and 
+        compute in an iterative manner a sequence of approximations $x^{(i)}$, 
+        in the hope to obtain increasingly better results, without ever reaching 
+        $x$.
+\end{itemize}
 
 \subsection{Direct Methods}
-\subsection{Iterative Methods}
+The prevalent way to solve large systems of linear equations is using matrix 
+factorization.
 
-\section{Deep Neural Networks and Their Parallelization}
+LU factorization of a matrix is the factorization of a given square matrix into 
+two triangular matrices, one upper triangular matrix and one lower triangular 
+matrix, such that the product of these two matrices gives the original matrix.  
+The LU factorization method comes handy whenever it is possible to model the 
+problem to be solved into matrix form. Conversion to the matrix form and solving 
+with triangular matrices makes it easy to do calculations in the process of 
+finding the solution~\cite{mc, nla}.
+
+For $$ A=
+\begin{pmatrix}
+    a_{11}&a_{12}&a_{13}\\
+    a_{21}&a_{22}&a_{23}\\
+    a_{31}&a_{32}&a_{33}\\
+\end{pmatrix} $$ we have
+$$ L=
+\begin{pmatrix}
+    1      &  0       &  0  \\
+    l_{21} &  1       &  0  \\
+    l_{31} &  l_{32}  &  1  \\
+\end{pmatrix} $$ and $$ U=
+\begin{pmatrix}
+    u_{11} &  u_{12}  &  u_{13}  \\
+    0 &  u_{22}  &  u_{23}  \\
+    0 &  0  &  u_{33}  \\
+\end{pmatrix} $$ such that $A = LU$. The system of equations $Ax = b$ can thus 
+be solved by the following steps:
+\begin{enumerate}
+    \item Factorize the matrix $A$ so that $LUx = b$
+    \item Solve the equation $Ly = b$ for $y$ by forward substitution
+    \item Solve the equation $Ux = y$ for $x$ by backward substitution
+\end{enumerate}
+
+Cholesky factorization is a faster method if the matrix $A$ is symmetric 
+positive-definite. In which case $A$ can be factorized into $A = LL^T$ where 
+where $L$ is a lower triangular matrix with real and positive diagonal entries, 
+and $L^T$ denotes the transpose of L~\cite{nla}.
+
+\subsection{Iterative Methods}
+In the absence of rounding errors, direct methods would yield an exact solution 
+yet iterative methods are indispensable when facing linear problems involving a 
+large number of variables (in the order of millions or more), where direct 
+methods would be prohibitively expensive even with the best available computing 
+power~\cite{nla}. 
+
+Krylov methods are among the most successful iterative methods and see a wide 
+application in numerical linear algebra. Krylov subspace methods solves a linear 
+system $Ax = b$ by forming a basis of the sequence of successive matrix powers 
+times the initial residual, \{$b, Ab, A^2b, \ldots, A^mb$\}. The approximations 
+to the solution are then formed by minimizing the residual over the subspace 
+formed. The prototypical method in this class is the conjugate gradient method 
+(CG)~\cite{cg} which assumes that the system matrix $A$ is symmetric 
+positive-definite. For symmetric (and possibly indefinite) $A$ one works with 
+the minimal residual method (MINRES)~\cite{minres}. In the case of not even 
+symmetric matrices methods, such as the generalized minimal residual method 
+(GMRES)~\cite{gmres} and the biconjugate gradient method (BiCG)~\cite{bicg}, 
+have been derived.
+
+\section{Deep Supervised Learning and Its Parallelization}
 \label{sec:dnn}
-\subsection{Supervised Deep Learning}
-\subsection{Data Parallelism}
-\subsection{Model Parallelism}
+Deep learning uses multi-layer neural networks to carry out wide range of tasks 
+such as image recognition~\cite{alexnet},  video 
+classification~\cite{video_class}, various NLP (natural language processing) 
+tasks~\cite{nlp0, nlp1, nlp2, nlp3} and art generation~\cite{gan, can} just to 
+name a few. A neural network consists of layers of neurons which are themselves 
+a mathematical model of a linear classifier. Figure~\ref{fig:perceptron} depicts 
+the inner workings of a neuron. The neuron takes a vector of inputs $x$, first 
+calculate its weighted sum $y = \sum_{i=1}^{n} x_i w_i$ and apply a non-linear 
+step function $o = \delta(y)$. An MLP (multi-layer perceptron) is thus comprised 
+of multiple layers each of which is constituted of multitudes of neurons with 
+their respective set of weights per input.
+\begin{figure}[H]
+    \centerline{\includegraphics[scale=0.25]{background/figs/perceptron.png}}
+    \caption{The workings of a neuron}
+    \label{fig:perceptron}
+\end{figure}
+
+This thesis has its focus on one particular branch of the deep learning, namely, 
+deep supervised learning. It utilizes a MLP (multi-layer perceptron) or CNN 
+(convolutional neural network) to learn a function that maps an input to an 
+output based on example input-output pairs. It infers a function from labeled 
+training data consisting of a set of training examples. The dataset in 
+supervised learning are a pair of input and a ground truth (the desired output).
+The neural network learns by adjusting all the weights from each neuron 
+according to its gradient $w' = w - \mu \Delta w$ to the lost yielded by a loss 
+function that measures the difference of the output of the neural network and 
+the ground truth. A typical loss function is MSE (mean square error), cross 
+entropy etc.
+
+\subsection{Parallelism in Deep Learning}
+Effectively training a neural network demands an immense amount of data. This 
+inevitably raise the need for parallelization. Currently, there are two 
+paradigms:
+\begin{itemize}
+    \item Data parallelism aims to run the training on data batches 
+        simultaneously.
+    \item Model parallelism aims to split the neural network itself to available 
+        computation units.
+\end{itemize}
+
+\subsubsection{Data Parallelism}
+The most common way in the data parallelism paradigm is the use of a parameter 
+server~\cite{pserver}. The dataset is split into data shards that are 
+consequently fed to each and every computation units respectively. The 
+parameters (weights $w$, biases $b$ etc.) are stored separately in dedicated units 
+called parameter servers. At the beginning of each batch of the training, all 
+the computation units involved in the training request a up-to-date copy of the 
+parameters from the servers. They carry on with the training and at the end of 
+the batch send their respective gradient $\Delta w$, $\Delta b$ back to the 
+servers. The servers then are responsible for updating the parameters with 
+regard to the gradients. Figure~\ref{fig:pserver} illustrates a schematic of two 
+parameter servers and three trainers.
+\begin{figure}[H]
+    \centerline{\includegraphics[scale=0.40]{background/figs/data_parallelism.png}}
+    \caption{Two parameter server and three trainers}
+    \label{fig:pserver}
+\end{figure}
+
+\subsubsection{Model Parallelism}
+Model parallelism is also called network parallelism. It can be seen as a 
+orthogonal to data parallelism. This strategy divides and distributes part of 
+the network to different machines. Figure~\ref{fig:model} shows the difference 
+between data and model parallelism. Model parallelism is suitable for models 
+that are too large to fit into one machine but this comes at a cost of incurring 
+additional communication during one batch of training~\cite{model0}.
+\begin{figure}[H]
+    \centerline{\includegraphics[scale=0.60]{background/figs/model_parallelism.png}}
+    \caption{The difference between data and model parallelism}
+    \label{fig:model}
+\end{figure}
+
+Nevertheless, the DNN architecture creates layer interdependencies, which, in 
+turn, generate communication that determines the overall performance. Fully
+connected layers, for instance, incur all-to-all communication (as opposed to 
+allreduce in data parallelism), as neurons connect to all the neurons of the 
+next layer~\cite{model1}.
+
+
