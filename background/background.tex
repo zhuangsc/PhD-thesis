@@ -1,10 +1,10 @@
 \chapter{Background}
 \label{chap:background}
-The readers benefit from an understanding regarding the state-of-the-art and the 
-current challenges presented in the field of parallel computing and deep 
-learning in order to grasp the works carried out from this thesis.
+This section provides a description on the state-of-the-art and the current 
+challenges presented in the field of parallel computing and deep learning in 
+order to grasp the works carried out from this thesis.
 Section~\ref{sec:mps} prepares the reader with the acquaintances of the various 
-forms of modern parallel systems. Section~\ref{sec:ppm} provides backgrounds on 
+forms of modern parallel systems. Section~\ref{sec:ppm} provides background on 
 the parallel programming models on modern parallel systems. Subsequently, 
 section~\ref{sec:solvers} and~\ref{sec:dnn} present an introduction to the two 
 application domains this work deals with, namely, parallel numerical algorithms 
@@ -12,13 +12,12 @@ and DNNs.
 
 \section{Modern Parallel Systems}
 \label{sec:mps}
-The Exascale supercomputers are expected to come into operation near 2020. In 
-order to reach that, major improvements need to be achieved including the energy 
-and power, memory and storage, concurrency and locality and 
-resiliency~\cite{doe}. Nevertheless, the mainstream trend stays with the massive 
-parallelism with accelerators approach. This section provides a background on 
-both types of systems and an introduction to some major parallel programming 
-models.
+Exascale supercomputers are expected to come into operation near 2020. In order 
+to reach that, major improvements need to be achieved including the energy and 
+power, memory and storage, concurrency and locality and resiliency~\cite{doe}.  
+Nevertheless, the mainstream trend stays with the massive parallelism with 
+accelerators approach. This section provides a background on both types of 
+systems and an introduction to some major parallel programming models.
 
 With the roll-out of 7 and 5 nm node, the VLSI (very large scale integration) 
 manufacturing technology is rapidly approaching its end due to its physical 
@@ -28,8 +27,8 @@ processor design. All the above impede the efforts to push a single-core
 processor to go faster. In response, industry turns its attention into designing 
 multi-core multiprocessor systems which exploit parallelism at the application 
 level. Figure~\ref{fig:multicore} illustrates a typical multi-core 
-multiprocessor system~\cite{ibm_multicore}. Each of the processor (processor 0 
-and 1) packs two separate cores with their own L1 and L2 cache. The two 
+multiprocessor system~\cite{ibm_multicore}. Each of the processors (processor 0 
+and 1) packs two separate cores with their own L1 and L2 caches. The two 
 processors are connected via a system bus which also connects to the RAM. All 
 the cores thus are able to access to the entire memory region. Nonetheless, 
 since all the access to the memory and communication among processors are 
@@ -48,8 +47,9 @@ interconnection system to further scale the system. All the cores belonging to
 the same node in the cluster shares the resources (memory system, last-level 
 cache etc.) whereas cross-node resources are private to their respective nodes.  
 This essentially segregates the memory system into various regions not directly 
-accessible to all the cores. Accessing remote contents is possible by sending 
-them as message to the requesting node which implies that accessing to different 
+accessible to all the cores. This type of memory system is known as 
+distributed-memory system. Accessing remote contents is possible by sending them 
+as message to the requesting node which implies that accessing to different 
 memory regions incurs distinct latency.  This offloads the task of ensuring the 
 performance of the program to the programmer because careless handling of the 
 physical location and topology of the nodes can easily saturate the 
@@ -57,8 +57,8 @@ interconnection system and cause different processors to have imbalanced
 accessing time to the same data.
 
 Since the dawn of the artificial intelligence, GPU, due to its immense data 
-parallelism capability, has seen a transformation from a peripheral device used 
-in niche domains to a general-purpose mass adoption. Along with the 
+parallelism capability, has accelerated its transformation from a peripheral 
+device used in niche domains to a general-purpose mass adoption. Along with the 
 re-configurability of FPGAs and domain-specific ASICs, heterogeneous systems 
 contribute to a significant portion of computation power on some modern parallel 
 systems. As external devices, to be able to exploit their parallelism, data has 
@@ -68,7 +68,7 @@ synchronization or communication.
 \section{Parallel Programming Models}
 \label{sec:ppm}
 Parallel programming models can roughly be categorized into two class: one for 
-shared-memory system and the other for distributed-memory system. The 
+shared-memory systems and the other for distributed-memory systems. The 
 classification is due to the distinct ways these models deal with the underlying 
 memory system.
 
@@ -77,8 +77,8 @@ OpenMP~\cite{openmp, OpenMP4.0} is a standard programming model on a
 shared-memory system. It is an application programming interface (API) that 
 supports shared memory multiprocessing programming in C, C++, and FORTRAN.
 
-OpenMP uses a fork-join model for its parallel executions as seen in 
-Figure~\ref{fig:fork-join}.
+OpenMP (prior to version 3.0) uses a fork-join model for its parallel executions 
+as seen in Figure~\ref{fig:fork-join}.
 All OpenMP programs begin as a single process: the master thread. The master 
 thread executes sequentially until the first parallel region construct is 
 encountered. The master thread then creates a team of parallel threads.
@@ -106,16 +106,27 @@ which data dependencies can be derived unambiguously. Therefore, tasks can be
 launched and executed in parallel as long as they don't have data dependencies 
 among each other and hardware resources are available. A dedicated runtime 
 system is in charge of building the dependency graph and orchestrating the task 
-scheduling. There are many task-based parallel programming models, the most 
-prominent of which includes the OpenMP 4.0~\cite{OpenMP4.0}, Clik++~\cite{clik},
-TBB~\cite{tbb} and OmpSs~\cite{ompss}.
+scheduling. Figure~\ref{fig:task-dependency} illustrates a typical task 
+dependency graph which is a DAG (directed acyclic graph) that the runtime system 
+uses to check the pending dependencies. There are many task-based parallel 
+programming models, the most prominent of which includes the OpenMP (version 3.0 
+onwards)~\cite{OpenMP4.0}, Clik++~\cite{clik}, TBB~\cite{tbb} and 
+OmpSs~\cite{ompss}.
+
+\begin{figure}[H]
+    \centerline{\includegraphics[scale=0.50]{background/figs/starss.png}}
+    \caption{A typical task dependency graph}
+    \label{fig:task-dependency}
+\end{figure}
 
 \subsection{Distributed-Memory Programming Model}
-MPI (Message Passing Interface) is a library specification for message-passing, 
-proposed as a standard by a broadly based committee of vendors, implementors, 
-and users. It primarily addresses the message-passing parallel programming 
-model: data is moved from the address space of one process to that of another 
-process through cooperative operations on each process~\cite{llnl_mpi}.
+MPI (Message Passing Interface) is the main parallel programming paradigm for 
+distributed memory environments. It is a library specification for 
+message-passing, proposed as a standard by a broadly based committee of vendors, 
+implementors, and users. It primarily addresses the message-passing parallel 
+programming model: data is moved from the address space of one process to that 
+of another process through cooperative operations on each 
+process~\cite{llnl_mpi}.
 
 The MPI interface is meant to provide essential virtual topology, 
 synchronization, and communication functionality between a set of processes 
@@ -277,11 +288,11 @@ paradigms:
 The most common way in the data parallelism paradigm is the use of a parameter 
 server~\cite{pserver}. The dataset is split into data shards that are 
 consequently fed to each and every computation units respectively. The 
-parameters (weights $w$, biases $b$ etc.) are stored separately in dedicated units 
-called parameter servers. At the beginning of each batch of the training, all 
-the computation units involved in the training request a up-to-date copy of the 
-parameters from the servers. They carry on with the training and at the end of 
-the batch send their respective gradient $\Delta w$, $\Delta b$ back to the 
+parameters (weights $w$, biases $b$ etc.) are stored separately in dedicated 
+units called parameter servers. At the beginning of each batch of the training, 
+all the computation units involved in the training request a up-to-date copy of 
+the parameters from the servers. They carry on with the training and at the end 
+of the batch send their respective gradient $\Delta w$, $\Delta b$ back to the 
 servers. The servers then are responsible for updating the parameters with 
 regard to the gradients. Figure~\ref{fig:pserver} illustrates a schematic of two 
 parameter servers and three trainers.
@@ -309,5 +320,3 @@ turn, generate communication that determines the overall performance. Fully
 connected layers, for instance, incur all-to-all communication (as opposed to 
 allreduce in data parallelism), as neurons connect to all the neurons of the 
 next layer~\cite{model1}.
-
-

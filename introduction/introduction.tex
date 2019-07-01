@@ -3,12 +3,13 @@
 Modern HPC systems make extensive use of their massive amount of CPU core count 
 and their peripheral accelerators (GPU, FPGA, ASIC etc.) to achieve a high 
 performance~\cite{gropp10, sierra, titan, mn4}.  In order to effectively utilize 
-such systems, algorithm designers have to parallelize the problems at hand. The 
-problems need to be meticulously split into smaller chunks that can be executed 
-on the individual computational units simultaneously. 
+such systems, algorithm designers need to parallelize their problems either by 
+hand or relying on compiler or runtime system support. The problems need to be 
+meticulously split into smaller chunks that can be executed on the individual 
+computational units simultaneously. 
 
 Not all parallelization problems are created equal. For some, denoted as 
-\textit{embarrassingly parallel problem}, the task is relatively simple because 
+\textit{embarrassingly parallel problems}, the task is relatively simple because 
 they can be easily solved in a divide and conquer fashion. Each component is 
 inherently independent in that it does not require the computational results 
 from its counterparts.  
@@ -26,16 +27,16 @@ As peripherals, the various types of accelerators are connected through external
 buses like PCIe, NVlink~\cite{nvlink} etc. Necessary data has to be transferred 
 from the host CPUs to the accelerators before carrying out any meaningful 
 computation. It is prominent among iterative-based numerical methods and with 
-the rise of deep neural networks.
+the rise of deep neural networks~\cite{ca0, ca1, ca2, ca3}.
 
-Imbalanced synchronization and communication put the involved computational 
-units on hold thus impede the execution progress. The scale of the parallel 
+Imbalanced synchronization and communication may force the involved computational 
+units to waste its computing resources. The scale of the parallel 
 system is the primary impact factor of the efficiency of the communication for 
 the following reasons.
 \begin{itemize}
     \item The physical proximity of the communicating nodes determines the 
         quality of the communication. In a distributed system with nodes 
-        scattered at different physical locations, the communication inbalance 
+        scattered at different physical locations, the communication imbalance 
         could create serious bottlenecks.
     \item The need to send data back and forth is alleviated on a shared-memory 
         system where all the computational units have access to entire memory 
