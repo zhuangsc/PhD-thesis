@@ -1,0 +1,21 @@
+\subsection{Hardware Platforms}
+\label{sec:platform}
+We conduct our experiments on two clusters featuring the x86 and POWER 
+architectures.
+The x86 machine is composed of two 8-core Intel Xeon
+\textregistered E5-2630 v3 (Haswell) at 2.4 GHz and a 20 MB L3 shared cache 
+memory each.  It is also equipped with two Nvidia Tesla K80 accelerators, each 
+of which hosts two Tesla GK210 GPUs.
+It has 128 GB of main memory, distributed in 8 DIMMs of 16 GB DDR4 @ 2133 MHz.
+The 16-core CPU and the four GPUs are connected via a PCIe 3.0 x8 8GT/s.
+The operating system is RedHat Linux 6.7.
+Overall, the peak performance of the two 8-core sockets plus the four Tesla 
+GK210 GPUs is 6.44 TFlop/s.
+
+The POWER machine is composed of two 20-core IBM POWER9 8335-GTG at 3.00 GHz.  
+It contains four NVIDIA Volta V100 GPUs.  
+Each node has 512 GB of main memory, distributed in 16 DIMMS of 32 GB @ 2666 
+MHz.  The GPUs are connected to the CPU devices via a NVIDIA NVLink 2.0 
+interconnection~\cite{nvlink}.  The operating system is RedHat Linux 7.4.  The 
+peak performance of the two 20-core sockets plus the four V100 GPUs is 28.85 
+TFlop/s.
