@@ -1,11 +1,47 @@
+\subsection{Parallelism Scalability}
 \begin{figure}[H]
-    \centerline{\includegraphics[scale=0.30]{altsplit/figs/mn4/16000_avgs_80.pdf}}
-    \centerline{\includegraphics[scale=0.30]{altsplit/figs/mn4/16000_avgs_160.pdf}}
-    \centerline{\includegraphics[scale=0.30]{altsplit/figs/mn4/16000_avgs_320.pdf}}
-    \centerline{\includegraphics[scale=0.30]{altsplit/figs/mn4/16000_avgs_640.pdf}}
-    \caption{Traces on 80 MPI processes 9 batches. Top: \emph{na\"{i}ve} approach Bottom: \emph{altsplit} approach}
-    \label{fig:altsplit_traces}
+    \centerline{
+        \includegraphics[scale=0.55]{altsplit/figs/mn4/16000_avgs_80.pdf}
+        \includegraphics[scale=0.55]{altsplit/figs/mn4/16000_avgs_160.pdf}
+    }
+    \centerline{
+        \includegraphics[scale=0.55]{altsplit/figs/mn4/16000_avgs_320.pdf}
+        \includegraphics[scale=0.55]{altsplit/figs/mn4/16000_avgs_640.pdf}
+    }
+    \caption{Performance improvements of 16k neurons on x86. Top left: 80 MPI 
+    processes, Top right: 160 MPI processes, Bottom left: 320 MPI processes, 
+    Bottom right: 640 MPI processes}
+    \label{fig:altsplit_16k_mn4}
 \end{figure}
+
+\subsection{Network Scalability}
+\begin{table}[]
+\caption{Performance improvements over the baseline} 
+    \centering
+    \begin{tabular}{|P{2.5cm}|P{2.5cm}|P{2.5cm}|P{2.5cm}|P{2.5cm}|}
+    \hline
+    \multicolumn{3}{|c}{Parameters} & \multicolumn{2}{|c|}{Machine} \\ \hline
+    Neurons & Layers & BS & \textbf{x86}  & \textbf{POWER9}  \\ \hline
+    \multirow{4}{*}{16k} & \multirow{2}{*}{3} & 512 & & 
+        \\ \cline{3-5}
+     & & 1024 & & 
+        \\ \cline{2-5}
+     & \multirow{2}{*}{5} & 512 & & 
+        \\ \cline{3-5}
+     & & 1024 & & 
+        \\ \hline 
+     \multirow{4}{*}{32k} & \multirow{2}{*}{3} & 512 & & 
+        \\ \cline{3-5}
+     & & 1024 & & 
+        \\ \cline{2-5}
+     & \multirow{2}{*}{5} & 512 & & 
+        \\ \cline{3-5}
+     & & 1024 & & 
+        \\ \hline 
+\end{tabular}
+\label{table:altsplit_network}
+\end{table}
+
 
 \subsection{Traces}
 \begin{figure}[H]
