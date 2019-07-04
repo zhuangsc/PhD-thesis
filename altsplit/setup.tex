@@ -1,7 +1,23 @@
-\subsection{Software Stack}
+\subsection{Implementation}
 \label{sec:altsplit_software}
-We use KANN~\cite{kann} 
-We use OpenMPI~\cite{openmpi, openmpi1}
+We build the baseline and our approach on top of KANN~\cite{kann} which is a 
+deep learning framework written in C/C++. Section~\ref{sec:kann} provides its 
+information in detail. 
+
+It builds a computational graph prior to carrying out the actual computations 
+and the operation and the computation of its derivative are performed in the same 
+node in the graph. Furthermore, we observe that all the MPI calls in both 
+approaches are performed either right before or after a matrix-matrix 
+multiplication. We thus insert appropriate MPI calls inside the computational 
+nodes that are responsible for carrying out the multiplication and its 
+derivative computation according to their relative order to the multiplications.
+
+Due to the fact that MPI all-to-all communication possess non-deterministic 
+behavior since the order the messages arriving to each MPI process may vary, the 
+two approaches may show minor differences in the accuracy. Apart from that we 
+make sure that the initial values of each layer are identical. 
+
+We use OpenMPI~\cite{openmpi, openmpi1} as our MPI implementation.
 
 \subsection{Hardware Platforms}
 \label{sec:altsplit_platform}
@@ -15,7 +31,8 @@ It has 128 GB of main memory, distributed in 8 DIMMs of 16 GB DDR4 @ 2133 MHz.
 The 16-core CPU and the four GPUs are connected via a PCIe 3.0 x8 8GT/s.
 The operating system is RedHat Linux 6.7.
 Overall, the peak performance of the two 8-core sockets plus the four Tesla 
-GK210 GPUs is 6.44 TFlop/s.
+GK210 GPUs is 6.44 TFlop/s. The version of OpenMPI available on the machine is 
+1.10.0.
 
 The POWER machine is composed of two 20-core IBM POWER9 8335-GTG at 3.00 GHz.  
 It contains four NVIDIA Volta V100 GPUs.  
@@ -23,4 +40,4 @@ Each node has 512 GB of main memory, distributed in 16 DIMMS of 32 GB @ 2666
 MHz.  The GPUs are connected to the CPU devices via a NVIDIA NVLink 2.0 
 interconnection~\cite{nvlink}.  The operating system is RedHat Linux 7.4.  The 
 peak performance of the two 20-core sockets plus the four V100 GPUs is 28.85 
-TFlop/s.
+TFlop/s. The version of OpenMPI available on the machine is 3.0.0.
