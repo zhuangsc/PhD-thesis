@@ -1,3 +1,25 @@
+\subsection{Hardware Platforms}
+\label{sec:altsplit_platform}
+We conduct our experiments on two clusters featuring the x86 and POWER 
+architectures.
+The x86 machine is composed of two 8-core Intel Xeon
+\textregistered E5-2630 v3 (Haswell) at 2.4 GHz and a 20 MB L3 shared cache 
+memory each.  It is also equipped with two Nvidia Tesla K80 accelerators, each 
+of which hosts two Tesla GK210 GPUs.
+It has 128 GB of main memory, distributed in 8 DIMMs of 16 GB DDR4 @ 2133 MHz.
+The 16-core CPU and the four GPUs are connected via a PCIe 3.0 x8 8GT/s.
+The operating system is RedHat Linux 6.7.
+Overall, the peak performance of the two 8-core sockets plus the four Tesla 
+GK210 GPUs is 6.44 TFlop/s. 
+
+The POWER machine is composed of two 20-core IBM POWER9 8335-GTG at 3.00 GHz.  
+It contains four NVIDIA Volta V100 GPUs.  
+Each node has 512 GB of main memory, distributed in 16 DIMMS of 32 GB @ 2666 
+MHz.  The GPUs are connected to the CPU devices via a NVIDIA NVLink 2.0 
+interconnection~\cite{nvlink}.  The operating system is RedHat Linux 7.4.  The 
+peak performance of the two 20-core sockets plus the four V100 GPUs is 28.85 
+TFlop/s. 
+
 \subsection{Implementation}
 \label{sec:altsplit_software}
 We build the baseline and our approach on top of KANN~\cite{kann} which is a 
@@ -17,27 +39,5 @@ behavior since the order the messages arriving to each MPI process may vary, the
 two approaches may show minor differences in the accuracy. Apart from that we 
 make sure that the initial values of each layer are identical. 
 
-We use OpenMPI~\cite{openmpi, openmpi1} as our MPI implementation.
-
-\subsection{Hardware Platforms}
-\label{sec:altsplit_platform}
-We conduct our experiments on two clusters featuring the x86 and POWER 
-architectures.
-The x86 machine is composed of two 8-core Intel Xeon
-\textregistered E5-2630 v3 (Haswell) at 2.4 GHz and a 20 MB L3 shared cache 
-memory each.  It is also equipped with two Nvidia Tesla K80 accelerators, each 
-of which hosts two Tesla GK210 GPUs.
-It has 128 GB of main memory, distributed in 8 DIMMs of 16 GB DDR4 @ 2133 MHz.
-The 16-core CPU and the four GPUs are connected via a PCIe 3.0 x8 8GT/s.
-The operating system is RedHat Linux 6.7.
-Overall, the peak performance of the two 8-core sockets plus the four Tesla 
-GK210 GPUs is 6.44 TFlop/s. The version of OpenMPI available on the machine is 
-1.10.0.
-
-The POWER machine is composed of two 20-core IBM POWER9 8335-GTG at 3.00 GHz.  
-It contains four NVIDIA Volta V100 GPUs.  
-Each node has 512 GB of main memory, distributed in 16 DIMMS of 32 GB @ 2666 
-MHz.  The GPUs are connected to the CPU devices via a NVIDIA NVLink 2.0 
-interconnection~\cite{nvlink}.  The operating system is RedHat Linux 7.4.  The 
-peak performance of the two 20-core sockets plus the four V100 GPUs is 28.85 
-TFlop/s. The version of OpenMPI available on the machine is 3.0.0.
+We use OpenMPI~\cite{openmpi, openmpi1} as our MPI implementation. The version we use 
+on the x86 machine is 1.10.0 and the version on the POWER machine is 3.0.0.

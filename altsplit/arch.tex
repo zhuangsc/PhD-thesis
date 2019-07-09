@@ -1,22 +1,23 @@
 \subsection{Na\"{i}ve Approach}
-We consider model parallelizing the training of a DNN on a distributed-memory 
-system using MPI. Figure~\ref{fig:altsplit_baseline} illustrates a na\"{i}ve 
-approach to it which also serves as the baseline of this chapter. It depicts a 
-5-hidden-layer all-connected DNN split on two MPI processes and the 4 neurons 
-per layer are evenly assigned to each MPI process. The input and output layer 
-are omitted and we assume they are replicated in every MPI process. The black 
-arrows in the figure indicate all-to-all communications between the two MPI 
-processes. During both the forward- and backward-propagation, each neuron from 
-the current layer needs the outputs of the entire neurons from the preceding 
-layer. All-to-all communication must be performed across all the MPI 
-processes. In the figure, prior to the computation of each layer 4 all-to-all 
-communication need to occur so that the output information from the preceding 
-layer can get to be fully propagated to the respective portions of the current 
-layer to all the MPI processes.  Albeit some numerical rounding errors 
-introduced due to the non-deterministic nature of the all-to-all communication, 
-this approach guarantees that the output information from the preceding layer is 
-consistent and identical to all the MPI processes prior to the computation of 
-their respective portions of the current layer.
+We consider model parallelism to accelerate the training of DNN on a
+distributed-memory system using MPI. Figure~\ref{fig:altsplit_baseline}
+illustrates a na\"{i}ve approach to it which also serves as the baseline of
+this chapter. It depicts a 5-hidden-layer all-connected DNN split on two MPI
+processes and the 4 neurons per layer are evenly assigned to each MPI
+process. The input and output layer are omitted and we assume they are
+replicated in every MPI process. The black arrows in the figure indicate
+all-to-all communications between the two MPI processes. During both the
+forward- and backward-propagation, each neuron from the current layer needs
+the outputs of the entire neurons from the preceding layer. All-to-all
+communication must be performed across all the MPI processes. In the figure,
+prior to the computation of each layer 4 all-to-all communication need to
+occur so that the output information from the preceding layer can get to be
+fully propagated to the respective portions of the current layer to all the
+MPI processes. Albeit some numerical rounding errors introduced due to the
+non-deterministic nature of the all-to-all communication, this approach
+guarantees that the output information from the preceding layer is consistent
+and identical to all the MPI processes prior to the computation of their
+respective portions of the current layer.
 \begin{figure}[H]
     \centerline{\includegraphics[scale=0.60]{altsplit/figs/baseline.png}}
     \caption{Na\"{i}ve model parallelism scheme}
@@ -113,7 +114,8 @@ on the MPI processes with the same initialization values. Subsequent layers are
 constructed with alternating splits and replications. Therefore, we cut the 
 amount of communication by half during the entire training compared to the 
 \emph{na\"{i}ve} approach by triggering communication every other layer while at 
-the cost of replicating layers on each MPI process.
+the cost of replicating layers on each MPI process. As a consequence, the floating
+point computation is increased by 25\% (twice every other layer).
 \begin{figure}[H]
     \centerline{\includegraphics[scale=0.60]{altsplit/figs/altsplit.png}}
     \caption{The \emph{Altsplit} scheme}
