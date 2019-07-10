@@ -1,4 +1,4 @@
-Deep Neural Networks (MLPs, CNNs etc.) have seen a mass adoption into the
+Deep Neural Networks (MLPs, CNNs, RNNs etc.) have seen a mass adoption into the
 industry in recent years~\cite{Acoustic, Language, Ciregan2012}. DNNs provide
 very competitive pattern detection capabilities and, more specifically,
 Convolutional Neural Networks~(CNNs) classify very large image sets with
@@ -8,21 +8,38 @@ As DNNs are gaining traction in more and more fields, the needs to accelerate
 the otherwise notoriously slow training has become a prominent topic in the
 HPC (high performance computing) community. (\textcolor{red}{references})
 Furthermore, with the ever-increasing size of the datasets and the
-ever-growing complexity of the DNN architecture, nowadays it takes HPC
-clusters to train DNNs to reach a competitive accuracy. A simple yet
-prevalent method to accelerate the training is to use \emph{data parallelism}
-~\cite{model1, pserver} in which the input data are distributed onto various
-available computational units (CPUs, GPUs, FPGAs etc.) and the training on
-different portion of the data are being carried out simultaneously.
-Nevertheless, it does not tackle the problem of the architectural complexity
-of the DNNs where the memory capacity of a computational unit is not
-sufficient to hold the parameters of the entire network. It is then natural
-to develop ways to distribute the network onto multiple computational units.
-\emph{Model parallelism} is thus the parallelism paradigm to this
-end~\cite{model0,model1}.
+ever-growing complexity of the DNN architecture~\cite{resnet, Inception,
+transformersXL}, nowadays it takes HPC clusters to train DNNs to reach a
+competitive accuracy~\cite{model0}. A simple yet prevalent method to
+accelerate the training is to use \emph{data parallelism} ~\cite{model1,
+pserver} in which the input data are distributed onto various available
+computational units (CPUs, GPUs, FPGAs etc.)~\cite{You17, fpga_dnn, tpu} and
+the training on different portion of the data are being carried out
+simultaneously. Nevertheless, it does not tackle the problem of the
+architectural complexity of the DNNs where the memory capacity of a
+computational unit is not sufficient to hold the parameters of the entire
+network. It is then natural to develop ways to distribute the network onto
+multiple computational units. \emph{Model parallelism} is thus the
+parallelism paradigm to this end~\cite{model0,model1}.
 
 Unlike \emph{data parallelism} where the trainings on portions of data have
 no inter-dependencies, \emph{model parallelism} inevitably introduces
 dependencies among the computational units. As a consequence, communication
-will have to occur so that each computational unit is updated with the contribution
-from the rest of the units. 
+will have to occur so that each computational unit is updated with the
+contribution from the rest of the units. This impedes the network to scale on
+the current massively parallel systems with the message passing paradigm.
+
+This chapter describes a novel approach \emph{Altsplit} to accelerate the
+training of DNNs by reducing the communication occurrences during both the
+forward- and backward- propagation phases. It achieves so by alternating the
+splitting and the replication of the neurons in successive layers in a
+distributed-memory system. We compare this approach with a \emph{baseline}
+approach, where the neurons of all the layers are split, on two HPC clusters
+with high-end CPUs (x86 Xeon and POWER9). Our experiments see an average
+performance benefits of 66.12\% and 57.16\% respectively on both clusters.
+
+This chapter is structured as follows: Section~\ref{sec:altsplit_arch} describes 
+our \emph{baseline} and \emph{Altsplit} approaches. Section~\ref{sec:altsplit_setup} 
+provides information on the HPC clusters we run experiments on as well as the 
+implementation details. We evaluate our approach in Section~\ref{sec:altsplit_evaluation}.
+Section~\ref{sec:altsplit_conclusion} offers the conclusion to this chapter.
