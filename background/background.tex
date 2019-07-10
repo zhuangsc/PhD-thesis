@@ -78,14 +78,14 @@ shared-memory system. It is an application programming interface (API) that
 supports shared memory multiprocessing programming in C, C++, and FORTRAN.
 
 OpenMP (prior to version 3.0) uses a fork-join model for its parallel executions 
-as seen in Figure~\ref{fig:fork-join}.
+as seen in Figure~\ref{fig:fork-join}~\cite{llnl_openmp}.
 All OpenMP programs begin as a single process: the master thread. The master 
 thread executes sequentially until the first parallel region construct is 
 encountered. The master thread then creates a team of parallel threads.
 The statements in the program that are enclosed by the parallel region construct 
 are then executed in parallel among the various team threads. When the team 
 threads complete the statements in the parallel region construct, they 
-synchronize and terminate, leaving only the master thread~\cite{llnl_openmp}.
+synchronize and terminate, leaving only the master thread.
 \begin{figure}[H]
     \centerline{\includegraphics[scale=0.50]{background/figs/fork_join.png}}
     \caption{OpenMP uses a fork-join model}
@@ -121,12 +121,12 @@ OmpSs~\cite{ompss}.
 
 \subsection{Distributed-Memory Programming Model}
 MPI (Message Passing Interface) is the main parallel programming paradigm for 
-distributed memory environments. It is a library specification for 
+distributed memory environments~\cite{llnl_mpi}. It is a library specification for 
 message-passing, proposed as a standard by a broadly based committee of vendors, 
 implementors, and users. It primarily addresses the message-passing parallel 
 programming model: data is moved from the address space of one process to that 
 of another process through cooperative operations on each 
-process~\cite{llnl_mpi}.
+process.
 
 The MPI interface is meant to provide essential virtual topology, 
 synchronization, and communication functionality between a set of processes 
@@ -142,10 +142,10 @@ graph-like logical process topology, exchanging data between process pairs
 reduce operations), synchronizing nodes (barrier operation) as well as obtaining 
 network-related information such as the number of processes in the computing 
 session, current processor identity that a process is mapped to, neighboring 
-processes accessible in a logical topology, and so on. Point-to-point operations 
+processes accessible in a logical topology, and so on~\cite{wiki_mpi}. Point-to-point operations 
 come in synchronous, asynchronous, buffered, and ready forms, to allow both 
 relatively stronger and weaker semantics for the synchronization aspects of a 
-rendezvous-send~\cite{wiki_mpi}.
+rendezvous-send.
 
 \section{Numerical Methods For Systems of Linear Equations}
 \label{sec:solvers}
@@ -241,6 +241,27 @@ the minimal residual method (MINRES)~\cite{minres}. In the case of not even
 symmetric matrices methods, such as the generalized minimal residual method 
 (GMRES)~\cite{gmres} and the biconjugate gradient method (BiCG)~\cite{bicg}, 
 have been derived.
+
+\subsubsection{Parallel CG}
+Driven by the ongoing transition of hardware towards the exascale regime,
+research on the scalability of Krylov subspace methods on massively parallel
+architectures has recently garnered attention in the scientific computing
+community~\cite{plcg2}. The system operator $A$ is oftentimes sparse for many
+applications and in turn rather inexpensive to apply in terms of
+computational and communication cost, the main bottleneck for efficient
+parallel execution is typically not the sparse matrix-vector product
+($spmv$), but rather the communication overhead due to global reductions in
+dot product computations and the related global synchronization
+bottleneck~\cite{plcg}.
+
+Much effort has been put on an efficient parallel version of the CG
+algorithm. One of the most prominent is the introduction of pipelined
+CG~\cite{ghysels14}. It aims at hiding global synchronization latency by
+overlapping the communication phase in the Krylov subspace algorithm by the
+application of the \textit{spmv}. Hence, idle core time is reduced by
+simultaneous execution of the time-consuming synchronization phase and
+independent compute-bound calculations. Other efforts includes the 
+enlarged CG~\cite{enlarged} and \cite{cg1, cg2}.
 
 \section{Deep Supervised Learning and Its Parallelization}
 \label{sec:dnn}

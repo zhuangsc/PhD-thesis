@@ -30,7 +30,8 @@ contribution from the rest of the units. This impedes the network to scale on
 the current massively parallel systems with the message passing paradigm.
 
 This chapter describes a novel approach \emph{Altsplit} to accelerate the
-training of DNNs by reducing the communication occurrences during both the
+training of DNNs and improving the scalability of the current \emph{model 
+parallelism} approach by reducing the communication occurrences during both the
 forward- and backward- propagation phases. It achieves so by alternating the
 splitting and the replication of the neurons in successive layers in a
 distributed-memory system. We compare this approach with a \emph{baseline}
@@ -39,7 +40,8 @@ with high-end CPUs (x86 Xeon and POWER9). Our experiments see an average
 performance benefits of 66.12\% and 57.16\% respectively on both clusters.
 
 This chapter is structured as follows: Section~\ref{sec:altsplit_arch} describes 
-our \emph{baseline} and \emph{Altsplit} approaches. Section~\ref{sec:altsplit_setup} 
-provides information on the HPC clusters we run experiments on as well as the 
-implementation details. We evaluate our approach in Section~\ref{sec:altsplit_evaluation}.
+our \emph{baseline} and \emph{Altsplit} approaches. 
+Section~\ref{sec:altsplit_setup} provides information on the HPC clusters we run 
+experiments on as well as the implementation details. We evaluate our approach 
+in Section~\ref{sec:altsplit_evaluation}.
 Section~\ref{sec:altsplit_conclusion} offers the conclusion to this chapter.
