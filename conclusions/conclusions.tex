@@ -1,5 +1,43 @@
 \chapter{Conclusions}
 \label{chap:conclusions}
+This thesis intends to alleviate the bottlenecks brought about by all-to-all 
+communication in the modern HPC systems due to the constant scaling-up of the 
+system size, problem size and the appearances of emerging fields.
+This proves to be a daunting task because there is not an one-size-fits-all 
+approach to it. Each field possesses its own requirements and patterns on 
+communication. Furthermore, the trade-offs applicable differ from field to 
+field.
 
+This thesis in concrete utilizes three trade-off techniques for the communication 
+reduction purpose.
+\begin{itemize}
+    \item Exploiting the resilience towards accumulation of rounding errors and 
+        loss of precision of the problem at hand to reduce communication.
+    \item Trading with a decreased computational precision with a marginal 
+        deterioration of the accuracy of the problem for reduced amount of 
+        communication. 
+    \item Trading at the cost of additional computation with reduce amount of 
+        communication.
+\end{itemize}
 
+The thesis first takes on reducing communication in one of the Krylov iterative 
+methods, CG. Compare to the various available direct methods the CG method 
+displays greater tolerance towards the accumulation of rounding errors. We thus 
+fuse a certain amount of iterations together which means some efforts to bring 
+down the accumulated error such as the residual replacement strategy has to be 
+deferred to the end of the fused phase. Nevertheless, we show that further 
+incorporating a task-based parallelism approach, significant speedup can be 
+achieved without much hampering to the convergence of the algorithm.
+
+On tackling the problem of accelerating the DNN training with multiple GPUs, we 
+exploited the fact that DNNs are intrinsically tolerant to a lowered precision 
+of both its parameters. Guided by the L2-norm of the weights of each layer, we 
+start by transferring compressed weights with low precision and dynamically 
+increment the precision in a per-layer granularity if needed.
+Our experiments confirms that this approach greatly reduces the amount of data
+needed to be transferred from the CPU host to GPUs prior to the beginning of 
+each batch and consequently outperforms the training with full 32-bit floating 
+point weights in terms of the training time.
+
+In order to 
 \input{conclusions/appendix}
