@@ -14,24 +14,26 @@
     synchronization at the end of the fuse phase. This approach also impedes the 
     application of some error correction routines. This thesis explores the 
     possibility to fuse iterations and its implication on the convergence of the 
-    entire algorithm. Empirical evidences indicate that it achieves speedups 
-    without hampering the convergence of the algorithm. 
+    entire algorithm. Empirical evidences from the experiments indicate that it 
+    achieves speedups without hampering the convergence of the algorithm. 
 
     We then move on to DNN training with multiple GPUs in which the up-to-date 
-    parameters stored and updated on the hosting CPU have to constantly 
+    parameters stored and updated on the hosting CPU has to be constantly 
     transferred to each GPU at the beginning of each batch. We propose to use a 
-    dynamic scheme that compress the parameters to a lower precision on the CPU 
-    side before the transfer takes place. The compress rate is guided by a 
-    heuristics metric and the approach proceeds to increment the precision of 
-    the parameters accordingly. It provides competitive accuracy while 
-    outperforms our baseline in terms of training time.
+    dynamic scheme that compresses the parameters to a lower precision on the CPU 
+    side before the transfer takes place. This way it cuts the amount of data 
+    transfer while the training on the GPU sides uses lower precision 
+    parameters. The compress rate is guided by a heuristics metric and the 
+    approach proceeds to increment the precision of the parameters accordingly. 
+    It provides competitive accuracy while outperforms our baseline in terms of 
+    training time.
 
     We eventually strive to improve the training of DNNs in a distributed-memory 
-    system with model parallelism using message passing. By replicating the 
-    neurons on each process once every two layers, we essentially cut the 
-    communication in half during both the forward- and backward-propagation at 
-    the cost of a 25\% increase in floating point computation. The trade-off 
-    turns out to pay off according to our experiments and this approach 
-    is able to offer significant speedups over the baseline approach where we 
-    na\"{i}vely split the neurons at each layer.
+    system with model parallelism using the message passing paradigm. By 
+    replicating the neurons on each process once every two layers, we 
+    essentially cut the communication in half during both the forward- and 
+    backward-propagation at the cost of a 25\% increase in floating point 
+    computation. The trade-off turns out to pay off according to our experiments 
+    and this approach is able to offer significant speedups over the baseline 
+    approach where we na\"{i}vely split the neurons at each layer.
 \end{abstract}
