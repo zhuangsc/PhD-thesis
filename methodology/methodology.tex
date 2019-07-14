@@ -55,11 +55,10 @@ OmpSs is based on tasks and dependences. Tasks are the elementary unit of work
 which represents a specific instance of an executable code. Dependences let the 
 user annotate the data flow of the program, this way at runtime this information 
 can be used to determine if the parallel execution of two tasks may cause data 
-races.
-In OmpSs the task construct also allows the annotation of function declarations 
-or definitions in addition to structured-blocks. When a function is annotated 
-with the task construct each invocation of that function becomes a task creation 
-point~\cite{Bueno13}.
+races. In OmpSs the task construct also allows the annotation of function 
+declarations or definitions in addition to structured-blocks~\cite{Bueno13}. 
+When a function is annotated with the task construct each invocation of that 
+function becomes a task creation point.
 
 The task construct allows expressing data-dependences among tasks using the 
 \textit{in}, \textit{out} and \textit{inout} clauses (standing for input, output 
@@ -97,12 +96,12 @@ neural networks etc.
 
 \subsection{Tensorflow}
 TensorFlow is an open source software library for numerical computation using 
-data flow graphs. The graph nodes represent mathematical operations, while the 
-graph edges represent the multidimensional data arrays (tensors) that flow 
-between them.  This flexible architecture enables you to deploy computation to 
-one or more CPUs or GPUs in a desktop, server, or mobile device without 
-rewriting code. TensorFlow also includes TensorBoard, a data visualization 
-toolkit~\cite{tensorflow}.
+data flow graphs~\cite{tensorflow}. The graph nodes represent mathematical 
+operations, while the graph edges represent the multidimensional data arrays 
+(tensors) that flow between them.  This flexible architecture enables you to 
+deploy computation to one or more CPUs or GPUs in a desktop, server, or mobile 
+device without rewriting code. TensorFlow also includes TensorBoard, a data 
+visualization toolkit.
 
 TensorFlow also takes a graph-based approach to construct neural networks in 
 which each node in the graph represents an op. An op is a function that runs on 
@@ -114,15 +113,15 @@ ops using its C++ interface and API.
 KANN is a standalone and lightweight library in C for constructing and training 
 small to medium artificial neural networks such as multi-layer perceptrons, 
 convolutional neural networks and recurrent neural networks (including LSTM and 
-GRU).  It implements graph-based reverse-mode automatic differentiation and 
-allows to build topologically complex neural networks with recurrence, shared 
-weights and multiple inputs/outputs/costs. In comparison to mainstream deep 
-learning frameworks such as TensorFlow, KANN is not as scalable, but it is close 
-in flexibility, has a much smaller code base and only depends on the standard C 
-library. In comparison to other lightweight frameworks such as tiny-dnn, KANN is 
-still smaller, times faster and much more versatile, supporting RNN, VAE and 
-non-standard neural networks that may fail these lightweight 
-frameworks~\cite{kann}.
+GRU)~\cite{kann}. It implements graph-based reverse-mode automatic 
+differentiation and allows to build topologically complex neural networks with 
+recurrence, shared weights and multiple inputs/outputs/costs. In comparison to 
+mainstream deep learning frameworks such as TensorFlow, KANN is not as scalable, 
+but it is close in flexibility, has a much smaller code base and only depends on 
+the standard C library. In comparison to other lightweight frameworks such as 
+tiny-dnn, KANN is still smaller, times faster and much more versatile, 
+supporting RNN, VAE and non-standard neural networks that may fail these 
+lightweight frameworks.
 
 \section{Datasets}
 \subsection{SuiteSparse Matrix Collection}
