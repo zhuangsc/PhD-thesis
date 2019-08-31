@@ -1,7 +1,7 @@
-\subsection{Na\"{i}ve Approach}
+\subsection{State-of-the-Art Approach}
 We consider model parallelism to accelerate the training of DNN on a
 distributed-memory system using MPI. Figure~\ref{fig:altsplit_baseline}
-illustrates a na\"{i}ve approach to it which also serves as the baseline of
+illustrates the state-of-the-art approach to it which also serves as the baseline of
 this chapter. It depicts a 5-hidden-layer all-connected DNN split on two MPI
 processes and the 4 neurons per layer are evenly assigned to each MPI
 process. The input and output layer are omitted and we assume they are
@@ -20,7 +20,7 @@ and identical to all the MPI processes prior to the computation of their
 respective portions of the current layer.
 \begin{figure}[H]
     \centerline{\includegraphics[scale=0.60]{altsplit/figs/baseline.png}}
-    \caption{Na\"{i}ve model parallelism scheme}
+    \caption{State-of-the-art model parallelism scheme}
     \label{fig:altsplit_baseline}
 \end{figure}
 
@@ -53,7 +53,7 @@ interest with regard to the subsequent parallel versions of the algorithm.
 \end{algorithmic}}
 \end{algorithm}
 
-The na\"{i}ve model parallelism of a DNN is shown in 
+The state-of-the-art model parallelism of a DNN is shown in 
 Algorithm~\ref{alg:altsplit_baseline}. Besides the notations we introduced in 
 Algorithm~\ref{alg:altsplit_sequential}, we give some additional notations due 
 to the introduction of parallelism. $size$ denotes the number of MPI processes, 
@@ -78,7 +78,7 @@ N_l*size]$ and extract its respective gradients from it during the
 backpropagation phase.
 
 \begin{algorithm}[H]
-\caption{Na\"{i}ve approach to model parallelism of DNN}
+\caption{State-of-the-art approach to model parallelism of DNN}
 \label{alg:altsplit_baseline}
 {\fontsize{10}{10}\selectfont
 \begin{algorithmic}[1]
@@ -113,7 +113,7 @@ hidden layer is split across MPI processes whereas the next layer is replicated
 on the MPI processes with the same initialization values. Subsequent layers are 
 constructed with alternating splits and replications. Therefore, we cut the 
 amount of communication by half during the entire training compared to the 
-\emph{na\"{i}ve} approach by triggering communication every other layer while at 
+\emph{state-of-the-art} approach by triggering communication every other layer while at 
 the cost of replicating layers on each MPI process. As a consequence, the floating
 point computation is increased by 25\% (twice every other layer).
 \begin{figure}[H]
@@ -123,7 +123,7 @@ point computation is increased by 25\% (twice every other layer).
 \end{figure}
 
 Algorithm~\ref{alg:altsplit_altsplit} illustrates the \emph{Altsplit} approach 
-to model parallelism. Unlike the na\"{i}ve approach, there is no need for extra 
+to model parallelism. Unlike the state-of-the-art approach, there is no need for extra 
 storage in \emph{Altsplit}. If the preceding layer during the 
 forward-propagation phase is a split, an MPI\_Allreduce with the \textit{sum} 
 operation must be performed on $\pmb{Y}_{l-1}[bs, N_{l}]$. Similarly, the same 

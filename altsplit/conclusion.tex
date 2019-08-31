@@ -3,13 +3,13 @@ model parallelism of the DNN with less communication. It achieves this by
 distributing the neurons and replicating them across all the computational
 units alternately in-between successive layers so that all-to-all
 communication only occurs every other layers instead of in a lock-step
-fashion in an \emph{na\"{i}ve} approach. Our experiments are conducted taking
+fashion in an \emph{state-of-the-art} approach. Our experiments are conducted taking
 multiple hyper-parameters into consideration: the number of neurons per
 layer, the number of layers and batch sizes. We conduct the experiments on
 two high-end multicore multinode clusters with distinct CPU architecture.
 
 We find that the \emph{Altsplit} approach achieves significant speedups over
-our baseline \emph{na\"{i}ve} approach regardless the underlying cluster.
+our baseline \emph{state-of-the-art} approach regardless the underlying cluster.
 Furthermore, we show that the speedup is retained among various
 hyper-parameters and we visualize the speedup by generating traces on both
 approach and shows that the trade-off between additional floating-point 
