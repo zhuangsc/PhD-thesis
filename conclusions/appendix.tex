@@ -15,4 +15,33 @@
     \item \bibentry{ilia}
 \end{itemize}
 
+\chapter{Pragmas}
+BBBAAA
+\begin{lstlisting}
+#pragma omp task in(X[initx:initx+bm-1], Y[inity:inity+bm-1]) concurrent(result[0:bn-1]) no_copy_deps priority(p) label(ddot) 
+void __t_dot(int p, int bm, int bn, int m, int n, double *X, double *Y, int initx, int inity, double *result); 
+
+#pragma omp task in(X1[0:bm-1], X2[0:bm-1], Anum[0:bn-1], Aden[0:bn-1], Y1[0:bm-1], Y2[0:bm-1]) out(Z1[0:bm-1], Z2[0:bm-1]) no_copy_deps priority(1) label(dcpaxpy_comb)
+void __t_cpaxpy_comb(int bm, int bn, int m, int n, double alpha, double *Anum, double *Aden, double *X1, double *X2, double *Y1, double *Y2, double *Z1, double *Z2);
+
+#pragma omp task in(X[0:bm-1], Y[0:bm-1], SAnum[0:bn-1], SAden[0:bn-1]) out(Z[0:bm-1]) no_copy_deps priority(p) label(extm_axpy)
+void __t_extm_axpy(int bm, int bn, int m, int n, double *SAnum, double *SAden, double *X, double *Y, double *Z, int p);
+
+#pragma omp task in(X[initx:initx+bm-1], Y[inity:inity+bm-1], A[inita:inita+bm-1], B[initb:initb+bm-1]) concurrent([bn]result, [bn]result2) no_copy_deps priority(p) label(cg_dot2)
+void _cg_dot2(int p, int bm, int bn, int m, int n, double *X, double *Y, int initx, int inity, double *result, double *A, double *B, int inita, int initb, double *result2);
+
+/* AAAAAA */
+#pragma omp task in(gamma[i], delta) out(beta[i], alpha[i]) label(centinel) 
+{
+    if ( k > 0 ) {
+        beta[i] = gamma[i]/gamma[iprev];
+        alpha[i] = gamma[i] / (delta - beta[i] * gamma[i] / alpha[iprev]);
+    } else {
+        beta[i] = (double) 0;
+        alpha[i] = gamma[i]/delta;
+    }
+    gamma[iprev] = delta = 0;
+}  
+\end{lstlisting}
 \end{appendices}
+

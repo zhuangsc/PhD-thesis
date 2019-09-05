@@ -220,7 +220,7 @@
 \usepackage{pdfpages}
 \usepackage{algorithm}
 \usepackage{algpseudocode}
-\usepackage{xcolor}
+%\usepackage{xcolor}
 \usepackage{bytefield}
 \usepackage{mathtools}
 \usepackage{float}
@@ -234,6 +234,7 @@
 \usepackage{xr}
 \usepackage[bottom]{footmisc}
 \newcolumntype{P}[1]{>{\centering\arraybackslash}p{#1}}
+\usepackage[dvipsnames]{xcolor}
 
 \lstset{ %
   basicstyle=\scriptsize,        % the size of the fonts that are used for the code
@@ -243,10 +244,10 @@
   %escapeinside={\%*}{*)},          % if you want to add LaTeX within your code
   %frame=single,                    % adds a frame around the code
   keepspaces=true,                 % keeps spaces in text, useful for keeping indentation of code (possibly needs columns=flexible)
-  keywordstyle=\color{blue},       % keyword style
+  keywordstyle=\color{Fuchsia},       % keyword style
   language=C,                 % the language of the code
-  morekeywords={pragma, omp, task, in, out, taskwait},            % if you want to add more keywords to the set
-  numbers=none,                    % where to put the line-numbers; possible values are (none, left, right)
+  morekeywords={pragma, omp, task, in, out, taskwait, parallel, concurrent, no\_copy\_deps, priority, label},
+  numbers=left,                    % where to put the line-numbers; possible values are (none, left, right)
   %numbersep=5pt,                   % how far the line-numbers are from the code
   %numberstyle=\tiny\color{mygray}, % the style that is used for the line-numbers
   %rulecolor=\color{black},         % if not set, the frame-color may be changed on line-breaks within not-black text (e.g. comments (green here))
