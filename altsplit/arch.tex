@@ -115,7 +115,7 @@ constructed with alternating splits and replications. Therefore, we cut the
 amount of communication by half during the entire training compared to the 
 \emph{state-of-the-art} approach by triggering communication every other layer while at 
 the cost of replicating layers on each MPI process. As a consequence, the floating
-point computation is increased by 25\% (twice every other layer).
+point computation is increased by 50\% (twice every other layer).
 \begin{figure}[H]
     \centerline{\includegraphics[scale=0.60]{altsplit/figs/altsplit.png}}
     \caption{The \emph{Altsplit} scheme}
