@@ -16,7 +16,16 @@
 \end{itemize}
 
 \chapter{Pragmas}
-BBBAAA
+\section{Description}
+The following are the list of the \textit{pragma} annotations of the routines 
+used in the various CG implementations of Chapter~\ref{chap:ifcg}. The 
+source code is open source and can be downloaded from
+\href{git@github.com:zhuangsc/IFCG.git}{Github}. The annotations follow the 
+syntax and semantics of the OmpSs programming model. The exact definitions 
+of those annotations can be found at the
+\href{https://pm.bsc.es/ftp/ompss/doc/spec/}{OmpSs official page}.
+
+\section{Annotations}
 \begin{lstlisting}
 #pragma omp task in(X[initx:initx+bm-1], Y[inity:inity+bm-1]) concurrent(result[0:bn-1]) no_copy_deps priority(p) label(ddot) 
 void __t_dot(int p, int bm, int bn, int m, int n, double *X, double *Y, int initx, int inity, double *result); 
@@ -30,7 +39,7 @@ void __t_extm_axpy(int bm, int bn, int m, int n, double *SAnum, double *SAden, d
 #pragma omp task in(X[initx:initx+bm-1], Y[inity:inity+bm-1], A[inita:inita+bm-1], B[initb:initb+bm-1]) concurrent([bn]result, [bn]result2) no_copy_deps priority(p) label(cg_dot2)
 void _cg_dot2(int p, int bm, int bn, int m, int n, double *X, double *Y, int initx, int inity, double *result, double *A, double *B, int inita, int initb, double *result2);
 
-/* AAAAAA */
+/* Computation of the coefficients */
 #pragma omp task in(gamma[i], delta) out(beta[i], alpha[i]) label(centinel) 
 {
     if ( k > 0 ) {
